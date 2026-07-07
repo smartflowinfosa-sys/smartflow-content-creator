@@ -1,14 +1,30 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "./supabase";
 import Auth from "./Auth"; 
+import { User, Settings, LogOut, Crown, Trash2 } from 'lucide-react';
 
 export default function App() {
   const [session, setSession] = useState<any>(null);
   const [prompt, setPrompt] = useState("");
   const [contentType, setContentType] = useState("promo_video");
+  const [activityType, setActivityType] = useState(""); // متغير النشاط التجاري
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [results, setResults] = useState<any[]>([]);
   const [isLoadingResults, setIsLoadingResults] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false); // حالة القائمة المنسدلة للبروفايل
+
+  // قائمة الأنشطة المقترحة للسوق السعودي
+  const saudiActivities = [
+    "المطاعم والمقاهي (F&B)",
+    "العقارات وإدارة الأملاك",
+    "المتاجر الإلكترونية (قطاع التجزئة)",
+    "مراكز التجميل والصالونات",
+    "العيادات والمراكز الطبية",
+    "تنظيم الفعاليات والمؤتمرات",
+    "الخدمات التقنية والبرمجيات",
+    "السياحة والسفر",
+    "النوادي الرياضية واللياقة البدنية"
+  ];
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -51,9 +67,30 @@ export default function App() {
     }
   }, [session]);
 
+  // دالة حذف المكتبة (الكارت)
+  const handleDelete = async (id: string) => {
+    if (window.confirm("هل أنت متأكد من حذف هذه المكتبة بشكل نهائي؟")) {
+      try {
+        const { error } = await supabase
+          .from('content_pipeline')
+          .delete()
+          .eq('id', id);
+        
+        if (error) throw error;
+        
+        // تحديث الواجهة مباشرة بعد الحذف الناجح
+        setResults(results.filter(item => item.id !== id));
+      } catch (error) {
+        console.error("خطأ في الحذف:", error);
+        alert("حدث خطأ أثناء الحذف.");
+      }
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!session?.user?.id) return alert("الرجاء تسجيل الدخول أولاً");
+    if (!activityType) return alert("الرجاء اختيار نوع النشاط التجاري"); // التحقق من اختيار النشاط
 
     setIsSubmitting(true);
     const webhookUrl = "https://n8n-p10bgpahkliy9hghak21zv3e.178.105.219.96.sslip.io/webhook/generate-content";
@@ -64,6 +101,7 @@ export default function App() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           store_id: session.user.id, 
+          activity_type: activityType, // إرسال النشاط التجاري للمصنع
           content_type: contentType,
           prompt: prompt,
         }),
@@ -88,27 +126,57 @@ export default function App() {
 
       {/* خلفية الاستوديو والعلامة المائية الاحترافية */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden flex items-center justify-center">
-        {/* علامة الكاميرا السينمائية المائية */}
         <div className="text-[35rem] opacity-[0.02] drop-shadow-[0_0_50px_rgba(255,255,255,0.1)] select-none">🎥</div>
-
-        {/* إضاءة الاستوديو الخلفية */}
         <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[120px]"></div>
         <div className="absolute bottom-[-20%] right-[-10%] w-[400px] h-[400px] bg-blue-600/20 rounded-full blur-[100px]"></div>
       </div>
 
       {/* شريط الأزرار العلوي */}
-      <div className="absolute top-4 left-0 right-0 px-6 flex justify-between items-center z-20 w-full max-w-7xl mx-auto">
-        {/* زر الخروج (أعلى اليمين) */}
-        <button 
-          onClick={() => supabase.auth.signOut()}
-          className="px-5 py-2 bg-slate-900/50 hover:bg-red-500/20 text-slate-400 hover:text-red-400 rounded-xl border border-slate-800 transition-all text-sm font-bold backdrop-blur-md"
-        >
-          خروج
-        </button>
+      <div className="absolute top-4 left-0 right-0 px-6 flex justify-between items-center z-50 w-full max-w-7xl mx-auto">
+        
+        {/* قائمة البروفايل (أعلى اليمين) */}
+        <div className="relative inline-block text-right">
+          <button
+            onClick={() => setIsProfileOpen(!isProfileOpen)}
+            className="flex items-center justify-center w-11 h-11 bg-slate-900/50 hover:bg-slate-800 border border-slate-700 text-white rounded-full transition-all backdrop-blur-md shadow-lg"
+          >
+            <User size={20} className="text-slate-300" />
+          </button>
 
-        {/* زر اللغة (أعلى اليسار) */}
+          {isProfileOpen && (
+            <div className="absolute right-0 mt-3 w-64 bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden backdrop-blur-xl z-50">
+              {/* باقة المستخدم */}
+              <div className="px-5 py-4 bg-slate-800/50 border-b border-slate-700/50 flex items-center gap-3">
+                <div className="bg-yellow-500/20 p-2 rounded-lg">
+                  <Crown size={20} className="text-yellow-500" />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-white">الباقة الحالية</p>
+                  <p className="text-xs text-slate-400 font-medium">الباقة المجانية (Free)</p>
+                </div>
+              </div>
+
+              {/* الإعدادات */}
+              <button className="w-full text-right px-5 py-3.5 text-sm text-slate-300 hover:text-white hover:bg-slate-800 flex items-center gap-3 transition-colors font-medium">
+                <Settings size={18} className="text-slate-400" />
+                الإعدادات (اللغة، الثيم، المرور)
+              </button>
+
+              {/* تسجيل الخروج */}
+              <button 
+                onClick={() => supabase.auth.signOut()}
+                className="w-full text-right px-5 py-3.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 flex items-center gap-3 transition-colors border-t border-slate-700/50 font-medium"
+              >
+                <LogOut size={18} />
+                تسجيل الخروج
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* زر اللغة السابق (أعلى اليسار - يمكن إزالته لاحقاً إذا أردت الاكتفاء بالقائمة) */}
         <button 
-          className="px-5 py-2 bg-slate-900/50 hover:bg-slate-800/80 text-slate-300 rounded-xl border border-slate-800 transition-all text-sm font-bold backdrop-blur-md flex items-center gap-2"
+          className="px-5 py-2 bg-slate-900/50 hover:bg-slate-800/80 text-slate-300 rounded-xl border border-slate-800 transition-all text-sm font-bold backdrop-blur-md flex items-center gap-2 z-40"
         >
           <span>English</span>
           <span>🌐</span>
@@ -116,7 +184,7 @@ export default function App() {
       </div>
 
       {/* القسم الأول: كابينة التحكم */}
-      <div className="relative z-10 bg-slate-900/60 backdrop-blur-2xl p-10 rounded-[2.5rem] shadow-[0_0_80px_-20px_rgba(124,58,237,0.3)] border border-slate-700/50 w-full max-w-xl mt-16">
+      <div className="relative z-10 bg-slate-900/60 backdrop-blur-2xl p-10 rounded-[2.5rem] shadow-[0_0_80px_-20px_rgba(124,58,237,0.3)] border border-slate-700/50 w-full max-w-xl mt-20">
         <div className="absolute top-0 inset-x-10 h-px bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-50"></div>
 
         <div className="text-center mb-10">
@@ -130,6 +198,30 @@ export default function App() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          
+          {/* حقل اختيار النشاط التجاري (الجديد) */}
+          <div className="space-y-2">
+            <label className="block text-sm font-bold text-slate-300 px-1">نوع النشاط التجاري:</label>
+            <div className="relative">
+              <select
+                value={activityType}
+                onChange={(e) => setActivityType(e.target.value)}
+                required
+                className="w-full px-5 py-4 bg-slate-950/50 border border-slate-700/80 text-white rounded-2xl focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-all appearance-none outline-none font-medium"
+              >
+                <option value="" disabled className="text-slate-500">اختر النشاط التجاري...</option>
+                {saudiActivities.map((activity, index) => (
+                  <option key={index} value={activity} className="bg-slate-900">
+                    {activity}
+                  </option>
+                ))}
+              </select>
+              <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none text-slate-400">
+                ▼
+              </div>
+            </div>
+          </div>
+
           <div className="space-y-2">
             <label className="block text-sm font-bold text-slate-300 px-1">نوع الإنتاج المطلوب:</label>
             <div className="relative">
@@ -163,7 +255,7 @@ export default function App() {
               required
               className="w-full px-5 py-4 bg-slate-950/50 border border-slate-700/80 text-white rounded-2xl focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 transition-all resize-none outline-none leading-relaxed"
               rows={4}
-              placeholder=""
+              placeholder="اكتب فكرتك هنا (مثال: أريد إعلان لقهوة مختصة بمناسبة الصيف...)"
             ></textarea>
           </div>
 
@@ -226,20 +318,33 @@ export default function App() {
               return (
                 <div key={index} className="bg-slate-900/80 backdrop-blur-xl rounded-[2rem] border border-slate-700/60 overflow-hidden hover:border-purple-500/50 transition-all duration-300 shadow-xl hover:shadow-[0_10px_40px_-15px_rgba(168,85,247,0.3)] flex flex-col h-full group">
 
-                  {/* رأس الكارت */}
+                  {/* رأس الكارت (مضاف إليه زر الحذف) */}
                   <div className="p-5 flex justify-between items-center bg-slate-950/50 border-b border-slate-800/80">
                     <span className="text-xs font-black text-white bg-gradient-to-r from-blue-600 to-blue-500 px-3 py-1.5 rounded-lg shadow-md">
                       {item.content_type === 'promo_video' ? '🎥 فيديو' : '📝 محتوى'}
                     </span>
-                    <button
-                      onClick={() => {
-                        navigator.clipboard.writeText(`${hook}\n\n${caption}`);
-                        alert('تم النسخ! 📋');
-                      }}
-                      className="text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 px-4 py-1.5 rounded-lg text-xs font-bold transition-colors border border-slate-700 flex items-center gap-2"
-                    >
-                      <span>نسخ</span> <span>📋</span>
-                    </button>
+                    
+                    <div className="flex items-center gap-2">
+                      {/* زر الحذف الجديد */}
+                      <button
+                        onClick={() => handleDelete(item.id)}
+                        className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors border border-transparent hover:border-red-500/20"
+                        title="حذف المكتبة"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+
+                      {/* زر النسخ */}
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(`${hook}\n\n${caption}`);
+                          alert('تم النسخ! 📋');
+                        }}
+                        className="text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors border border-slate-700 flex items-center gap-2"
+                      >
+                        <span>نسخ</span> <span>📋</span>
+                      </button>
+                    </div>
                   </div>
 
                   {/* المحتوى النصي */}
@@ -254,7 +359,7 @@ export default function App() {
                     </p>
                   </div>
 
-                  {/* منطقة الجدولة والنشر (بأيقونات حقيقية SVG) */}
+                  {/* منطقة الجدولة والنشر */}
                   <div className="p-4 bg-slate-950/50 border-t border-slate-800/80">
                     <p className="text-xs text-center text-slate-500 font-bold mb-3">النشر التلقائي (قريباً)</p>
                     <div className="flex gap-2">
