@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "./supabase";
 import Auth from "./Auth"; 
-import { User, Settings, LogOut, Crown, Trash2, X, Lock, Globe, Palette, Calendar, Clock, Copy, CheckCircle2 } from 'lucide-react';
+import { User, Settings, LogOut, Crown, Trash2, X, Lock, Globe, Palette, Copy, CheckCircle2 } from 'lucide-react';
 
 // ==========================================
-// 1. قاموس الترجمة (عربي / إنجليزي)
+// 1. قاموس الترجمة المحدث (عربي / إنجليزي)
 // ==========================================
 const translations = {
   ar: {
@@ -54,6 +54,10 @@ const translations = {
     reelsPost: "ريلز/بوست",
     scheduleBtn: "جدولة النشر 🚀",
     scheduling: "جاري الجدولة...",
+    deleteConfirm: "هل أنت متأكد من حذف هذه المكتبة بشكل نهائي؟",
+    platformValidation: "الرجاء اختيار منصة واحدة ونوع نشر على الأقل",
+    dateValidation: "الرجاء تحديد تاريخ ووقت النشر",
+    scheduleSuccess: "تمت جدولة النشر بنجاح! 📅\nسيتم النشر يوم {date} الساعة {time}",
     visualGroup: "الإنتاج المرئي والترويج",
     textGroup: "المحتوى النصي والإدارة",
     activities: [
@@ -109,6 +113,10 @@ const translations = {
     reelsPost: "Reels/Post",
     scheduleBtn: "Schedule Publish 🚀",
     scheduling: "Scheduling...",
+    deleteConfirm: "Are you sure you want to delete this permanently?",
+    platformValidation: "Please select at least one platform and post type",
+    dateValidation: "Please select both date and time",
+    scheduleSuccess: "Scheduled successfully! 📅\nWill be published on {date} at {time}",
     visualGroup: "Visual Production",
     textGroup: "Text & Management",
     activities: [
@@ -136,7 +144,7 @@ const ContentCard = ({ item, handleDelete, isDark, t }) => {
   const hook = aiData?.social_media_copy?.hook || '';
   const caption = aiData?.social_media_copy?.caption || item.user_prompt || '...';
 
-  // خيارات النشر الجديدة (منفصلة لكل منصة)
+  // خيارات النشر
   const [tkPost, setTkPost] = useState(false);
   const [tkStory, setTkStory] = useState(false);
   const [igPost, setIgPost] = useState(false);
@@ -148,13 +156,14 @@ const ContentCard = ({ item, handleDelete, isDark, t }) => {
   const [copied, setCopied] = useState(false);
 
   const handleSchedule = async () => {
-    if (!tkPost && !tkStory && !igPost && !igStory) return alert("الرجاء اختيار منصة واحدة ونوع نشر على الأقل / Select at least one platform and type");
-    if (!scheduleDate || !scheduleTime) return alert("الرجاء تحديد تاريخ ووقت النشر / Please select date and time");
+    if (!tkPost && !tkStory && !igPost && !igStory) return alert(t.platformValidation);
+    if (!scheduleDate || !scheduleTime) return alert(t.dateValidation);
     
     setIsPublishing(true);
     try {
       await new Promise(resolve => setTimeout(resolve, 1500));
-      alert(`تمت جدولة النشر بنجاح! 📅\nScheduled successfully for ${scheduleDate} at ${scheduleTime}`);
+      const successMsg = t.scheduleSuccess.replace('{date}', scheduleDate).replace('{time}', scheduleTime);
+      alert(successMsg);
     } catch (error) {
       alert("Error scheduling");
     } finally {
@@ -224,29 +233,29 @@ const ContentCard = ({ item, handleDelete, isDark, t }) => {
           </div>
         </div>
 
-        {/* اختيار التاريخ والوقت (محدث للأرقام الإنجليزية وإخفاء النصوص) */}
-        <div className="flex gap-3 mb-4" dir="ltr">
-          <div className="relative flex-1">
+        {/* اختيار التاريخ والوقت (محدث للأرقام الإنجليزية وإظهار الأيقونة الأصلية فقط) */}
+        <div className="flex gap-3 mb-4">
+          <div className="flex-1">
             <input 
               type="date" 
               required
-              lang="en-US"
+              dir="ltr"
+              lang="en"
               value={scheduleDate} 
               onChange={e=>setScheduleDate(e.target.value)} 
-              className={`clean-datetime w-full border rounded-xl pl-9 pr-3 py-3 text-sm outline-none transition-colors ${inputBg} font-mono`} 
+              className={`w-full border rounded-xl px-4 py-3 text-sm outline-none transition-colors ${inputBg} font-sans`} 
             />
-            <Calendar className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none ${isDark ? 'text-slate-500' : 'text-slate-400'}`} />
           </div>
-          <div className="relative flex-1">
+          <div className="flex-1">
             <input 
               type="time" 
               required
-              lang="en-US"
+              dir="ltr"
+              lang="en"
               value={scheduleTime} 
               onChange={e=>setScheduleTime(e.target.value)} 
-              className={`clean-datetime w-full border rounded-xl pl-9 pr-3 py-3 text-sm outline-none transition-colors ${inputBg} font-mono`} 
+              className={`w-full border rounded-xl px-4 py-3 text-sm outline-none transition-colors ${inputBg} font-sans`} 
             />
-            <Clock className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none ${isDark ? 'text-slate-500' : 'text-slate-400'}`} />
           </div>
         </div>
 
@@ -282,7 +291,7 @@ export default function App() {
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
 
   const isDark = theme === 'dark';
-  const t = translations[langCode]; // استدعاء القاموس بناءً على اللغة
+  const t = translations[langCode]; 
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => setSession(session));
@@ -309,7 +318,7 @@ export default function App() {
   }, [session]);
 
   const handleDelete = async (id: string) => {
-    if (window.confirm("Are you sure? / هل أنت متأكد؟")) {
+    if (window.confirm(t.deleteConfirm)) {
       try {
         await supabase.from('content_pipeline').delete().eq('id', id);
         setResults(results.filter(item => item.id !== id));
@@ -323,7 +332,7 @@ export default function App() {
     try {
       const { error } = await supabase.auth.updateUser({ password: newPassword });
       if (error) throw error;
-      alert("Password updated! 🔒");
+      alert(t.copied); // just reusing a generic success alert format
       setNewPassword("");
     } catch (error: any) {
       alert("Error: " + error.message);
@@ -335,7 +344,7 @@ export default function App() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!session?.user?.id) return;
-    if (!activityType) return alert("Please select a category");
+    if (!activityType) return alert(t.platformValidation);
 
     setIsSubmitting(true);
     const webhookUrl = "https://n8n-p10bgpahkliy9hghak21zv3e.178.105.219.96.sslip.io/webhook/generate-content";
@@ -365,12 +374,6 @@ export default function App() {
   return (
     <div className={`relative min-h-screen p-4 font-sans flex flex-col items-center overflow-x-hidden transition-colors duration-500 ${mainBg}`} dir={t.dir}>
       
-      {/* ستايل إخفاء نصوص التاريخ والوقت */}
-      <style>{`
-        .clean-datetime:invalid::-webkit-datetime-edit { color: transparent; }
-        .clean-datetime:focus::-webkit-datetime-edit { color: inherit; }
-      `}</style>
-
       {/* نافذة الإعدادات */}
       {isSettingsOpen && (
         <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
@@ -391,7 +394,7 @@ export default function App() {
                 </label>
                 <select value={langCode} onChange={(e) => setLangCode(e.target.value)} className={`w-full border rounded-xl px-4 py-3 outline-none ${isDark ? 'bg-slate-950 border-slate-700 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'}`}>
                   <option value="ar">العربية (Arabic)</option>
-                  <option value="en">English</option>
+                  <option value="en">English (الإنجليزية)</option>
                 </select>
               </div>
 
