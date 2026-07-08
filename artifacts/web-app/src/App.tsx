@@ -233,28 +233,28 @@ const ContentCard = ({ item, handleDelete, isDark, t }) => {
           </div>
         </div>
 
-        {/* اختيار التاريخ والوقت (محدث للأرقام الإنجليزية وإظهار الأيقونة الأصلية فقط) */}
-        <div className="flex gap-3 mb-4">
+        {/* الحظر البرمجي للأرقام الإنجليزية في مربعات التاريخ والوقت */}
+        <div className="flex gap-3 mb-4" dir="ltr">
           <div className="flex-1">
             <input 
               type="date" 
               required
-              dir="ltr"
-              lang="en"
+              lang="en-US"
               value={scheduleDate} 
               onChange={e=>setScheduleDate(e.target.value)} 
-              className={`w-full border rounded-xl px-4 py-3 text-sm outline-none transition-colors ${inputBg} font-sans`} 
+              style={{ fontFamily: 'Arial, Helvetica, sans-serif', direction: 'ltr', colorScheme: isDark ? 'dark' : 'light' }}
+              className={`w-full border rounded-xl px-4 py-3 text-sm outline-none transition-colors ${inputBg}`} 
             />
           </div>
           <div className="flex-1">
             <input 
               type="time" 
               required
-              dir="ltr"
-              lang="en"
+              lang="en-US"
               value={scheduleTime} 
               onChange={e=>setScheduleTime(e.target.value)} 
-              className={`w-full border rounded-xl px-4 py-3 text-sm outline-none transition-colors ${inputBg} font-sans`} 
+              style={{ fontFamily: 'Arial, Helvetica, sans-serif', direction: 'ltr', colorScheme: isDark ? 'dark' : 'light' }}
+              className={`w-full border rounded-xl px-4 py-3 text-sm outline-none transition-colors ${inputBg}`} 
             />
           </div>
         </div>
@@ -332,7 +332,7 @@ export default function App() {
     try {
       const { error } = await supabase.auth.updateUser({ password: newPassword });
       if (error) throw error;
-      alert(t.copied); // just reusing a generic success alert format
+      alert(t.copied); 
       setNewPassword("");
     } catch (error: any) {
       alert("Error: " + error.message);
