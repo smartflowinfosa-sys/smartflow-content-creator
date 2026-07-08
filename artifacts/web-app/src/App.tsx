@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "./supabase";
 import Auth from "./Auth"; 
-import { User, Settings, LogOut, Crown, Trash2, X, Lock, Globe, Palette, Copy, CheckCircle2, Instagram } from 'lucide-react';
+import { User, Settings, LogOut, Crown, Trash2, X, Lock, Globe, Palette, Copy, CheckCircle2, Instagram, Check } from 'lucide-react';
 
 // ==========================================
 // 1. قاموس الترجمة المحدث (عربي / إنجليزي)
@@ -27,6 +27,7 @@ const translations = {
     passNote: "ملاحظة: خيارات اللغة والثيم تُحفظ تلقائياً دون الحاجة لضغط زر التحديث.",
     socialAuth: "ربط حسابات التواصل",
     connectIg: "ربط حساب إنستقرام",
+    igConnected: "إنستقرام متصل ✅",
     bizCategory: "نوع النشاط التجاري:",
     bizPlaceholder: "اختر النشاط التجاري...",
     contentType: "نوع الإنتاج المطلوب:",
@@ -88,6 +89,7 @@ const translations = {
     passNote: "Note: Language and Theme settings are saved automatically.",
     socialAuth: "Social Connections",
     connectIg: "Connect Instagram",
+    igConnected: "Instagram Connected ✅",
     bizCategory: "Business Category:",
     bizPlaceholder: "Select business category...",
     contentType: "Content Type:",
@@ -152,6 +154,7 @@ const ContentCard = ({ item, handleDelete, isDark, t }) => {
   const [tkStory, setTkStory] = useState(false);
   const [igPost, setIgPost] = useState(false);
   const [igStory, setIgStory] = useState(false);
+  
   const [scheduleDate, setScheduleDate] = useState("");
   const [scheduleTime, setScheduleTime] = useState("");
   const [isPublishing, setIsPublishing] = useState(false);
@@ -282,6 +285,9 @@ export default function App() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   
+  // حالة جديدة للتحقق مما إذا كان الإنستقرام مربوطاً
+  const [isIgConnected, setIsIgConnected] = useState(false);
+
   const [theme, setTheme] = useState('dark');
   const [langCode, setLangCode] = useState('ar');
   const [newPassword, setNewPassword] = useState("");
@@ -290,9 +296,47 @@ export default function App() {
   const isDark = theme === 'dark';
   const t = translations[langCode]; 
 
+  // دالة التقاط المفتاح السري وحفظه في قاعدة البيانات
+  const checkAndSaveToken = async (currentSession: any) => {
+    if (!currentSession?.user?.id) return;
+
+    // التحقق هل المستخدم مربوط مسبقاً؟
+    const { data } = await supabase.from('social_connections')
+      .select('*').eq('user_id', currentSession.user.id).eq('platform', 'instagram').single();
+    
+    if (data) setIsIgConnected(true);
+
+    // إذا عاد المستخدم وفي يده مفتاح (provider_token)
+    if (currentSession?.provider_token) {
+      if (data) {
+         // تحديث المفتاح إذا كان موجوداً مسبقاً
+         await supabase.from('social_connections').update({ 
+           access_token: currentSession.provider_token, 
+           updated_at: new Date().toISOString() 
+         }).eq('id', data.id);
+      } else {
+         // إنشاء سجل جديد للمفتاح
+         await supabase.from('social_connections').insert({ 
+           user_id: currentSession.user.id, 
+           platform: 'instagram', 
+           access_token: currentSession.provider_token 
+         });
+      }
+      setIsIgConnected(true);
+    }
+  };
+
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => setSession(session));
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => setSession(session));
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      checkAndSaveToken(session);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      checkAndSaveToken(session);
+    });
+
     return () => subscription.unsubscribe();
   }, []);
 
@@ -338,13 +382,11 @@ export default function App() {
     }
   };
 
-  // دالة طلب الربط مع إنستقرام (عبر فيسبوك)
   const handleConnectInstagram = async () => {
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'facebook',
         options: {
-          // هذه الصلاحيات هي التي نحتاجها لنشر المحتوى لاحقاً
           scopes: 'instagram_basic,instagram_content_publish,pages_show_list,pages_read_engagement',
           redirectTo: window.location.origin
         }
@@ -424,17 +466,22 @@ export default function App() {
 
               <div className={`h-px my-4 ${isDark ? 'bg-slate-800' : 'bg-slate-200'}`}></div>
 
-              {/* قسم ربط حسابات التواصل الاجتماعي الجديد */}
+              {/* قسم ربط حسابات التواصل */}
               <div className="space-y-3">
                 <label className={`text-sm font-bold flex items-center gap-2 ${labelColor}`}>
                   <Instagram size={16} className="text-pink-500"/> {t.socialAuth}
                 </label>
                 <button 
                   onClick={handleConnectInstagram}
-                  className={`w-full py-3 rounded-xl font-bold text-sm transition-all border flex justify-center items-center gap-2 hover:bg-pink-500/10 hover:border-pink-500/50 hover:text-pink-500 ${isDark ? 'bg-slate-950 border-slate-700 text-slate-300' : 'bg-white border-slate-300 text-slate-700'}`}
+                  disabled={isIgConnected}
+                  className={`w-full py-3 rounded-xl font-bold text-sm transition-all border flex justify-center items-center gap-2 
+                    ${isIgConnected 
+                      ? 'bg-green-500/10 border-green-500/50 text-green-500 cursor-default' 
+                      : `hover:bg-pink-500/10 hover:border-pink-500/50 hover:text-pink-500 ${isDark ? 'bg-slate-950 border-slate-700 text-slate-300' : 'bg-white border-slate-300 text-slate-700'}`
+                    }`}
                 >
-                  <Instagram size={18} />
-                  {t.connectIg}
+                  {isIgConnected ? <Check size={18} /> : <Instagram size={18} />}
+                  {isIgConnected ? t.igConnected : t.connectIg}
                 </button>
               </div>
 
