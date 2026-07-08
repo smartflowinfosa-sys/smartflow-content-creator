@@ -28,6 +28,7 @@ const translations = {
     socialAuth: "ربط حسابات التواصل",
     connectIg: "ربط حساب إنستقرام",
     igConnected: "إنستقرام متصل ✅",
+    igTrustMsg: "🔒 اطمئن: نحن نطلب الصلاحيات الأساسية فقط لجدولة ونشر المحتوى وقراءة التعليقات للرد عليها. لا نصل أبداً لرسائلك الخاصة ولا نشارك بياناتك.",
     bizCategory: "نوع النشاط التجاري:",
     bizPlaceholder: "اختر النشاط التجاري...",
     contentType: "نوع الإنتاج المطلوب:",
@@ -90,6 +91,7 @@ const translations = {
     socialAuth: "Social Connections",
     connectIg: "Connect Instagram",
     igConnected: "Instagram Connected ✅",
+    igTrustMsg: "🔒 Rest assured: We only request essential permissions to schedule/publish content and read comments. We never access your DMs or share your data.",
     bizCategory: "Business Category:",
     bizPlaceholder: "Select business category...",
     contentType: "Content Type:",
@@ -285,7 +287,6 @@ export default function App() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   
-  // حالة جديدة للتحقق مما إذا كان الإنستقرام مربوطاً
   const [isIgConnected, setIsIgConnected] = useState(false);
 
   const [theme, setTheme] = useState('dark');
@@ -296,26 +297,21 @@ export default function App() {
   const isDark = theme === 'dark';
   const t = translations[langCode]; 
 
-  // دالة التقاط المفتاح السري وحفظه في قاعدة البيانات
   const checkAndSaveToken = async (currentSession: any) => {
     if (!currentSession?.user?.id) return;
 
-    // التحقق هل المستخدم مربوط مسبقاً؟
     const { data } = await supabase.from('social_connections')
       .select('*').eq('user_id', currentSession.user.id).eq('platform', 'instagram').single();
     
     if (data) setIsIgConnected(true);
 
-    // إذا عاد المستخدم وفي يده مفتاح (provider_token)
     if (currentSession?.provider_token) {
       if (data) {
-         // تحديث المفتاح إذا كان موجوداً مسبقاً
          await supabase.from('social_connections').update({ 
            access_token: currentSession.provider_token, 
            updated_at: new Date().toISOString() 
          }).eq('id', data.id);
       } else {
-         // إنشاء سجل جديد للمفتاح
          await supabase.from('social_connections').insert({ 
            user_id: currentSession.user.id, 
            platform: 'instagram', 
@@ -483,6 +479,10 @@ export default function App() {
                   {isIgConnected ? <Check size={18} /> : <Instagram size={18} />}
                   {isIgConnected ? t.igConnected : t.connectIg}
                 </button>
+                {/* رسالة الطمأنينة الدقيقة */}
+                <p className={`text-[11px] leading-relaxed mt-2 text-center opacity-80 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                  {t.igTrustMsg}
+                </p>
               </div>
 
               <div className={`h-px my-4 ${isDark ? 'bg-slate-800' : 'bg-slate-200'}`}></div>
