@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "./supabase";
 import Auth from "./Auth"; 
-import { User, Settings, LogOut, Crown, Trash2, X, Lock, Globe, Palette, Copy, CheckCircle2, Instagram, Check } from 'lucide-react';
+import { User, Settings, LogOut, Crown, Trash2, X, Lock, Globe, Palette, Copy, CheckCircle2, Instagram, Info, Unplug } from 'lucide-react';
 
 // ==========================================
 // 1. قاموس الترجمة المحدث (عربي / إنجليزي)
@@ -27,8 +27,10 @@ const translations = {
     passNote: "ملاحظة: خيارات اللغة والثيم تُحفظ تلقائياً دون الحاجة لضغط زر التحديث.",
     socialAuth: "ربط حسابات التواصل",
     connectIg: "ربط حساب إنستقرام",
-    igConnected: "إنستقرام متصل ✅",
-    igTrustMsg: "🔒 اطمئن: نحن نطلب الصلاحيات الأساسية فقط لجدولة ونشر المحتوى وقراءة التعليقات للرد عليها. لا نصل أبداً لرسائلك الخاصة ولا نشارك بياناتك.",
+    disconnectIg: "فصل الحساب",
+    disconnectConfirm: "هل أنت متأكد أنك تريد فصل حساب إنستقرام عن المنصة؟ سيتم إيقاف النشر التلقائي.",
+    disconnected: "تم فصل الحساب بنجاح.",
+    igTrustMsg: "نحن نطلب الصلاحيات الأساسية فقط لجدولة ونشر المحتوى بالنيابة عنك. لا نصل أبداً لرسائلك الخاصة ولا نشارك بياناتك مع أي طرف.",
     bizCategory: "نوع النشاط التجاري:",
     bizPlaceholder: "اختر النشاط التجاري...",
     contentType: "نوع الإنتاج المطلوب:",
@@ -90,8 +92,10 @@ const translations = {
     passNote: "Note: Language and Theme settings are saved automatically.",
     socialAuth: "Social Connections",
     connectIg: "Connect Instagram",
-    igConnected: "Instagram Connected ✅",
-    igTrustMsg: "🔒 Rest assured: We only request essential permissions to schedule/publish content and read comments. We never access your DMs or share your data.",
+    disconnectIg: "Disconnect Account",
+    disconnectConfirm: "Are you sure you want to disconnect your Instagram account? Auto-publishing will stop.",
+    disconnected: "Account disconnected successfully.",
+    igTrustMsg: "We only request essential permissions to schedule and publish content on your behalf. We never access your DMs or share your data.",
     bizCategory: "Business Category:",
     bizPlaceholder: "Select business category...",
     contentType: "Content Type:",
@@ -378,6 +382,7 @@ export default function App() {
     }
   };
 
+  // دالة طلب الربط
   const handleConnectInstagram = async () => {
     try {
       const { error } = await supabase.auth.signInWithOAuth({
@@ -390,6 +395,25 @@ export default function App() {
       if (error) throw error;
     } catch (error: any) {
       alert("حدث خطأ أثناء الاتصال: " + error.message);
+    }
+  };
+
+  // دالة فصل الحساب الجديدة
+  const handleDisconnectInstagram = async () => {
+    if (window.confirm(t.disconnectConfirm)) {
+      try {
+        const { error } = await supabase.from('social_connections')
+          .delete()
+          .eq('user_id', session.user.id)
+          .eq('platform', 'instagram');
+        
+        if (error) throw error;
+        
+        setIsIgConnected(false);
+        alert(t.disconnected);
+      } catch (error: any) {
+        alert("حدث خطأ أثناء الفصل: " + error.message);
+      }
     }
   };
 
@@ -467,22 +491,34 @@ export default function App() {
                 <label className={`text-sm font-bold flex items-center gap-2 ${labelColor}`}>
                   <Instagram size={16} className="text-pink-500"/> {t.socialAuth}
                 </label>
-                <button 
-                  onClick={handleConnectInstagram}
-                  disabled={isIgConnected}
-                  className={`w-full py-3 rounded-xl font-bold text-sm transition-all border flex justify-center items-center gap-2 
-                    ${isIgConnected 
-                      ? 'bg-green-500/10 border-green-500/50 text-green-500 cursor-default' 
-                      : `hover:bg-pink-500/10 hover:border-pink-500/50 hover:text-pink-500 ${isDark ? 'bg-slate-950 border-slate-700 text-slate-300' : 'bg-white border-slate-300 text-slate-700'}`
-                    }`}
-                >
-                  {isIgConnected ? <Check size={18} /> : <Instagram size={18} />}
-                  {isIgConnected ? t.igConnected : t.connectIg}
-                </button>
-                {/* رسالة الطمأنينة الدقيقة */}
-                <p className={`text-[11px] leading-relaxed mt-2 text-center opacity-80 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                  {t.igTrustMsg}
-                </p>
+                
+                {/* صندوق رسالة الطمأنينة البارز */}
+                <div className={`p-3 rounded-xl border flex gap-3 items-start ${isDark ? 'bg-blue-500/10 border-blue-500/20' : 'bg-blue-50 border-blue-100'}`}>
+                  <Info size={16} className={`mt-0.5 shrink-0 ${isDark ? 'text-blue-400' : 'text-blue-600'}`} />
+                  <p className={`text-xs leading-relaxed font-medium ${isDark ? 'text-blue-300' : 'text-blue-800'}`}>
+                    {t.igTrustMsg}
+                  </p>
+                </div>
+
+                {isIgConnected ? (
+                  // زر فصل الحساب (أحمر)
+                  <button 
+                    onClick={handleDisconnectInstagram}
+                    className={`w-full py-3 rounded-xl font-bold text-sm transition-all border flex justify-center items-center gap-2 hover:bg-red-500 hover:text-white hover:border-red-500 ${isDark ? 'bg-red-500/10 border-red-500/30 text-red-400' : 'bg-red-50 border-red-200 text-red-600'}`}
+                  >
+                    <Unplug size={18} />
+                    {t.disconnectIg}
+                  </button>
+                ) : (
+                  // زر ربط الحساب (وردي/افتراضي)
+                  <button 
+                    onClick={handleConnectInstagram}
+                    className={`w-full py-3 rounded-xl font-bold text-sm transition-all border flex justify-center items-center gap-2 hover:bg-pink-500 hover:text-white hover:border-pink-500 ${isDark ? 'bg-slate-950 border-slate-700 text-slate-300' : 'bg-white border-slate-300 text-slate-700'}`}
+                  >
+                    <Instagram size={18} />
+                    {t.connectIg}
+                  </button>
+                )}
               </div>
 
               <div className={`h-px my-4 ${isDark ? 'bg-slate-800' : 'bg-slate-200'}`}></div>
