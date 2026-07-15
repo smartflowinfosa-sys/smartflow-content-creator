@@ -139,7 +139,6 @@ const translations = {
   }
 };
 
-
 // ==========================================
 // 2. مكون كارت المحتوى المستقل
 // ==========================================
@@ -201,11 +200,11 @@ const ContentCard = ({ item, handleDelete, isDark, t }) => {
           {item.content_type === 'promo_video' ? t.videoBadge : t.textBadge}
         </span>
         <div className="flex items-center gap-2">
-          <button onClick={() => handleDelete(item.id)} className={`p-1.5 rounded-lg transition-colors border border-transparent ${isDark ? 'text-slate-500 hover:text-red-400 hover:bg-red-500/10' : 'text-slate-400 hover:text-red-500 hover:bg-red-50'}`}>
-            <Trash2 size={16} />
-          </button>
           <button onClick={copyToClipboard} className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors border flex items-center gap-2 ${copied ? 'bg-green-500/20 text-green-500 border-green-500/50' : isDark ? 'text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 border-slate-700' : 'text-slate-600 hover:text-slate-900 bg-white hover:bg-slate-100 border-slate-300'}`}>
             <span>{copied ? t.copied : t.copy}</span> {copied ? <CheckCircle2 size={14}/> : <Copy size={14}/>}
+          </button>
+          <button onClick={() => handleDelete(item.id)} className={`p-1.5 rounded-lg transition-colors border border-transparent ${isDark ? 'text-slate-500 hover:text-red-400 hover:bg-red-500/10' : 'text-slate-400 hover:text-red-500 hover:bg-red-50'}`}>
+            <Trash2 size={16} />
           </button>
         </div>
       </div>
@@ -221,8 +220,7 @@ const ContentCard = ({ item, handleDelete, isDark, t }) => {
         <div className="flex gap-3 mb-4">
           <div className={`flex-1 p-3 rounded-xl border transition-all ${isDark ? 'border-slate-700 bg-slate-900/50' : 'border-slate-200 bg-white'}`}>
             <div className="flex justify-center items-center gap-1.5 mb-3 text-sm font-bold">
-               <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.63 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg>
-               {t.tiktok}
+               تيك توك
             </div>
             <div className="flex gap-2">
                <button onClick={()=>setTkPost(!tkPost)} className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all border ${tkPost ? 'bg-[#25F4EE]/10 text-[#25F4EE] border-[#25F4EE]/50' : isDark ? 'text-slate-500 border-slate-700 hover:text-slate-300' : 'text-slate-500 border-slate-200 hover:bg-slate-50'}`}>{t.post}</button>
@@ -232,8 +230,7 @@ const ContentCard = ({ item, handleDelete, isDark, t }) => {
 
           <div className={`flex-1 p-3 rounded-xl border transition-all ${isDark ? 'border-slate-700 bg-slate-900/50' : 'border-slate-200 bg-white'}`}>
             <div className="flex justify-center items-center gap-1.5 mb-3 text-sm font-bold">
-               <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
-               {t.instagram}
+               إنستقرام
             </div>
             <div className="flex gap-2">
                <button onClick={()=>setIgPost(!igPost)} className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all border ${igPost ? 'bg-pink-500/10 text-pink-500 border-pink-500/50' : isDark ? 'text-slate-500 border-slate-700 hover:text-slate-300' : 'text-slate-500 border-slate-200 hover:bg-slate-50'}`}>{t.reelsPost}</button>
@@ -267,7 +264,7 @@ const ContentCard = ({ item, handleDelete, isDark, t }) => {
           </div>
         </div>
 
-        <button onClick={handleSchedule} disabled={isPublishing} className="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 rounded-xl transition-colors text-sm flex justify-center items-center gap-2 disabled:opacity-50">
+        <button onClick={handleSchedule} disabled={isPublishing} className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition-colors text-sm flex justify-center items-center gap-2 disabled:opacity-50">
           {isPublishing ? t.scheduling : t.scheduleBtn}
         </button>
       </div>
@@ -275,14 +272,13 @@ const ContentCard = ({ item, handleDelete, isDark, t }) => {
   );
 };
 
-
 // ==========================================
 // 3. التطبيق الرئيسي (App)
 // ==========================================
 export default function App() {
   const [session, setSession] = useState<any>(null);
   const [prompt, setPrompt] = useState("");
-  const [contentType, setContentType] = useState("promo_video");
+  const [contentType, setContentType] = useState("social_caption");
   const [activityType, setActivityType] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [results, setResults] = useState<any[]>([]);
@@ -301,40 +297,13 @@ export default function App() {
   const isDark = theme === 'dark';
   const t = translations[langCode]; 
 
-  const checkAndSaveToken = async (currentSession: any) => {
-    if (!currentSession?.user?.id) return;
-
-    const { data } = await supabase.from('social_connections')
-      .select('*').eq('user_id', currentSession.user.id).eq('platform', 'instagram').single();
-    
-    if (data) setIsIgConnected(true);
-
-    if (currentSession?.provider_token) {
-      if (data) {
-         await supabase.from('social_connections').update({ 
-           access_token: currentSession.provider_token, 
-           updated_at: new Date().toISOString() 
-         }).eq('id', data.id);
-      } else {
-         await supabase.from('social_connections').insert({ 
-           user_id: currentSession.user.id, 
-           platform: 'instagram', 
-           access_token: currentSession.provider_token 
-         });
-      }
-      setIsIgConnected(true);
-    }
-  };
-
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
-      checkAndSaveToken(session);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
-      checkAndSaveToken(session);
     });
 
     return () => subscription.unsubscribe();
@@ -373,47 +342,12 @@ export default function App() {
     try {
       const { error } = await supabase.auth.updateUser({ password: newPassword });
       if (error) throw error;
-      alert(t.copied); 
+      alert("تم التحديث بنجاح"); 
       setNewPassword("");
     } catch (error: any) {
       alert("Error: " + error.message);
     } finally {
       setIsUpdatingPassword(false);
-    }
-  };
-
-  // دالة طلب الربط
-  const handleConnectInstagram = async () => {
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'facebook',
-        options: {
-          scopes: 'instagram_basic,instagram_content_publish,pages_show_list,pages_read_engagement',
-          redirectTo: window.location.origin
-        }
-      });
-      if (error) throw error;
-    } catch (error: any) {
-      alert("حدث خطأ أثناء الاتصال: " + error.message);
-    }
-  };
-
-  // دالة فصل الحساب الجديدة
-  const handleDisconnectInstagram = async () => {
-    if (window.confirm(t.disconnectConfirm)) {
-      try {
-        const { error } = await supabase.from('social_connections')
-          .delete()
-          .eq('user_id', session.user.id)
-          .eq('platform', 'instagram');
-        
-        if (error) throw error;
-        
-        setIsIgConnected(false);
-        alert(t.disconnected);
-      } catch (error: any) {
-        alert("حدث خطأ أثناء الفصل: " + error.message);
-      }
     }
   };
 
@@ -441,29 +375,38 @@ export default function App() {
 
   if (!session) return <Auth />;
 
-  const mainBg = isDark ? 'bg-slate-950' : 'bg-slate-50';
+  const mainBg = isDark ? 'bg-[#0b1121]' : 'bg-slate-50';
   const textMain = isDark ? 'text-white' : 'text-slate-900';
-  const panelBg = isDark ? 'bg-slate-900/60 border-slate-700/50' : 'bg-white/80 border-slate-200 shadow-2xl';
+  const panelBg = isDark ? 'bg-slate-900/40 border-slate-800' : 'bg-white/80 border-slate-200 shadow-2xl';
   const inputBg = isDark ? 'bg-slate-950/50 border-slate-700/80 text-white' : 'bg-white border-slate-300 text-slate-900';
   const labelColor = isDark ? 'text-slate-300' : 'text-slate-700';
 
   return (
     <div className={`relative min-h-screen p-4 font-sans flex flex-col items-center overflow-x-hidden transition-colors duration-500 ${mainBg}`} dir={t.dir}>
       
-      {/* نافذة الإعدادات */}
+      {/* 
+        ====================================================
+        نافذة الإعدادات الذكية (تم الإصلاح هنا) 
+        ====================================================
+      */}
       {isSettingsOpen && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-          <div className={`${isDark ? 'bg-slate-900 border-slate-700/80' : 'bg-white border-slate-200'} border rounded-3xl w-full max-w-md overflow-hidden shadow-2xl relative animate-in fade-in zoom-in duration-200 transition-colors`}>
-            <div className={`px-6 py-4 border-b flex justify-between items-center ${isDark ? 'border-slate-800 bg-slate-950/50' : 'border-slate-100 bg-slate-50'}`}>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+          {/* حاوية النافذة مع تحديد أقصى ارتفاع max-h-[85vh] */}
+          <div className={`${isDark ? 'bg-[#0f172a] border-slate-800' : 'bg-white border-slate-200'} border rounded-3xl w-full max-w-md max-h-[85vh] flex flex-col overflow-hidden shadow-2xl relative animate-in fade-in zoom-in duration-200`}>
+            
+            {/* الهيدر - ثابت لا يتحرك (shrink-0) */}
+            <div className={`px-6 py-4 border-b flex justify-between items-center shrink-0 ${isDark ? 'border-slate-800 bg-[#0f172a]' : 'border-slate-100 bg-slate-50'}`}>
               <h3 className={`text-lg font-black flex items-center gap-2 ${textMain}`}>
-                <Settings className="text-purple-500" size={20} /> {t.settings}
+                <Settings className="text-blue-500" size={20} /> {t.settings}
               </h3>
-              <button onClick={() => setIsSettingsOpen(false)} className={`p-2 rounded-full transition ${isDark ? 'text-slate-400 hover:bg-slate-700' : 'text-slate-500 hover:bg-slate-200'}`}>
-                <X size={18} />
+              <button onClick={() => setIsSettingsOpen(false)} className={`p-2 rounded-full transition ${isDark ? 'text-slate-400 hover:bg-slate-800 hover:text-white' : 'text-slate-500 hover:bg-slate-200 hover:text-slate-900'}`}>
+                <X size={20} />
               </button>
             </div>
             
-            <div className="p-6 space-y-6">
+            {/* المحتوى الداخلي - قابل للتمرير (overflow-y-auto) */}
+            <div className="p-6 space-y-6 overflow-y-auto flex-1">
+              {/* قسم اللغة */}
               <div className="space-y-3">
                 <label className={`text-sm font-bold flex items-center gap-2 ${labelColor}`}>
                   <Globe size={16} className="text-blue-400"/> {t.langUi}
@@ -474,25 +417,25 @@ export default function App() {
                 </select>
               </div>
 
+              {/* قسم الثيم */}
               <div className="space-y-3">
                 <label className={`text-sm font-bold flex items-center gap-2 ${labelColor}`}>
                   <Palette size={16} className="text-pink-400"/> {t.theme}
                 </label>
                 <div className="flex gap-3">
-                  <button onClick={() => setTheme('dark')} className={`flex-1 py-2.5 rounded-xl font-bold text-sm border ${theme === 'dark' ? 'bg-purple-600/20 border-purple-500 text-purple-400' : isDark ? 'border-slate-700 text-slate-400' : 'bg-slate-50 border-slate-300 text-slate-500'}`}>{t.dark}</button>
-                  <button onClick={() => setTheme('light')} className={`flex-1 py-2.5 rounded-xl font-bold text-sm border ${theme === 'light' ? 'bg-purple-600/10 border-purple-500 text-purple-600' : isDark ? 'border-slate-700 text-slate-400' : 'bg-slate-50 border-slate-300 text-slate-500'}`}>{t.light}</button>
+                  <button onClick={() => setTheme('dark')} className={`flex-1 py-2.5 rounded-xl font-bold text-sm border transition-all ${theme === 'dark' ? 'bg-purple-600/20 border-purple-500 text-purple-400' : isDark ? 'border-slate-700 text-slate-400 hover:text-white' : 'bg-slate-50 border-slate-300 text-slate-500'}`}>{t.dark}</button>
+                  <button onClick={() => setTheme('light')} className={`flex-1 py-2.5 rounded-xl font-bold text-sm border transition-all ${theme === 'light' ? 'bg-purple-600/10 border-purple-500 text-purple-600' : isDark ? 'border-slate-700 text-slate-400 hover:text-white' : 'bg-slate-50 border-slate-300 text-slate-500'}`}>{t.light}</button>
                 </div>
               </div>
 
               <div className={`h-px my-4 ${isDark ? 'bg-slate-800' : 'bg-slate-200'}`}></div>
 
-              {/* قسم ربط حسابات التواصل */}
+              {/* قسم ربط الحسابات */}
               <div className="space-y-3">
                 <label className={`text-sm font-bold flex items-center gap-2 ${labelColor}`}>
                   <Instagram size={16} className="text-pink-500"/> {t.socialAuth}
                 </label>
                 
-                {/* صندوق رسالة الطمأنينة البارز */}
                 <div className={`p-3 rounded-xl border flex gap-3 items-start ${isDark ? 'bg-blue-500/10 border-blue-500/20' : 'bg-blue-50 border-blue-100'}`}>
                   <Info size={16} className={`mt-0.5 shrink-0 ${isDark ? 'text-blue-400' : 'text-blue-600'}`} />
                   <p className={`text-xs leading-relaxed font-medium ${isDark ? 'text-blue-300' : 'text-blue-800'}`}>
@@ -500,36 +443,22 @@ export default function App() {
                   </p>
                 </div>
 
-                {isIgConnected ? (
-                  // زر فصل الحساب (أحمر)
-                  <button 
-                    onClick={handleDisconnectInstagram}
-                    className={`w-full py-3 rounded-xl font-bold text-sm transition-all border flex justify-center items-center gap-2 hover:bg-red-500 hover:text-white hover:border-red-500 ${isDark ? 'bg-red-500/10 border-red-500/30 text-red-400' : 'bg-red-50 border-red-200 text-red-600'}`}
-                  >
-                    <Unplug size={18} />
-                    {t.disconnectIg}
-                  </button>
-                ) : (
-                  // زر ربط الحساب (وردي/افتراضي)
-                  <button 
-                    onClick={handleConnectInstagram}
-                    className={`w-full py-3 rounded-xl font-bold text-sm transition-all border flex justify-center items-center gap-2 hover:bg-pink-500 hover:text-white hover:border-pink-500 ${isDark ? 'bg-slate-950 border-slate-700 text-slate-300' : 'bg-white border-slate-300 text-slate-700'}`}
-                  >
-                    <Instagram size={18} />
-                    {t.connectIg}
-                  </button>
-                )}
+                <button className={`w-full py-3 rounded-xl font-bold text-sm transition-all border flex justify-center items-center gap-2 hover:bg-pink-500 hover:text-white hover:border-pink-500 ${isDark ? 'bg-slate-950 border-slate-700 text-slate-300' : 'bg-white border-slate-300 text-slate-700'}`}>
+                  <Instagram size={18} />
+                  {t.connectIg}
+                </button>
               </div>
 
               <div className={`h-px my-4 ${isDark ? 'bg-slate-800' : 'bg-slate-200'}`}></div>
 
+              {/* قسم تغيير كلمة المرور */}
               <div className="space-y-3 bg-slate-500/5 p-4 rounded-2xl border border-slate-500/10">
                 <label className={`text-sm font-bold flex items-center gap-2 ${labelColor}`}>
                   <Lock size={16} className="text-green-500"/> {t.changePass}
                 </label>
                 <div className="flex gap-2">
-                  <input type="password" placeholder={t.passPlaceholder} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className={`flex-1 border rounded-xl px-4 py-3 outline-none text-sm ${isDark ? 'bg-slate-950 border-slate-700 text-white' : 'bg-white border-slate-300 text-slate-900'}`} />
-                  <button onClick={handleUpdatePassword} disabled={isUpdatingPassword} className="bg-green-600 hover:bg-green-500 text-white px-5 rounded-xl font-bold text-sm transition">
+                  <input type="password" placeholder={t.passPlaceholder} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className={`flex-1 border rounded-xl px-4 py-3 outline-none text-sm w-full ${isDark ? 'bg-slate-950 border-slate-700 text-white' : 'bg-white border-slate-300 text-slate-900'}`} />
+                  <button onClick={handleUpdatePassword} disabled={isUpdatingPassword} className="bg-green-600 hover:bg-green-500 text-white px-5 py-3 rounded-xl font-bold text-sm transition shrink-0">
                     {isUpdatingPassword ? t.updating : t.update}
                   </button>
                 </div>
@@ -540,17 +469,10 @@ export default function App() {
         </div>
       )}
 
-      {/* خلفية الاستوديو */}
-      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden flex items-center justify-center">
-        <div className={`text-[35rem] drop-shadow-[0_0_50px_rgba(255,255,255,0.1)] select-none ${isDark ? 'opacity-[0.02]' : 'opacity-[0.04]'}`}>🎥</div>
-        <div className={`absolute top-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full blur-[120px] ${isDark ? 'bg-purple-600/20' : 'bg-purple-400/20'}`}></div>
-        <div className={`absolute bottom-[-20%] right-[-10%] w-[400px] h-[400px] rounded-full blur-[100px] ${isDark ? 'bg-blue-600/20' : 'bg-blue-400/20'}`}></div>
-      </div>
-
       {/* شريط قائمة البروفايل */}
       <div className={`absolute top-4 ${t.dir === 'rtl' ? 'left-0 right-0 px-6 justify-end' : 'right-0 left-0 px-6 justify-end'} flex items-center z-50 w-full max-w-7xl mx-auto`}>
         <div className={`relative inline-block ${t.dir === 'rtl' ? 'text-right' : 'text-left'}`}>
-          <button onClick={() => setIsProfileOpen(!isProfileOpen)} className={`flex items-center justify-center w-11 h-11 border rounded-full transition-all backdrop-blur-md shadow-lg ${isDark ? 'bg-slate-900/50 border-slate-700 text-slate-300' : 'bg-white border-slate-200 text-slate-600'}`}>
+          <button onClick={() => setIsProfileOpen(!isProfileOpen)} className={`flex items-center justify-center w-11 h-11 border rounded-full transition-all backdrop-blur-md shadow-lg ${isDark ? 'bg-slate-900/80 border-slate-700 text-slate-300 hover:text-white' : 'bg-white border-slate-200 text-slate-600 hover:text-slate-900'}`}>
             <User size={20} />
           </button>
 
@@ -563,10 +485,10 @@ export default function App() {
                   <p className={`text-xs font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t.freePlan}</p>
                 </div>
               </div>
-              <button onClick={() => { setIsSettingsOpen(true); setIsProfileOpen(false); }} className={`w-full ${t.dir === 'rtl' ? 'text-right' : 'text-left'} px-5 py-3.5 text-sm flex items-center gap-3 font-medium ${isDark ? 'text-slate-300 hover:bg-slate-800' : 'text-slate-600 hover:bg-slate-50'}`}>
+              <button onClick={() => { setIsSettingsOpen(true); setIsProfileOpen(false); }} className={`w-full ${t.dir === 'rtl' ? 'text-right' : 'text-left'} px-5 py-3.5 text-sm flex items-center gap-3 font-medium transition-colors ${isDark ? 'text-slate-300 hover:bg-slate-800' : 'text-slate-600 hover:bg-slate-50'}`}>
                 <Settings size={18} /> {t.settings}
               </button>
-              <button onClick={() => supabase.auth.signOut()} className={`w-full ${t.dir === 'rtl' ? 'text-right' : 'text-left'} px-5 py-3.5 text-sm flex items-center gap-3 border-t font-medium ${isDark ? 'text-red-400 hover:bg-red-500/10 border-slate-700/50' : 'text-red-500 hover:bg-red-50 border-slate-100'}`}>
+              <button onClick={() => supabase.auth.signOut()} className={`w-full ${t.dir === 'rtl' ? 'text-right' : 'text-left'} px-5 py-3.5 text-sm flex items-center gap-3 border-t font-medium transition-colors ${isDark ? 'text-red-400 hover:bg-red-500/10 border-slate-700/50' : 'text-red-500 hover:bg-red-50 border-slate-100'}`}>
                 <LogOut size={18} /> {t.logout}
               </button>
             </div>
@@ -575,11 +497,10 @@ export default function App() {
       </div>
 
       {/* كابينة التحكم */}
-      <div className={`relative z-10 backdrop-blur-2xl p-10 rounded-[2.5rem] border w-full max-w-xl mt-20 transition-colors duration-500 ${panelBg}`}>
-        <div className="absolute top-0 inset-x-10 h-px bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-50"></div>
+      <div className={`relative z-10 backdrop-blur-2xl p-8 sm:p-10 rounded-[2.5rem] border w-full max-w-xl mt-20 transition-colors duration-500 ${panelBg}`}>
         <div className="text-center mb-10">
           <span className="inline-block py-1 px-3 rounded-full bg-blue-500/10 text-blue-500 text-xs font-bold mb-4 border border-blue-500/20">{t.badge}</span>
-          <h1 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 mb-3 drop-shadow-xl">{t.appTitle}</h1>
+          <h1 className="text-4xl sm:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 mb-3 drop-shadow-xl">{t.appTitle}</h1>
           <p className={`font-medium text-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t.appDesc}</p>
         </div>
 
@@ -587,7 +508,7 @@ export default function App() {
           <div className="space-y-2">
             <label className={`block text-sm font-bold px-1 ${labelColor}`}>{t.bizCategory}</label>
             <div className="relative">
-              <select value={activityType} onChange={(e) => setActivityType(e.target.value)} required className={`w-full px-5 py-4 border rounded-2xl focus:ring-2 focus:ring-purple-500/50 outline-none font-medium appearance-none ${inputBg}`}>
+              <select value={activityType} onChange={(e) => setActivityType(e.target.value)} required className={`w-full px-5 py-4 border rounded-2xl focus:ring-2 focus:ring-blue-500/50 outline-none font-medium appearance-none ${inputBg}`}>
                 <option value="" disabled>{t.bizPlaceholder}</option>
                 {t.activities.map((act, i) => <option key={i} value={act}>{act}</option>)}
               </select>
@@ -598,7 +519,7 @@ export default function App() {
           <div className="space-y-2">
             <label className={`block text-sm font-bold px-1 ${labelColor}`}>{t.contentType}</label>
             <div className="relative">
-              <select value={contentType} onChange={(e) => setContentType(e.target.value)} className={`w-full px-5 py-4 border rounded-2xl focus:ring-2 focus:ring-purple-500/50 outline-none font-medium appearance-none ${inputBg}`}>
+              <select value={contentType} onChange={(e) => setContentType(e.target.value)} className={`w-full px-5 py-4 border rounded-2xl focus:ring-2 focus:ring-blue-500/50 outline-none font-medium appearance-none ${inputBg}`}>
                 <optgroup label={t.visualGroup}>
                   <option value="promo_video">{t.videoPromo}</option>
                   <option value="delivery_campaign">{t.deliveryApp}</option>
@@ -616,12 +537,11 @@ export default function App() {
 
           <div className="space-y-2">
             <label className={`block text-sm font-bold px-1 ${labelColor}`}>{t.idea}</label>
-            <textarea value={prompt} onChange={(e) => setPrompt(e.target.value)} required className={`w-full px-5 py-4 border rounded-2xl focus:ring-2 focus:ring-purple-500/50 outline-none resize-none leading-relaxed ${inputBg}`} rows={4} placeholder={t.ideaPlaceholder}></textarea>
+            <textarea value={prompt} onChange={(e) => setPrompt(e.target.value)} required className={`w-full px-5 py-4 border rounded-2xl focus:ring-2 focus:ring-blue-500/50 outline-none resize-none leading-relaxed ${inputBg}`} rows={4} placeholder={t.ideaPlaceholder}></textarea>
           </div>
 
           <div className="pt-4">
-            <button type="submit" disabled={isSubmitting} className="relative w-full group overflow-hidden py-4 px-6 rounded-2xl bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white font-black text-lg shadow-[0_10px_40px_-10px_rgba(168,85,247,0.8)] hover:shadow-[0_10px_50px_-10px_rgba(168,85,247,1)] transform active:scale-[0.98] transition-all duration-300 disabled:opacity-50">
-              <div className="absolute inset-0 w-full h-full bg-white/20 group-hover:translate-x-full transition-transform duration-500 ease-out -skew-x-12 -translate-x-full"></div>
+            <button type="submit" disabled={isSubmitting} className="relative w-full group overflow-hidden py-4 px-6 rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-black text-lg shadow-[0_10px_40px_-10px_rgba(59,130,246,0.5)] hover:shadow-[0_10px_50px_-10px_rgba(59,130,246,0.7)] transform active:scale-[0.98] transition-all duration-300 disabled:opacity-50">
               <span className="relative z-10 flex items-center justify-center gap-2">
                 {isSubmitting ? <><span>⏳</span> <span>{t.producing}</span></> : <><span>✨</span> <span>{t.launchBtn}</span></>}
               </span>
