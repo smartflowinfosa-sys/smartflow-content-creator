@@ -4,7 +4,7 @@ import Auth from "./Auth";
 import { User, Settings, LogOut, Crown, Trash2, X, Lock, Globe, Palette, Copy, CheckCircle2, Instagram, Info, Loader2, Wallet, CreditCard, Shield, Sliders, ImagePlus, Mic, Activity, Clapperboard, Target, AlignLeft } from 'lucide-react';
 
 // ==========================================
-// 1. قاموس الترجمة المحدث (كامل بدون اختصارات)
+// 1. قاموس الترجمة المحدث (كامل مع رسائل الأخطاء الذكية)
 // ==========================================
 const translations = {
   ar: {
@@ -103,7 +103,10 @@ const translations = {
     tabGeneral: "إعدادات عامة",
     tabBilling: "الباقة والأرصدة",
     tabSecurity: "الأمان والمرور",
-    tabConnections: "ربط الحسابات"
+    tabConnections: "ربط الحسابات",
+    // رسائل الأخطاء الذكية الجديدة
+    insufficientCredits: "عفواً، رصيد النقاط الخاص بك لا يكفي لإنتاج هذا المحتوى. يرجى شحن محفظتك وإعادة المحاولة لتستمر في إطلاق إبداعاتك! 🚀",
+    serverError: "الاستوديو الذكي يشهد إقبالاً عالياً في هذه اللحظة! 🎬 يرجى المحاولة مرة أخرى بعد قليل.\n\n(اطمئن، لم يتم خصم أي نقاط من رصيدك)"
   },
   en: {
     dir: "ltr",
@@ -201,7 +204,10 @@ const translations = {
     tabGeneral: "General",
     tabBilling: "Billing & Credits",
     tabSecurity: "Security",
-    tabConnections: "Connections"
+    tabConnections: "Connections",
+    // Smart Error Messages
+    insufficientCredits: "Sorry, your credit balance is insufficient to produce this content. Please top up your plan and try again! 🚀",
+    serverError: "Our Smart Studio is experiencing high demand right now! 🎬 Please try again in a few moments.\n\n(Rest assured, no credits were deducted)"
   }
 };
 
@@ -424,13 +430,19 @@ export default function App() {
   };
 
   // ========================================================
-  // دالة الإرسال والخصم العادل والآمن لحماية رصيد العميل بالكامل
+  // دالة الإرسال مع الفصل الدقيق بين "نقص الرصيد" و "ضغط الخوادم"
   // ========================================================
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!session?.user?.id) return;
     if (!activityType) return alert(t.platformValidation);
-    if (credits < 10) return alert("عفواً، رصيدك لا يكفي لإتمام هذه العملية. يرجى شحن أرصدة إضافية.");
+    
+    // 1. التحقق من رصيد العميل أولاً:
+    // إذا لم يكن لديه رصيد، تظهر رسالة "شحن الرصيد" ولا يكمل العملية
+    if (credits < 10) {
+      alert(t.insufficientCredits);
+      return; 
+    }
 
     setIsSubmitting(true);
     let uploadedImageUrl = null;
@@ -465,19 +477,19 @@ export default function App() {
     };
 
     try {
-      // إرسال الطلب إلى n8n والانتظار حتى انتهاء المعالجة بالكامل
+      // 2. محاولة الاتصال بخوادم n8n
       const response = await fetch(webhookUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
-      // التحقق مما إذا كان n8n قد واجه أي أخطاء أو كان رصيد الـ API في السيرفر معطلاً
+      // إذا رد n8n بخطأ (مثلاً بسبب توقف مسار n8n أو مشكلة في Kling)
       if (!response.ok) {
-        throw new Error("حدث خطأ في خوادم الإنتاج والـ API.");
+        throw new Error("Server or API Overload"); // هذا سينقله مباشرة إلى قسم catch
       }
 
-      // الخصم العادل: لن نخصم الـ 10 نقاط إلا بعد التأكد التام من استجابة n8n الناجحة
+      // إذا نجحت العملية 100%، نقوم بخصم النقاط بأمان
       setCredits(prev => prev - 10);
       setPrompt("");
       setImageFile(null);
@@ -486,8 +498,8 @@ export default function App() {
 
     } catch (error) {
       console.error("Submission error:", error);
-      // تنبيه المستخدم بالخطأ مع طمأنته بأن رصيده لم يتأثر مطلقاً
-      alert("عذراً، حدثت مشكلة أثناء محاولة إنتاج المحتوى (قد يكون بسبب ضغط على مزود الخدمة أو خطأ في خوادم الفيديو). \n\nاطمئن، لم يتم خصم أي نقاط من رصيدك. يرجى المحاولة لاحقاً.");
+      // 3. تظهر رسالة "الضغط العالي" اللبقة فقط إذا كان رصيد العميل موجوداً ولكن الخادم فشل
+      alert(t.serverError);
     } finally {
       setIsSubmitting(false);
     }
@@ -602,7 +614,7 @@ export default function App() {
                       <div className={`p-5 rounded-2xl border flex items-center justify-between ${isDark ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-200'}`}>
                         <div className="flex items-center gap-3">
                           <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-black text-white shadow-md">
-                            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89(2.89) 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z"/></svg>
+                            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z"/></svg>
                           </div>
                           <div>
                             <h4 className={`font-bold ${textMain}`}>تيك توك (TikTok)</h4>
