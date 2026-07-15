@@ -345,11 +345,9 @@ export default function App() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   // حالات النماذج الشرطية الذكية
-  // 1. خيارات الفيديو والصور
   const [voiceGender, setVoiceGender] = useState("male_sa");
   const [adTone, setAdTone] = useState("enthusiastic");
   const [visualStyle, setVisualStyle] = useState("cinematic");
-  // 2. خيارات النصوص
   const [contentGoal, setContentGoal] = useState("sales");
   const [textLength, setTextLength] = useState("medium");
 
@@ -425,6 +423,9 @@ export default function App() {
     }
   };
 
+  // ========================================================
+  // دالة الإرسال والخصم العادل والآمن لحماية رصيد العميل بالكامل
+  // ========================================================
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!session?.user?.id) return;
@@ -464,17 +465,30 @@ export default function App() {
     };
 
     try {
-      await fetch(webhookUrl, {
+      // إرسال الطلب إلى n8n والانتظار حتى انتهاء المعالجة بالكامل
+      const response = await fetch(webhookUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
+
+      // التحقق مما إذا كان n8n قد واجه أي أخطاء أو كان رصيد الـ API في السيرفر معطلاً
+      if (!response.ok) {
+        throw new Error("حدث خطأ في خوادم الإنتاج والـ API.");
+      }
+
+      // الخصم العادل: لن نخصم الـ 10 نقاط إلا بعد التأكد التام من استجابة n8n الناجحة
       setCredits(prev => prev - 10);
       setPrompt("");
       setImageFile(null);
       setImagePreview(null);
       setTimeout(fetchResults, 4000); 
-    } catch (error) {} finally {
+
+    } catch (error) {
+      console.error("Submission error:", error);
+      // تنبيه المستخدم بالخطأ مع طمأنته بأن رصيده لم يتأثر مطلقاً
+      alert("عذراً، حدثت مشكلة أثناء محاولة إنتاج المحتوى (قد يكون بسبب ضغط على مزود الخدمة أو خطأ في خوادم الفيديو). \n\nاطمئن، لم يتم خصم أي نقاط من رصيدك. يرجى المحاولة لاحقاً.");
+    } finally {
       setIsSubmitting(false);
     }
   };
@@ -588,7 +602,7 @@ export default function App() {
                       <div className={`p-5 rounded-2xl border flex items-center justify-between ${isDark ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-200'}`}>
                         <div className="flex items-center gap-3">
                           <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-black text-white shadow-md">
-                            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z"/></svg>
+                            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89(2.89) 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z"/></svg>
                           </div>
                           <div>
                             <h4 className={`font-bold ${textMain}`}>تيك توك (TikTok)</h4>
@@ -644,7 +658,7 @@ export default function App() {
           </div>
 
           <div className={`relative inline-block ${t.dir === 'rtl' ? 'text-right' : 'text-left'}`}>
-            <button onClick={() => setIsProfileOpen(!isProfileOpen)} className={`flex items-center justify-center w-11 h-11 border rounded-full transition-all backdrop-blur-md shadow-lg ${isDark ? 'bg-slate-900/80 border-slate-700 text-slate-300 hover:text-white' : 'bg-white border-slate-200 text-slate-600 hover:text-slate-900'}`}>
+            <button onClick={() => setIsProfileOpen(!isProfileOpen)} className={`flex items-center justify-center w-11 h-11 border rounded-full transition-all backdrop-blur-md shadow-lg ${isDark ? 'bg-slate-900/80 border-slate-700 text-slate-300' : 'bg-white border-slate-200 text-slate-600'}`}>
               <User size={20} />
             </button>
             {isProfileOpen && (
@@ -707,11 +721,7 @@ export default function App() {
             </div>
           </div>
 
-          {/* =========================================
-              النماذج الشرطية الديناميكية
-              ========================================= */}
-          
-          {/* قسم الخيارات المرئية والصوتية */}
+          {/* النماذج الشرطية الديناميكية */}
           {isVisualContent && (
             <div className={`p-5 rounded-2xl border animate-in fade-in slide-in-from-top-2 duration-300 space-y-4 ${isDark ? 'bg-purple-900/10 border-purple-500/20' : 'bg-purple-50 border-purple-100'}`}>
               <h3 className={`text-sm font-black mb-3 flex items-center gap-2 ${isDark ? 'text-purple-300' : 'text-purple-700'}`}>{t.visualOptionsTitle}</h3>
@@ -747,7 +757,6 @@ export default function App() {
             </div>
           )}
 
-          {/* قسم الخيارات النصية البحتة */}
           {isTextContent && (
             <div className={`p-5 rounded-2xl border animate-in fade-in slide-in-from-top-2 duration-300 space-y-4 ${isDark ? 'bg-blue-900/10 border-blue-500/20' : 'bg-blue-50 border-blue-100'}`}>
               <h3 className={`text-sm font-black mb-3 flex items-center gap-2 ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>{t.textOptionsTitle}</h3>
@@ -773,7 +782,6 @@ export default function App() {
               </div>
             </div>
           )}
-          {/* ========================================= */}
 
           {/* قسم رفع الصورة */}
           {isVisualContent && (
