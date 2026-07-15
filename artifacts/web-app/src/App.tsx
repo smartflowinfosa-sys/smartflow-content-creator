@@ -25,12 +25,13 @@ const translations = {
     update: "تحديث",
     updating: "جاري التحديث...",
     passNote: "ملاحظة: خيارات اللغة والثيم تُحفظ تلقائياً دون الحاجة لضغط زر التحديث.",
-    socialAuth: "ربط حسابات التواصل",
-    connectIg: "ربط حساب إنستقرام",
+    socialAuth: "إدارة ربط الحسابات (OAuth)",
+    connectIg: "ربط إنستقرام",
+    connectTk: "ربط تيك توك",
     disconnectIg: "فصل الحساب",
     disconnectConfirm: "هل أنت متأكد أنك تريد فصل حساب إنستقرام عن المنصة؟ سيتم إيقاف النشر التلقائي.",
     disconnected: "تم فصل الحساب بنجاح.",
-    igTrustMsg: "نحن نطلب الصلاحيات الأساسية فقط لجدولة ونشر المحتوى بالنيابة عنك. لا نصل أبداً لرسائلك الخاصة ولا نشارك بياناتك مع أي طرف.",
+    igTrustMsg: "يتم الربط رسمياً ومباشرة عبر خوادم المنصات (OAuth 2.0). نحن لا نطلب أو نحفظ كلمات المرور الخاصة بك، ونطلب فقط صلاحية النشر الآلي لتسهيل عملك.",
     bizCategory: "نوع النشاط التجاري:",
     bizPlaceholder: "اختر النشاط التجاري...",
     contentType: "نوع الإنتاج المطلوب:",
@@ -71,7 +72,6 @@ const translations = {
       "مراكز التجميل والصالونات", "العيادات والمراكز الطبية", "تنظيم الفعاليات والمؤتمرات",
       "تجهيز المناسبات والضيافة", "السياحة والسفر", "النوادي الرياضية واللياقة البدنية"
     ],
-    // إضافات جديدة للرصيد والقائمة الجانبية
     credits: "الرصيد المتاح",
     points: "نقطة",
     buyCredits: "شراء رصيد إضافي",
@@ -98,12 +98,13 @@ const translations = {
     update: "Update",
     updating: "Updating...",
     passNote: "Note: Language and Theme settings are saved automatically.",
-    socialAuth: "Social Connections",
+    socialAuth: "Social Accounts Connection (OAuth)",
     connectIg: "Connect Instagram",
-    disconnectIg: "Disconnect Account",
-    disconnectConfirm: "Are you sure you want to disconnect your Instagram account? Auto-publishing will stop.",
+    connectTk: "Connect TikTok",
+    disconnectIg: "Disconnect",
+    disconnectConfirm: "Are you sure you want to disconnect? Auto-publishing will stop.",
     disconnected: "Account disconnected successfully.",
-    igTrustMsg: "We only request essential permissions to schedule and publish content on your behalf. We never access your DMs or share your data.",
+    igTrustMsg: "Connection is made securely via official OAuth 2.0. We never ask for or store your passwords. We only request publishing permissions.",
     bizCategory: "Business Category:",
     bizPlaceholder: "Select business category...",
     contentType: "Content Type:",
@@ -144,7 +145,6 @@ const translations = {
       "Beauty Salons & Centers", "Clinics & Medical Centers", "Events & Conferences",
       "Event Planning & Hospitality", "Travel & Tourism", "Sports & Fitness Clubs"
     ],
-    // إضافات جديدة للرصيد والقائمة الجانبية
     credits: "Available Credits",
     points: "pts",
     buyCredits: "Buy More Credits",
@@ -297,14 +297,16 @@ export default function App() {
   const [results, setResults] = useState<any[]>([]);
   const [isLoadingResults, setIsLoadingResults] = useState(false);
   
-  // حالة الرصيد الوهمية للتجربة (قم بربطها مع قاعدة البيانات لاحقاً)
   const [credits, setCredits] = useState(150);
-
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState('general'); // حالة القائمة الجانبية للإعدادات
+  const [activeTab, setActiveTab] = useState('general');
   
-  const [isIgConnected, setIsIgConnected] = useState(false);
+  // حالات وهمية لربط الحسابات (للتجربة البصرية)
+  const [isIgConnected, setIsIgConnected] = useState(true); // نجعله مربوطاً للتجربة
+  const [isTkConnected, setIsTkConnected] = useState(false); 
+  const [isConnecting, setIsConnecting] = useState(false);
+
   const [theme, setTheme] = useState('dark');
   const [langCode, setLangCode] = useState('ar');
   const [newPassword, setNewPassword] = useState("");
@@ -365,15 +367,22 @@ export default function App() {
     }
   };
 
+  // محاكاة الربط عبر OAuth
+  const handleConnectOAuth = (platform: string) => {
+    setIsConnecting(true);
+    // هنا مستقبلاً ستقوم بتوجيه المستخدم للرابط: window.location.href = "YOUR_OAUTH_URL";
+    setTimeout(() => {
+      if (platform === 'ig') setIsIgConnected(true);
+      if (platform === 'tk') setIsTkConnected(true);
+      setIsConnecting(false);
+    }, 1500);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!session?.user?.id) return;
     if (!activityType) return alert(t.platformValidation);
-    
-    // التحقق من الرصيد قبل الإرسال
-    if (credits < 10) {
-      return alert("عفواً، رصيدك لا يكفي لإتمام هذه العملية. يرجى شحن أرصدة إضافية.");
-    }
+    if (credits < 10) return alert("عفواً، رصيدك لا يكفي لإتمام هذه العملية. يرجى شحن أرصدة إضافية.");
 
     setIsSubmitting(true);
     const webhookUrl = "https://n8n-p10bgpahkliy9hghak21zv3e.178.105.219.96.sslip.io/webhook/generate-content";
@@ -384,8 +393,6 @@ export default function App() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ store_id: session.user.id, activity_type: activityType, content_type: contentType, prompt: prompt }),
       });
-      
-      // خصم رصيد تجريبي عند النجاح
       setCredits(prev => prev - 10);
       setPrompt("");
       setTimeout(fetchResults, 4000); 
@@ -399,22 +406,19 @@ export default function App() {
   const mainBg = isDark ? 'bg-[#0b1121]' : 'bg-slate-50';
   const textMain = isDark ? 'text-white' : 'text-slate-900';
   const panelBg = isDark ? 'bg-slate-900/40 border-slate-800' : 'bg-white/80 border-slate-200 shadow-2xl';
-  const inputBg = isDark ? 'bg-slate-950/50 border-slate-700/80 text-white' : 'bg-white border-slate-300 text-slate-900';
+  // تم تحديث inputBg لتعديل لون الخيارات (options) في القائمة المنسدلة
+  const inputBg = isDark ? 'bg-slate-950/50 border-slate-700/80 text-white focus:bg-slate-900' : 'bg-white border-slate-300 text-slate-900';
+  const optionClass = isDark ? 'bg-[#0f172a] text-slate-200 font-medium' : 'bg-white text-slate-900 font-medium';
   const labelColor = isDark ? 'text-slate-300' : 'text-slate-700';
 
   return (
     <div className={`relative min-h-screen p-4 font-sans flex flex-col items-center overflow-x-hidden transition-colors duration-500 ${mainBg}`} dir={t.dir}>
       
-      {/* 
-        ====================================================
-        نافذة الإعدادات الذكية الجديدة (بتصميم Sidebar)
-        ====================================================
-      */}
+      {/* نافذة الإعدادات */}
       {isSettingsOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
           <div className={`${isDark ? 'bg-[#0f172a] border-slate-800' : 'bg-white border-slate-200'} border rounded-3xl w-full max-w-4xl max-h-[85vh] flex flex-col overflow-hidden shadow-2xl relative animate-in fade-in zoom-in duration-200`}>
             
-            {/* هيدر النافذة */}
             <div className={`px-6 py-4 border-b flex justify-between items-center shrink-0 ${isDark ? 'border-slate-800 bg-[#0f172a]' : 'border-slate-100 bg-slate-50'}`}>
               <h3 className={`text-lg font-black flex items-center gap-2 ${textMain}`}>
                 <Settings className="text-blue-500" size={20} /> {t.settings}
@@ -424,44 +428,30 @@ export default function App() {
               </button>
             </div>
             
-            {/* المحتوى الداخلي مع القائمة الجانبية */}
             <div className="flex flex-col md:flex-row flex-1 overflow-hidden">
-              
               {/* القائمة الجانبية */}
               <div className={`w-full md:w-1/3 p-4 flex flex-col gap-2 overflow-y-auto border-b md:border-b-0 ${t.dir === 'rtl' ? 'md:border-l' : 'md:border-r'} ${isDark ? 'border-slate-800 bg-slate-900/30' : 'border-slate-100 bg-slate-50/50'}`}>
-                <button onClick={() => setActiveTab('general')} className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeTab === 'general' ? (isDark ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-50 text-blue-600') : (isDark ? 'text-slate-400 hover:bg-slate-800/50' : 'text-slate-600 hover:bg-slate-100')}`}>
-                  <Sliders size={18} /> {t.tabGeneral}
-                </button>
-                <button onClick={() => setActiveTab('billing')} className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeTab === 'billing' ? (isDark ? 'bg-yellow-500/20 text-yellow-400' : 'bg-yellow-50 text-yellow-600') : (isDark ? 'text-slate-400 hover:bg-slate-800/50' : 'text-slate-600 hover:bg-slate-100')}`}>
-                  <CreditCard size={18} /> {t.tabBilling}
-                </button>
-                <button onClick={() => setActiveTab('connections')} className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeTab === 'connections' ? (isDark ? 'bg-pink-500/20 text-pink-400' : 'bg-pink-50 text-pink-600') : (isDark ? 'text-slate-400 hover:bg-slate-800/50' : 'text-slate-600 hover:bg-slate-100')}`}>
-                  <Globe size={18} /> {t.tabConnections}
-                </button>
-                <button onClick={() => setActiveTab('security')} className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeTab === 'security' ? (isDark ? 'bg-green-500/20 text-green-400' : 'bg-green-50 text-green-600') : (isDark ? 'text-slate-400 hover:bg-slate-800/50' : 'text-slate-600 hover:bg-slate-100')}`}>
-                  <Shield size={18} /> {t.tabSecurity}
-                </button>
+                <button onClick={() => setActiveTab('general')} className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeTab === 'general' ? (isDark ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-50 text-blue-600') : (isDark ? 'text-slate-400 hover:bg-slate-800/50' : 'text-slate-600 hover:bg-slate-100')}`}><Sliders size={18} /> {t.tabGeneral}</button>
+                <button onClick={() => setActiveTab('billing')} className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeTab === 'billing' ? (isDark ? 'bg-yellow-500/20 text-yellow-400' : 'bg-yellow-50 text-yellow-600') : (isDark ? 'text-slate-400 hover:bg-slate-800/50' : 'text-slate-600 hover:bg-slate-100')}`}><CreditCard size={18} /> {t.tabBilling}</button>
+                <button onClick={() => setActiveTab('connections')} className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeTab === 'connections' ? (isDark ? 'bg-pink-500/20 text-pink-400' : 'bg-pink-50 text-pink-600') : (isDark ? 'text-slate-400 hover:bg-slate-800/50' : 'text-slate-600 hover:bg-slate-100')}`}><Globe size={18} /> {t.tabConnections}</button>
+                <button onClick={() => setActiveTab('security')} className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeTab === 'security' ? (isDark ? 'bg-green-500/20 text-green-400' : 'bg-green-50 text-green-600') : (isDark ? 'text-slate-400 hover:bg-slate-800/50' : 'text-slate-600 hover:bg-slate-100')}`}><Shield size={18} /> {t.tabSecurity}</button>
               </div>
 
-              {/* منطقة العرض الرئيسية للإعدادات */}
+              {/* العرض الرئيسي للإعدادات */}
               <div className="w-full md:w-2/3 p-6 overflow-y-auto flex-1 space-y-6">
                 
-                {/* الإعدادات العامة */}
+                {/* عام */}
                 {activeTab === 'general' && (
                   <div className="space-y-6 animate-in fade-in">
                     <div className="space-y-3">
-                      <label className={`text-sm font-bold flex items-center gap-2 ${labelColor}`}>
-                        <Globe size={16} className="text-blue-400"/> {t.langUi}
-                      </label>
+                      <label className={`text-sm font-bold flex items-center gap-2 ${labelColor}`}><Globe size={16} className="text-blue-400"/> {t.langUi}</label>
                       <select value={langCode} onChange={(e) => setLangCode(e.target.value)} className={`w-full border rounded-xl px-4 py-3 outline-none ${isDark ? 'bg-slate-950 border-slate-700 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'}`}>
-                        <option value="ar">العربية (Arabic)</option>
-                        <option value="en">English (الإنجليزية)</option>
+                        <option className={optionClass} value="ar">العربية (Arabic)</option>
+                        <option className={optionClass} value="en">English (الإنجليزية)</option>
                       </select>
                     </div>
                     <div className="space-y-3">
-                      <label className={`text-sm font-bold flex items-center gap-2 ${labelColor}`}>
-                        <Palette size={16} className="text-pink-400"/> {t.theme}
-                      </label>
+                      <label className={`text-sm font-bold flex items-center gap-2 ${labelColor}`}><Palette size={16} className="text-pink-400"/> {t.theme}</label>
                       <div className="flex gap-3">
                         <button onClick={() => setTheme('dark')} className={`flex-1 py-2.5 rounded-xl font-bold text-sm border transition-all ${theme === 'dark' ? 'bg-purple-600/20 border-purple-500 text-purple-400' : isDark ? 'border-slate-700 text-slate-400 hover:text-white' : 'bg-slate-50 border-slate-300 text-slate-500'}`}>{t.dark}</button>
                         <button onClick={() => setTheme('light')} className={`flex-1 py-2.5 rounded-xl font-bold text-sm border transition-all ${theme === 'light' ? 'bg-purple-600/10 border-purple-500 text-purple-600' : isDark ? 'border-slate-700 text-slate-400 hover:text-white' : 'bg-slate-50 border-slate-300 text-slate-500'}`}>{t.light}</button>
@@ -471,7 +461,7 @@ export default function App() {
                   </div>
                 )}
 
-                {/* إعدادات الأرصدة والباقات */}
+                {/* الأرصدة (الدفع) */}
                 {activeTab === 'billing' && (
                   <div className="space-y-6 animate-in fade-in">
                     <div className={`p-6 rounded-2xl border flex flex-col items-center justify-center text-center ${isDark ? 'bg-yellow-500/10 border-yellow-500/30' : 'bg-yellow-50 border-yellow-200'}`}>
@@ -480,35 +470,81 @@ export default function App() {
                       <p className={`text-4xl font-black mb-4 ${isDark ? 'text-yellow-400' : 'text-yellow-600'}`}>
                         {credits} <span className="text-lg font-bold opacity-70">{t.points}</span>
                       </p>
-                      <button className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 text-white font-bold py-3 px-8 rounded-xl transition-all transform hover:scale-105 shadow-lg">
+                      {/* الزر الآن جاهز للربط مع بوابة الدفع (Moyasar أو Tap) */}
+                      <button onClick={() => alert("سيتم فتح بوابة الدفع (ميسر أو تاب) قريباً!")} className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 text-white font-bold py-3 px-8 rounded-xl transition-all transform hover:scale-105 shadow-lg">
                         {t.buyCredits}
                       </button>
                     </div>
                   </div>
                 )}
 
-                {/* إعدادات ربط الحسابات */}
+                {/* ربط الحسابات (OAuth) - تم التحديث ليدعم واجهة احترافية */}
                 {activeTab === 'connections' && (
                   <div className="space-y-6 animate-in fade-in">
-                    <div className="space-y-3">
+                    <div className="space-y-4">
                       <label className={`text-sm font-bold flex items-center gap-2 ${labelColor}`}>
-                        <Instagram size={16} className="text-pink-500"/> {t.socialAuth}
+                        <Globe size={16} className="text-blue-500"/> {t.socialAuth}
                       </label>
-                      <div className={`p-3 rounded-xl border flex gap-3 items-start ${isDark ? 'bg-blue-500/10 border-blue-500/20' : 'bg-blue-50 border-blue-100'}`}>
-                        <Info size={16} className={`mt-0.5 shrink-0 ${isDark ? 'text-blue-400' : 'text-blue-600'}`} />
-                        <p className={`text-xs leading-relaxed font-medium ${isDark ? 'text-blue-300' : 'text-blue-800'}`}>
+                      <div className={`p-4 rounded-xl border flex gap-3 items-start ${isDark ? 'bg-blue-500/10 border-blue-500/20' : 'bg-blue-50 border-blue-100'}`}>
+                        <Info size={20} className={`mt-0.5 shrink-0 ${isDark ? 'text-blue-400' : 'text-blue-600'}`} />
+                        <p className={`text-sm leading-relaxed font-medium ${isDark ? 'text-blue-300' : 'text-blue-800'}`}>
                           {t.igTrustMsg}
                         </p>
                       </div>
-                      <button className={`w-full py-3 rounded-xl font-bold text-sm transition-all border flex justify-center items-center gap-2 hover:bg-pink-500 hover:text-white hover:border-pink-500 ${isDark ? 'bg-slate-950 border-slate-700 text-slate-300' : 'bg-white border-slate-300 text-slate-700'}`}>
-                        <Instagram size={18} />
-                        {t.connectIg}
-                      </button>
+
+                      {/* كارت إنستقرام */}
+                      <div className={`p-5 rounded-2xl border flex items-center justify-between ${isDark ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-200'}`}>
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 text-white shadow-md">
+                            <Instagram size={24} />
+                          </div>
+                          <div>
+                            <h4 className={`font-bold ${textMain}`}>إنستقرام (Instagram)</h4>
+                            {isIgConnected ? (
+                              <p className="text-xs font-bold text-green-500 flex items-center gap-1"><CheckCircle2 size={12}/> متصل بـ @myagency_sa</p>
+                            ) : (
+                              <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>غير متصل</p>
+                            )}
+                          </div>
+                        </div>
+                        {isIgConnected ? (
+                          <button onClick={() => setIsIgConnected(false)} className={`px-4 py-2 rounded-lg text-xs font-bold border transition ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300 hover:text-red-400' : 'bg-slate-100 border-slate-200 text-slate-600 hover:text-red-500'}`}>فصل الحساب</button>
+                        ) : (
+                          <button onClick={() => handleConnectOAuth('ig')} disabled={isConnecting} className="px-4 py-2 rounded-lg text-xs font-bold border bg-slate-900 text-white border-slate-800 hover:bg-slate-800 transition flex items-center gap-2">
+                            {isConnecting ? <Loader2 size={14} className="animate-spin" /> : t.connectIg}
+                          </button>
+                        )}
+                      </div>
+
+                      {/* كارت تيك توك */}
+                      <div className={`p-5 rounded-2xl border flex items-center justify-between ${isDark ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-200'}`}>
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-black text-white shadow-md">
+                            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z"/></svg>
+                          </div>
+                          <div>
+                            <h4 className={`font-bold ${textMain}`}>تيك توك (TikTok)</h4>
+                            {isTkConnected ? (
+                              <p className="text-xs font-bold text-green-500 flex items-center gap-1"><CheckCircle2 size={12}/> متصل بـ @myagency_sa</p>
+                            ) : (
+                              <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>غير متصل</p>
+                            )}
+                          </div>
+                        </div>
+                        {isTkConnected ? (
+                          <button onClick={() => setIsTkConnected(false)} className={`px-4 py-2 rounded-lg text-xs font-bold border transition ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300 hover:text-red-400' : 'bg-slate-100 border-slate-200 text-slate-600 hover:text-red-500'}`}>فصل الحساب</button>
+                        ) : (
+                          <button onClick={() => handleConnectOAuth('tk')} disabled={isConnecting} className="px-4 py-2 rounded-lg text-xs font-bold border bg-black text-white border-slate-800 hover:bg-slate-900 transition flex items-center gap-2">
+                            {isConnecting ? <Loader2 size={14} className="animate-spin" /> : t.connectTk}
+                          </button>
+                        )}
+                      </div>
+
                     </div>
                   </div>
                 )}
 
-                {/* إعدادات الأمان */}
+                {/* الأمان */}
                 {activeTab === 'security' && (
                   <div className="space-y-6 animate-in fade-in">
                     <div className="space-y-3 bg-slate-500/5 p-4 rounded-2xl border border-slate-500/10">
@@ -532,15 +568,9 @@ export default function App() {
         </div>
       )}
 
-      {/* 
-        ====================================================
-        الشريط العلوي (Navbar) مع إضافة شارة الرصيد
-        ====================================================
-      */}
+      {/* الشريط العلوي */}
       <div className={`absolute top-4 ${t.dir === 'rtl' ? 'left-0 right-0 px-6 justify-end' : 'right-0 left-0 px-6 justify-end'} flex items-center z-50 w-full max-w-7xl mx-auto`}>
         <div className="flex items-center gap-3">
-          
-          {/* شارة عرض الرصيد المتاح */}
           <div onClick={() => { setIsSettingsOpen(true); setActiveTab('billing'); }} className={`flex items-center gap-2 px-4 py-2 border rounded-full cursor-pointer transition-all backdrop-blur-md shadow-lg ${isDark ? 'bg-slate-900/80 border-slate-700 text-slate-300 hover:text-white hover:border-yellow-500/50' : 'bg-white border-slate-200 text-slate-700 hover:border-yellow-400'}`}>
             <Wallet size={16} className="text-yellow-500" />
             <span className="font-bold text-sm">{credits} <span className="font-medium text-xs opacity-80">{t.points}</span></span>
@@ -584,9 +614,10 @@ export default function App() {
           <div className="space-y-2">
             <label className={`block text-sm font-bold px-1 ${labelColor}`}>{t.bizCategory}</label>
             <div className="relative">
+              {/* تمت إضافة optionClass لتنسيق القائمة */}
               <select value={activityType} onChange={(e) => setActivityType(e.target.value)} required className={`w-full px-5 py-4 border rounded-2xl focus:ring-2 focus:ring-blue-500/50 outline-none font-medium appearance-none ${inputBg}`}>
-                <option value="" disabled>{t.bizPlaceholder}</option>
-                {t.activities.map((act, i) => <option key={i} value={act}>{act}</option>)}
+                <option className={optionClass} value="" disabled>{t.bizPlaceholder}</option>
+                {t.activities.map((act, i) => <option className={optionClass} key={i} value={act}>{act}</option>)}
               </select>
               <div className={`absolute inset-y-0 ${t.dir === 'rtl' ? 'left-5' : 'right-5'} flex items-center pointer-events-none text-slate-400`}>▼</div>
             </div>
@@ -596,15 +627,15 @@ export default function App() {
             <label className={`block text-sm font-bold px-1 ${labelColor}`}>{t.contentType}</label>
             <div className="relative">
               <select value={contentType} onChange={(e) => setContentType(e.target.value)} className={`w-full px-5 py-4 border rounded-2xl focus:ring-2 focus:ring-blue-500/50 outline-none font-medium appearance-none ${inputBg}`}>
-                <optgroup label={t.visualGroup}>
-                  <option value="promo_video">{t.videoPromo}</option>
-                  <option value="delivery_campaign">{t.deliveryApp}</option>
-                  <option value="product_shot">{t.poster}</option>
+                <optgroup label={t.visualGroup} className={optionClass}>
+                  <option className={optionClass} value="promo_video">{t.videoPromo}</option>
+                  <option className={optionClass} value="delivery_campaign">{t.deliveryApp}</option>
+                  <option className={optionClass} value="product_shot">{t.poster}</option>
                 </optgroup>
-                <optgroup label={t.textGroup}>
-                  <option value="social_caption">{t.contentPlan}</option>
-                  <option value="ad_script">{t.adScript}</option>
-                  <option value="customer_response">{t.reply}</option>
+                <optgroup label={t.textGroup} className={optionClass}>
+                  <option className={optionClass} value="social_caption">{t.contentPlan}</option>
+                  <option className={optionClass} value="ad_script">{t.adScript}</option>
+                  <option className={optionClass} value="customer_response">{t.reply}</option>
                 </optgroup>
               </select>
               <div className={`absolute inset-y-0 ${t.dir === 'rtl' ? 'left-5' : 'right-5'} flex items-center pointer-events-none text-slate-400`}>▼</div>
@@ -616,7 +647,6 @@ export default function App() {
             <textarea value={prompt} onChange={(e) => setPrompt(e.target.value)} required className={`w-full px-5 py-4 border rounded-2xl focus:ring-2 focus:ring-blue-500/50 outline-none resize-none leading-relaxed ${inputBg}`} rows={4} placeholder={t.ideaPlaceholder}></textarea>
           </div>
 
-          {/* زر إطلاق الحملة التفاعلي مع التحميل */}
           <div className="pt-4">
             <button type="submit" disabled={isSubmitting} className="relative w-full group overflow-hidden py-4 px-6 rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-black text-lg shadow-[0_10px_40px_-10px_rgba(59,130,246,0.5)] hover:shadow-[0_10px_50px_-10px_rgba(59,130,246,0.7)] transform active:scale-[0.98] transition-all duration-300 disabled:opacity-50">
               <span className="relative z-10 flex items-center justify-center gap-2">
