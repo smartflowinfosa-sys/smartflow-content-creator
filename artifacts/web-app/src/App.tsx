@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "./supabase";
 import Auth from "./Auth"; 
-import { User, Settings, LogOut, Crown, Trash2, X, Lock, Globe, Palette, Copy, CheckCircle2, Instagram, Info, Loader2, Wallet, CreditCard, Shield, Sliders } from 'lucide-react';
+import { User, Settings, LogOut, Crown, Trash2, X, Lock, Globe, Palette, Copy, CheckCircle2, Instagram, Info, Loader2, Wallet, CreditCard, Shield, Sliders, ImagePlus, Mic, Activity, Clapperboard, Target, AlignLeft } from 'lucide-react';
 
 // ==========================================
-// 1. قاموس الترجمة المحدث (عربي / إنجليزي)
+// 1. قاموس الترجمة المحدث (كامل بدون اختصارات)
 // ==========================================
 const translations = {
   ar: {
@@ -24,12 +24,12 @@ const translations = {
     passPlaceholder: "كلمة المرور الجديدة...",
     update: "تحديث",
     updating: "جاري التحديث...",
-    passNote: "ملاحظة: خيارات اللغة والثيم تُحفظ تلقائياً دون الحاجة لضغط زر التحديث.",
+    passNote: "ملاحظة: خيارات اللغة والثيم تُحفظ تلقائياً.",
     socialAuth: "إدارة ربط الحسابات (OAuth)",
     connectIg: "ربط إنستقرام",
     connectTk: "ربط تيك توك",
     disconnectIg: "فصل الحساب",
-    disconnectConfirm: "هل أنت متأكد أنك تريد فصل حساب إنستقرام عن المنصة؟ سيتم إيقاف النشر التلقائي.",
+    disconnectConfirm: "هل أنت متأكد أنك تريد فصل الحساب عن المنصة؟ سيتم إيقاف النشر التلقائي.",
     disconnected: "تم فصل الحساب بنجاح.",
     igTrustMsg: "يتم الربط رسمياً ومباشرة عبر خوادم المنصات (OAuth 2.0). نحن لا نطلب أو نحفظ كلمات المرور الخاصة بك، ونطلب فقط صلاحية النشر الآلي لتسهيل عملك.",
     bizCategory: "نوع النشاط التجاري:",
@@ -41,8 +41,33 @@ const translations = {
     contentPlan: "📝 خطة محتوى أسبوعية متكاملة",
     adScript: "🎙️ كتابة سكريبت إعلاني جذاب",
     reply: "💬 رد ذكي واحترافي على التقييمات",
+    visualOptionsTitle: "✨ خيارات الإخراج الفني والصوتي:",
+    voiceLabel: "المعلق الصوتي",
+    voiceMaleSA: "رجل (لهجة سعودية)",
+    voiceFemaleSA: "امرأة (لهجة سعودية)",
+    voiceNone: "بدون تعليق صوتي (موسيقى فقط)",
+    toneLabel: "نبرة الإعلان",
+    toneEnthusiastic: "حماسي وسريع 🔥",
+    toneCalm: "هادئ وفخم 🛋️",
+    toneFormal: "رسمي وموثوق 🤝",
+    styleLabel: "أسلوب الإخراج",
+    styleCinematic: "تصوير سينمائي احترافي 🎬",
+    styleUGC: "تصوير جوال واقعي (UGC) 📱",
+    style3D: "أنيميشن ورسومات 🎨",
+    textOptionsTitle: "✨ خيارات المحتوى النصي:",
+    goalLabel: "الهدف التسويقي",
+    goalSales: "زيادة المبيعات والحجوزات 💰",
+    goalEngagement: "تفاعل ومشاركة 👥",
+    goalAwareness: "الوعي بالعلامة التجارية 📢",
+    lengthLabel: "طول النص",
+    lengthShort: "قصير ومباشر",
+    lengthMedium: "متوسط (مثالي للسوشيال ميديا)",
+    lengthLong: "طويل وتفصيلي",
     idea: "الفكرة التسويقية:",
     ideaPlaceholder: "اكتب فكرتك هنا (مثال: إعلان لقهوة مختصة)...",
+    uploadImageTitle: "صورة المنتج (اختياري، لتحويلها إلى فيديو أو تصميم):",
+    uploadImageBtn: "ارفع صورة منتجك من هنا",
+    changeImage: "تغيير الصورة",
     launchBtn: "أطلق الحملة الآن",
     producing: "جاري الإنتاج في الاستوديو...",
     libraryTitle: "مكتبة الحملات الجاهزة",
@@ -104,7 +129,7 @@ const translations = {
     disconnectIg: "Disconnect",
     disconnectConfirm: "Are you sure you want to disconnect? Auto-publishing will stop.",
     disconnected: "Account disconnected successfully.",
-    igTrustMsg: "Connection is made securely via official OAuth 2.0. We never ask for or store your passwords. We only request publishing permissions.",
+    igTrustMsg: "Connection is made securely via official OAuth 2.0. We never store your passwords.",
     bizCategory: "Business Category:",
     bizPlaceholder: "Select business category...",
     contentType: "Content Type:",
@@ -114,8 +139,33 @@ const translations = {
     contentPlan: "📝 Full Weekly Content Plan",
     adScript: "🎙️ Engaging Ad Script",
     reply: "💬 Smart Review Responses",
+    visualOptionsTitle: "✨ Visual & Audio Options:",
+    voiceLabel: "Voiceover",
+    voiceMaleSA: "Male (Saudi Accent)",
+    voiceFemaleSA: "Female (Saudi Accent)",
+    voiceNone: "No Voiceover (Music Only)",
+    toneLabel: "Ad Tone",
+    toneEnthusiastic: "Enthusiastic & Fast 🔥",
+    toneCalm: "Calm & Premium 🛋️",
+    toneFormal: "Formal & Trusted 🤝",
+    styleLabel: "Visual Style",
+    styleCinematic: "Professional Cinematic 🎬",
+    styleUGC: "Realistic Mobile (UGC) 📱",
+    style3D: "3D Animation 🎨",
+    textOptionsTitle: "✨ Text Content Options:",
+    goalLabel: "Marketing Goal",
+    goalSales: "Drive Sales & Bookings 💰",
+    goalEngagement: "Engagement & Shares 👥",
+    goalAwareness: "Brand Awareness 📢",
+    lengthLabel: "Text Length",
+    lengthShort: "Short & Direct",
+    lengthMedium: "Medium (Ideal for Social)",
+    lengthLong: "Long & Detailed",
     idea: "Marketing Idea:",
     ideaPlaceholder: "Type your idea here (e.g., Specialty coffee summer promo)...",
+    uploadImageTitle: "Product Image (Optional, for image-to-video/poster):",
+    uploadImageBtn: "Upload your product image here",
+    changeImage: "Change Image",
     launchBtn: "Launch Campaign Now",
     producing: "Producing in studio...",
     libraryTitle: "Campaign Library",
@@ -253,26 +303,10 @@ const ContentCard = ({ item, handleDelete, isDark, t }) => {
 
         <div className="flex gap-3 mb-4" dir="ltr">
           <div className="flex-1">
-            <input 
-              type="date" 
-              required
-              lang="en-US"
-              value={scheduleDate} 
-              onChange={e=>setScheduleDate(e.target.value)} 
-              style={{ fontFamily: 'Arial, Helvetica, sans-serif', direction: 'ltr', colorScheme: isDark ? 'dark' : 'light' }}
-              className={`w-full border rounded-xl px-4 py-3 text-sm outline-none transition-colors ${inputBg}`} 
-            />
+            <input type="date" required value={scheduleDate} onChange={e=>setScheduleDate(e.target.value)} style={{ fontFamily: 'Arial, Helvetica, sans-serif', direction: 'ltr', colorScheme: isDark ? 'dark' : 'light' }} className={`w-full border rounded-xl px-4 py-3 text-sm outline-none transition-colors ${inputBg}`} />
           </div>
           <div className="flex-1">
-            <input 
-              type="time" 
-              required
-              lang="en-US"
-              value={scheduleTime} 
-              onChange={e=>setScheduleTime(e.target.value)} 
-              style={{ fontFamily: 'Arial, Helvetica, sans-serif', direction: 'ltr', colorScheme: isDark ? 'dark' : 'light' }}
-              className={`w-full border rounded-xl px-4 py-3 text-sm outline-none transition-colors ${inputBg}`} 
-            />
+            <input type="time" required value={scheduleTime} onChange={e=>setScheduleTime(e.target.value)} style={{ fontFamily: 'Arial, Helvetica, sans-serif', direction: 'ltr', colorScheme: isDark ? 'dark' : 'light' }} className={`w-full border rounded-xl px-4 py-3 text-sm outline-none transition-colors ${inputBg}`} />
           </div>
         </div>
 
@@ -291,7 +325,7 @@ const ContentCard = ({ item, handleDelete, isDark, t }) => {
 export default function App() {
   const [session, setSession] = useState<any>(null);
   const [prompt, setPrompt] = useState("");
-  const [contentType, setContentType] = useState("social_caption");
+  const [contentType, setContentType] = useState("promo_video");
   const [activityType, setActivityType] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [results, setResults] = useState<any[]>([]);
@@ -302,10 +336,22 @@ export default function App() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('general');
   
-  // حالات وهمية لربط الحسابات (للتجربة البصرية)
-  const [isIgConnected, setIsIgConnected] = useState(true); // نجعله مربوطاً للتجربة
+  const [isIgConnected, setIsIgConnected] = useState(true); 
   const [isTkConnected, setIsTkConnected] = useState(false); 
   const [isConnecting, setIsConnecting] = useState(false);
+
+  // حالات رفع الصورة
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  // حالات النماذج الشرطية الذكية
+  // 1. خيارات الفيديو والصور
+  const [voiceGender, setVoiceGender] = useState("male_sa");
+  const [adTone, setAdTone] = useState("enthusiastic");
+  const [visualStyle, setVisualStyle] = useState("cinematic");
+  // 2. خيارات النصوص
+  const [contentGoal, setContentGoal] = useState("sales");
+  const [textLength, setTextLength] = useState("medium");
 
   const [theme, setTheme] = useState('dark');
   const [langCode, setLangCode] = useState('ar');
@@ -313,15 +359,14 @@ export default function App() {
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
 
   const isDark = theme === 'dark';
-  const t = translations[langCode]; 
+  const t = translations[langCode] || translations['ar']; 
+
+  const isVisualContent = contentType === "promo_video" || contentType === "delivery_campaign" || contentType === "product_shot";
+  const isTextContent = contentType === "social_caption" || contentType === "ad_script" || contentType === "customer_response";
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
+    supabase.auth.getSession().then(({ data: { session } }) => setSession(session));
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => setSession(session));
     return () => subscription.unsubscribe();
   }, []);
 
@@ -332,16 +377,10 @@ export default function App() {
       const { data, error } = await supabase.from('content_pipeline').select('*').eq('store_id', session.user.id).order('created_at', { ascending: false }).limit(6); 
       if (error) throw error;
       if (data) setResults(data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoadingResults(false);
-    }
+    } catch (error) { console.error(error); } finally { setIsLoadingResults(false); }
   };
 
-  useEffect(() => {
-    if (session) fetchResults();
-  }, [session]);
+  useEffect(() => { if (session) fetchResults(); }, [session]);
 
   const handleDelete = async (id: string) => {
     if (window.confirm(t.deleteConfirm)) {
@@ -367,15 +406,23 @@ export default function App() {
     }
   };
 
-  // محاكاة الربط عبر OAuth
   const handleConnectOAuth = (platform: string) => {
     setIsConnecting(true);
-    // هنا مستقبلاً ستقوم بتوجيه المستخدم للرابط: window.location.href = "YOUR_OAUTH_URL";
     setTimeout(() => {
       if (platform === 'ig') setIsIgConnected(true);
       if (platform === 'tk') setIsTkConnected(true);
       setIsConnecting(false);
     }, 1500);
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => setImagePreview(reader.result as string);
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -385,16 +432,47 @@ export default function App() {
     if (credits < 10) return alert("عفواً، رصيدك لا يكفي لإتمام هذه العملية. يرجى شحن أرصدة إضافية.");
 
     setIsSubmitting(true);
+    let uploadedImageUrl = null;
+
+    if (imageFile) {
+      try {
+        const fileExt = imageFile.name.split('.').pop();
+        const fileName = `${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
+        const filePath = `${session.user.id}/${fileName}`;
+        const { error: uploadError } = await supabase.storage.from('campaign-assets').upload(filePath, imageFile);
+        if (uploadError) throw uploadError;
+        const { data: publicUrlData } = supabase.storage.from('campaign-assets').getPublicUrl(filePath);
+        uploadedImageUrl = publicUrlData.publicUrl;
+      } catch (error) {
+        console.error("Error uploading image:", error);
+      }
+    }
+
     const webhookUrl = "https://n8n-p10bgpahkliy9hghak21zv3e.178.105.219.96.sslip.io/webhook/generate-content";
+
+    const payload = {
+      store_id: session.user.id, 
+      activity_type: activityType, 
+      content_type: contentType, 
+      prompt: prompt,
+      image_url: uploadedImageUrl,
+      voice_gender: isVisualContent ? voiceGender : null,
+      ad_tone: isVisualContent ? adTone : null,
+      visual_style: isVisualContent ? visualStyle : null,
+      content_goal: isTextContent ? contentGoal : null,
+      text_length: isTextContent ? textLength : null
+    };
 
     try {
       await fetch(webhookUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ store_id: session.user.id, activity_type: activityType, content_type: contentType, prompt: prompt }),
+        body: JSON.stringify(payload),
       });
       setCredits(prev => prev - 10);
       setPrompt("");
+      setImageFile(null);
+      setImagePreview(null);
       setTimeout(fetchResults, 4000); 
     } catch (error) {} finally {
       setIsSubmitting(false);
@@ -406,8 +484,7 @@ export default function App() {
   const mainBg = isDark ? 'bg-[#0b1121]' : 'bg-slate-50';
   const textMain = isDark ? 'text-white' : 'text-slate-900';
   const panelBg = isDark ? 'bg-slate-900/40 border-slate-800' : 'bg-white/80 border-slate-200 shadow-2xl';
-  // تم تحديث inputBg لتعديل لون الخيارات (options) في القائمة المنسدلة
-  const inputBg = isDark ? 'bg-slate-950/50 border-slate-700/80 text-white focus:bg-slate-900' : 'bg-white border-slate-300 text-slate-900';
+  const inputBg = isDark ? 'bg-slate-950/50 border-slate-700/80 text-white focus:bg-slate-900 focus:border-purple-500/50' : 'bg-white border-slate-300 text-slate-900 focus:border-purple-500/50';
   const optionClass = isDark ? 'bg-[#0f172a] text-slate-200 font-medium' : 'bg-white text-slate-900 font-medium';
   const labelColor = isDark ? 'text-slate-300' : 'text-slate-700';
 
@@ -429,7 +506,6 @@ export default function App() {
             </div>
             
             <div className="flex flex-col md:flex-row flex-1 overflow-hidden">
-              {/* القائمة الجانبية */}
               <div className={`w-full md:w-1/3 p-4 flex flex-col gap-2 overflow-y-auto border-b md:border-b-0 ${t.dir === 'rtl' ? 'md:border-l' : 'md:border-r'} ${isDark ? 'border-slate-800 bg-slate-900/30' : 'border-slate-100 bg-slate-50/50'}`}>
                 <button onClick={() => setActiveTab('general')} className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeTab === 'general' ? (isDark ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-50 text-blue-600') : (isDark ? 'text-slate-400 hover:bg-slate-800/50' : 'text-slate-600 hover:bg-slate-100')}`}><Sliders size={18} /> {t.tabGeneral}</button>
                 <button onClick={() => setActiveTab('billing')} className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeTab === 'billing' ? (isDark ? 'bg-yellow-500/20 text-yellow-400' : 'bg-yellow-50 text-yellow-600') : (isDark ? 'text-slate-400 hover:bg-slate-800/50' : 'text-slate-600 hover:bg-slate-100')}`}><CreditCard size={18} /> {t.tabBilling}</button>
@@ -437,10 +513,7 @@ export default function App() {
                 <button onClick={() => setActiveTab('security')} className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeTab === 'security' ? (isDark ? 'bg-green-500/20 text-green-400' : 'bg-green-50 text-green-600') : (isDark ? 'text-slate-400 hover:bg-slate-800/50' : 'text-slate-600 hover:bg-slate-100')}`}><Shield size={18} /> {t.tabSecurity}</button>
               </div>
 
-              {/* العرض الرئيسي للإعدادات */}
               <div className="w-full md:w-2/3 p-6 overflow-y-auto flex-1 space-y-6">
-                
-                {/* عام */}
                 {activeTab === 'general' && (
                   <div className="space-y-6 animate-in fade-in">
                     <div className="space-y-3">
@@ -461,7 +534,6 @@ export default function App() {
                   </div>
                 )}
 
-                {/* الأرصدة (الدفع) */}
                 {activeTab === 'billing' && (
                   <div className="space-y-6 animate-in fade-in">
                     <div className={`p-6 rounded-2xl border flex flex-col items-center justify-center text-center ${isDark ? 'bg-yellow-500/10 border-yellow-500/30' : 'bg-yellow-50 border-yellow-200'}`}>
@@ -470,15 +542,13 @@ export default function App() {
                       <p className={`text-4xl font-black mb-4 ${isDark ? 'text-yellow-400' : 'text-yellow-600'}`}>
                         {credits} <span className="text-lg font-bold opacity-70">{t.points}</span>
                       </p>
-                      {/* الزر الآن جاهز للربط مع بوابة الدفع (Moyasar أو Tap) */}
-                      <button onClick={() => alert("سيتم فتح بوابة الدفع (ميسر أو تاب) قريباً!")} className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 text-white font-bold py-3 px-8 rounded-xl transition-all transform hover:scale-105 shadow-lg">
+                      <button onClick={() => alert("سيتم فتح بوابة الدفع قريباً!")} className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 text-white font-bold py-3 px-8 rounded-xl transition-all transform hover:scale-105 shadow-lg">
                         {t.buyCredits}
                       </button>
                     </div>
                   </div>
                 )}
 
-                {/* ربط الحسابات (OAuth) - تم التحديث ليدعم واجهة احترافية */}
                 {activeTab === 'connections' && (
                   <div className="space-y-6 animate-in fade-in">
                     <div className="space-y-4">
@@ -492,7 +562,6 @@ export default function App() {
                         </p>
                       </div>
 
-                      {/* كارت إنستقرام */}
                       <div className={`p-5 rounded-2xl border flex items-center justify-between ${isDark ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-200'}`}>
                         <div className="flex items-center gap-3">
                           <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 text-white shadow-md">
@@ -508,7 +577,7 @@ export default function App() {
                           </div>
                         </div>
                         {isIgConnected ? (
-                          <button onClick={() => setIsIgConnected(false)} className={`px-4 py-2 rounded-lg text-xs font-bold border transition ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300 hover:text-red-400' : 'bg-slate-100 border-slate-200 text-slate-600 hover:text-red-500'}`}>فصل الحساب</button>
+                          <button onClick={() => setIsIgConnected(false)} className={`px-4 py-2 rounded-lg text-xs font-bold border transition ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300 hover:text-red-400' : 'bg-slate-100 border-slate-200 text-slate-600 hover:text-red-500'}`}>{t.disconnectIg}</button>
                         ) : (
                           <button onClick={() => handleConnectOAuth('ig')} disabled={isConnecting} className="px-4 py-2 rounded-lg text-xs font-bold border bg-slate-900 text-white border-slate-800 hover:bg-slate-800 transition flex items-center gap-2">
                             {isConnecting ? <Loader2 size={14} className="animate-spin" /> : t.connectIg}
@@ -516,7 +585,6 @@ export default function App() {
                         )}
                       </div>
 
-                      {/* كارت تيك توك */}
                       <div className={`p-5 rounded-2xl border flex items-center justify-between ${isDark ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-200'}`}>
                         <div className="flex items-center gap-3">
                           <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-black text-white shadow-md">
@@ -532,7 +600,7 @@ export default function App() {
                           </div>
                         </div>
                         {isTkConnected ? (
-                          <button onClick={() => setIsTkConnected(false)} className={`px-4 py-2 rounded-lg text-xs font-bold border transition ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300 hover:text-red-400' : 'bg-slate-100 border-slate-200 text-slate-600 hover:text-red-500'}`}>فصل الحساب</button>
+                          <button onClick={() => setIsTkConnected(false)} className={`px-4 py-2 rounded-lg text-xs font-bold border transition ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300 hover:text-red-400' : 'bg-slate-100 border-slate-200 text-slate-600 hover:text-red-500'}`}>{t.disconnectIg}</button>
                         ) : (
                           <button onClick={() => handleConnectOAuth('tk')} disabled={isConnecting} className="px-4 py-2 rounded-lg text-xs font-bold border bg-black text-white border-slate-800 hover:bg-slate-900 transition flex items-center gap-2">
                             {isConnecting ? <Loader2 size={14} className="animate-spin" /> : t.connectTk}
@@ -544,7 +612,6 @@ export default function App() {
                   </div>
                 )}
 
-                {/* الأمان */}
                 {activeTab === 'security' && (
                   <div className="space-y-6 animate-in fade-in">
                     <div className="space-y-3 bg-slate-500/5 p-4 rounded-2xl border border-slate-500/10">
@@ -580,7 +647,6 @@ export default function App() {
             <button onClick={() => setIsProfileOpen(!isProfileOpen)} className={`flex items-center justify-center w-11 h-11 border rounded-full transition-all backdrop-blur-md shadow-lg ${isDark ? 'bg-slate-900/80 border-slate-700 text-slate-300 hover:text-white' : 'bg-white border-slate-200 text-slate-600 hover:text-slate-900'}`}>
               <User size={20} />
             </button>
-
             {isProfileOpen && (
               <div className={`absolute ${t.dir === 'rtl' ? 'left-0' : 'right-0'} mt-3 w-64 border rounded-2xl shadow-2xl overflow-hidden backdrop-blur-xl z-50 ${isDark ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-200'}`}>
                 <div className={`px-5 py-4 border-b flex items-center gap-3 ${isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-slate-50 border-slate-100'}`}>
@@ -602,7 +668,7 @@ export default function App() {
         </div>
       </div>
 
-      {/* كابينة التحكم */}
+      {/* كابينة التحكم الأساسية */}
       <div className={`relative z-10 backdrop-blur-2xl p-8 sm:p-10 rounded-[2.5rem] border w-full max-w-xl mt-20 transition-colors duration-500 ${panelBg}`}>
         <div className="text-center mb-10">
           <span className="inline-block py-1 px-3 rounded-full bg-blue-500/10 text-blue-500 text-xs font-bold mb-4 border border-blue-500/20">{t.badge}</span>
@@ -614,8 +680,7 @@ export default function App() {
           <div className="space-y-2">
             <label className={`block text-sm font-bold px-1 ${labelColor}`}>{t.bizCategory}</label>
             <div className="relative">
-              {/* تمت إضافة optionClass لتنسيق القائمة */}
-              <select value={activityType} onChange={(e) => setActivityType(e.target.value)} required className={`w-full px-5 py-4 border rounded-2xl focus:ring-2 focus:ring-blue-500/50 outline-none font-medium appearance-none ${inputBg}`}>
+              <select value={activityType} onChange={(e) => setActivityType(e.target.value)} required className={`w-full px-5 py-4 border rounded-2xl outline-none font-medium appearance-none transition-all ${inputBg}`}>
                 <option className={optionClass} value="" disabled>{t.bizPlaceholder}</option>
                 {t.activities.map((act, i) => <option className={optionClass} key={i} value={act}>{act}</option>)}
               </select>
@@ -626,7 +691,7 @@ export default function App() {
           <div className="space-y-2">
             <label className={`block text-sm font-bold px-1 ${labelColor}`}>{t.contentType}</label>
             <div className="relative">
-              <select value={contentType} onChange={(e) => setContentType(e.target.value)} className={`w-full px-5 py-4 border rounded-2xl focus:ring-2 focus:ring-blue-500/50 outline-none font-medium appearance-none ${inputBg}`}>
+              <select value={contentType} onChange={(e) => setContentType(e.target.value)} className={`w-full px-5 py-4 border rounded-2xl outline-none font-medium appearance-none transition-all ${inputBg}`}>
                 <optgroup label={t.visualGroup} className={optionClass}>
                   <option className={optionClass} value="promo_video">{t.videoPromo}</option>
                   <option className={optionClass} value="delivery_campaign">{t.deliveryApp}</option>
@@ -642,25 +707,108 @@ export default function App() {
             </div>
           </div>
 
+          {/* =========================================
+              النماذج الشرطية الديناميكية
+              ========================================= */}
+          
+          {/* قسم الخيارات المرئية والصوتية */}
+          {isVisualContent && (
+            <div className={`p-5 rounded-2xl border animate-in fade-in slide-in-from-top-2 duration-300 space-y-4 ${isDark ? 'bg-purple-900/10 border-purple-500/20' : 'bg-purple-50 border-purple-100'}`}>
+              <h3 className={`text-sm font-black mb-3 flex items-center gap-2 ${isDark ? 'text-purple-300' : 'text-purple-700'}`}>{t.visualOptionsTitle}</h3>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className={`text-xs font-bold flex items-center gap-1.5 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}><Mic size={14} /> {t.voiceLabel}</label>
+                  <select value={voiceGender} onChange={(e) => setVoiceGender(e.target.value)} className={`w-full px-3 py-2.5 border rounded-xl outline-none text-sm appearance-none transition-all ${inputBg}`}>
+                    <option className={optionClass} value="male_sa">{t.voiceMaleSA}</option>
+                    <option className={optionClass} value="female_sa">{t.voiceFemaleSA}</option>
+                    <option className={optionClass} value="none">{t.voiceNone}</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className={`text-xs font-bold flex items-center gap-1.5 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}><Activity size={14} /> {t.toneLabel}</label>
+                  <select value={adTone} onChange={(e) => setAdTone(e.target.value)} className={`w-full px-3 py-2.5 border rounded-xl outline-none text-sm appearance-none transition-all ${inputBg}`}>
+                    <option className={optionClass} value="enthusiastic">{t.toneEnthusiastic}</option>
+                    <option className={optionClass} value="calm">{t.toneCalm}</option>
+                    <option className={optionClass} value="formal">{t.toneFormal}</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1.5 sm:col-span-2">
+                  <label className={`text-xs font-bold flex items-center gap-1.5 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}><Clapperboard size={14} /> {t.styleLabel}</label>
+                  <select value={visualStyle} onChange={(e) => setVisualStyle(e.target.value)} className={`w-full px-3 py-2.5 border rounded-xl outline-none text-sm appearance-none transition-all ${inputBg}`}>
+                    <option className={optionClass} value="cinematic">{t.styleCinematic}</option>
+                    <option className={optionClass} value="ugc">{t.styleUGC}</option>
+                    <option className={optionClass} value="3d_animation">{t.style3D}</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* قسم الخيارات النصية البحتة */}
+          {isTextContent && (
+            <div className={`p-5 rounded-2xl border animate-in fade-in slide-in-from-top-2 duration-300 space-y-4 ${isDark ? 'bg-blue-900/10 border-blue-500/20' : 'bg-blue-50 border-blue-100'}`}>
+              <h3 className={`text-sm font-black mb-3 flex items-center gap-2 ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>{t.textOptionsTitle}</h3>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className={`text-xs font-bold flex items-center gap-1.5 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}><Target size={14} /> {t.goalLabel}</label>
+                  <select value={contentGoal} onChange={(e) => setContentGoal(e.target.value)} className={`w-full px-3 py-2.5 border rounded-xl outline-none text-sm appearance-none transition-all ${inputBg}`}>
+                    <option className={optionClass} value="sales">{t.goalSales}</option>
+                    <option className={optionClass} value="engagement">{t.goalEngagement}</option>
+                    <option className={optionClass} value="awareness">{t.goalAwareness}</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className={`text-xs font-bold flex items-center gap-1.5 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}><AlignLeft size={14} /> {t.lengthLabel}</label>
+                  <select value={textLength} onChange={(e) => setTextLength(e.target.value)} className={`w-full px-3 py-2.5 border rounded-xl outline-none text-sm appearance-none transition-all ${inputBg}`}>
+                    <option className={optionClass} value="short">{t.lengthShort}</option>
+                    <option className={optionClass} value="medium">{t.lengthMedium}</option>
+                    <option className={optionClass} value="long">{t.lengthLong}</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          )}
+          {/* ========================================= */}
+
+          {/* قسم رفع الصورة */}
+          {isVisualContent && (
+            <div className="space-y-2 animate-in fade-in zoom-in duration-300">
+              <label className={`block text-sm font-bold px-1 ${labelColor}`}>{t.uploadImageTitle}</label>
+              <div className={`relative border-2 border-dashed rounded-2xl p-4 transition-all ${imagePreview ? 'border-purple-500/50 bg-purple-500/5' : isDark ? 'border-slate-700 hover:border-slate-500 bg-slate-900/50' : 'border-slate-300 hover:border-slate-400 bg-slate-50'}`}>
+                <input type="file" accept="image/*" onChange={handleImageChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+                {imagePreview ? (
+                  <div className="flex items-center gap-4">
+                    <img src={imagePreview} alt="Preview" className="w-16 h-16 object-cover rounded-xl shadow-md border border-slate-200/20" />
+                    <div className="flex-1">
+                      <p className={`text-sm font-bold ${textMain}`}>{imageFile?.name}</p>
+                      <p className={`text-xs mt-1 ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>{t.changeImage}</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-4 text-center">
+                    <div className={`p-3 rounded-full mb-3 ${isDark ? 'bg-slate-800 text-slate-400' : 'bg-slate-200 text-slate-600'}`}><ImagePlus size={24} /></div>
+                    <p className={`text-sm font-bold ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{t.uploadImageBtn}</p>
+                    <p className={`text-xs mt-1 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>PNG, JPG (Max 5MB)</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           <div className="space-y-2">
             <label className={`block text-sm font-bold px-1 ${labelColor}`}>{t.idea}</label>
-            <textarea value={prompt} onChange={(e) => setPrompt(e.target.value)} required className={`w-full px-5 py-4 border rounded-2xl focus:ring-2 focus:ring-blue-500/50 outline-none resize-none leading-relaxed ${inputBg}`} rows={4} placeholder={t.ideaPlaceholder}></textarea>
+            <textarea value={prompt} onChange={(e) => setPrompt(e.target.value)} required className={`w-full px-5 py-4 border rounded-2xl outline-none resize-none leading-relaxed transition-all ${inputBg}`} rows={4} placeholder={t.ideaPlaceholder}></textarea>
           </div>
 
           <div className="pt-4">
             <button type="submit" disabled={isSubmitting} className="relative w-full group overflow-hidden py-4 px-6 rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-black text-lg shadow-[0_10px_40px_-10px_rgba(59,130,246,0.5)] hover:shadow-[0_10px_50px_-10px_rgba(59,130,246,0.7)] transform active:scale-[0.98] transition-all duration-300 disabled:opacity-50">
               <span className="relative z-10 flex items-center justify-center gap-2">
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="animate-spin" size={24} /> 
-                    <span>{t.producing}</span>
-                  </>
-                ) : (
-                  <>
-                    <span>✨</span> 
-                    <span>{t.launchBtn}</span>
-                  </>
-                )}
+                {isSubmitting ? <><Loader2 className="animate-spin" size={24} /> <span>{t.producing}</span></> : <><span>✨</span> <span>{t.launchBtn}</span></>}
               </span>
             </button>
           </div>
@@ -687,9 +835,7 @@ export default function App() {
               <p className={`font-medium text-lg ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t.emptyLib}</p>
             </div>
           ) : (
-            results.map((item, index) => (
-              <ContentCard key={index} item={item} handleDelete={handleDelete} isDark={isDark} t={t} />
-            ))
+            results.map((item, index) => <ContentCard key={index} item={item} handleDelete={handleDelete} isDark={isDark} t={t} />)
           )}
         </div>
       </div>
