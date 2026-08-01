@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "./supabase";
 import Auth from "./Auth"; 
-import { User, Settings, LogOut, Crown, Trash2, X, Lock, Globe, Palette, Copy, CheckCircle2, Instagram, Info, Loader2, Wallet, CreditCard, Shield, Sliders, ImagePlus, Mic, Activity, Target, AlignLeft, AlignJustify, Star, MessageCircle, Clapperboard } from 'lucide-react';
+import { User, Settings, LogOut, Crown, Trash2, X, Lock, Globe, Palette, Copy, CheckCircle2, Instagram, Info, Loader2, Wallet, CreditCard, Shield, Sliders, ImagePlus, Mic, Activity, Target, AlignLeft, AlignJustify, Star, MessageCircle, Clapperboard, Filter, Bot, Bell, LineChart } from 'lucide-react';
 
 // ==========================================
 // 1. قاموس الترجمة
@@ -216,7 +216,7 @@ const translations = {
 };
 
 // ==========================================
-// 2. مكون كارت المحتوى المستقل
+// 2. مكون كارت المحتوى المستقل (الاستوديو)
 // ==========================================
 const ContentCard = ({ item, handleDelete, isDark, t }) => {
   let aiData: any = null;
@@ -332,23 +332,31 @@ const ContentCard = ({ item, handleDelete, isDark, t }) => {
 // ==========================================
 // 3. مكون لوحة تحكم التقييمات الجديد (Google Reviews Dashboard)
 // ==========================================
-const ReviewsDashboard = ({ isDark }) => {
-  // حالة عزل البيانات: هل المستخدم ربط حسابه أم لا؟
+const ReviewsDashboard = ({ isDark, t }) => {
+  // حالة الربط
   const [isGoogleConnected, setIsGoogleConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
+  
+  // الفلترة
+  const [activeFilter, setActiveFilter] = useState('all');
 
-  // دالة محاكاة عملية الربط
+  // حالات الإعدادات المتقدمة (Toggles)
+  const [featCustomPrompt, setFeatCustomPrompt] = useState(false);
+  const [customPromptText, setCustomPromptText] = useState("");
+  const [featCompetitor, setFeatCompetitor] = useState(false);
+  const [competitorUrl, setCompetitorUrl] = useState("");
+  const [featAlerts, setFeatAlerts] = useState(false);
+  const [alertPhone, setAlertPhone] = useState("");
+
   const handleConnectGoogle = () => {
     setIsConnecting(true);
-    // محاكاة الاتصال بـ API جوجل لمدة ثانيتين
     setTimeout(() => {
       setIsConnecting(false);
       setIsGoogleConnected(true);
     }, 2000);
   };
 
-  // بيانات عامة تظهر فقط بعد الربط (مثال توضيحي لبيانات العميل)
-  const userReviews = [
+  const allReviews = [
     {
       id: 1,
       author: "أحمد عبدالله",
@@ -358,18 +366,18 @@ const ReviewsDashboard = ({ isDark }) => {
       tag: "الخدمة والجودة",
       date: "قبل ساعتين",
       aiReply: "نسعد بتجربتك أستاذ أحمد! شهادتك بجودة خدمتنا وسام نعتز به. نعمل حالياً على خطة لتوسعة الجلسات لراحتكم. ننتظر زيارتك القادمة قريباً!",
-      status: "published" // منشور آلياً
+      status: "published"
     },
     {
       id: 2,
       author: "سارة خالد",
-      rating: 2,
+      rating: 1,
       text: "للأسف الطلب تأخر أكثر من 45 دقيقة، ولما وصل كان الأكل بارد.",
       sentiment: "negative",
       tag: "خدمة العملاء",
       date: "أمس",
       aiReply: "نعتذر جداً عن هذا التأخير غير المقبول أستاذة سارة، وهذا ليس مستوى الخدمة الذي نعد به في فروعنا. يرجى التواصل معنا عبر الرسائل الخاصة لتعويضك وتصحيح الخطأ فوراً.",
-      status: "draft" // ينتظر مراجعة بشرية
+      status: "draft"
     },
     {
       id: 3,
@@ -377,27 +385,41 @@ const ReviewsDashboard = ({ isDark }) => {
       rating: 4,
       text: "الخدمة ممتازة! الأسعار معقولة جداً مقارنة بالمنافسين في نفس المنطقة.",
       sentiment: "positive",
-      tag: "الأسعار والجودة",
+      tag: "الأسعار",
       date: "قبل 3 أيام",
       aiReply: "بالعافية عليك أستاذ محمد! شكراً لتقييمك ونسعى دائماً لتقديم أفضل جودة بأنسب سعر لننال رضاكم.",
       status: "published"
     }
   ];
 
+  // تطبيق الفلترة
+  const displayedReviews = allReviews.filter(review => {
+    if (activeFilter === '1star') return review.rating <= 2;
+    if (activeFilter === 'drafts') return review.status === 'draft';
+    return true;
+  });
+
   const cardClass = isDark ? 'bg-slate-900/50 border-slate-700/50 text-white' : 'bg-white border-slate-200 text-slate-900';
   const textMuted = isDark ? 'text-slate-400' : 'text-slate-500';
+  const inputBg = isDark ? 'bg-slate-950/50 border-slate-700/80 text-white focus:border-blue-500/50' : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-blue-500/50';
+
+  // مكون صغير لزر التفعيل (Toggle Switch)
+  const ToggleSwitch = ({ isOn, onToggle }) => (
+    <div onClick={onToggle} className={`w-12 h-6 rounded-full flex items-center p-1 cursor-pointer transition-colors ${isOn ? 'bg-green-500' : (isDark ? 'bg-slate-700' : 'bg-slate-300')}`}>
+      <div className={`w-4 h-4 bg-white rounded-full shadow-sm transform transition-transform duration-300 ${isOn ? (t.dir === 'rtl' ? '-translate-x-6' : 'translate-x-6') : 'translate-x-0'}`}></div>
+    </div>
+  );
 
   return (
     <div className="w-full max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 animate-in fade-in zoom-in duration-500">
       
-      {/* رأس الصفحة المُحدث */}
+      {/* رأس الصفحة */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
           <h2 className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-pink-500 mb-2">إدارة السمعة وتقييمات جوجل ماب</h2>
-          <p className={`font-medium ${textMuted}`}>الرد الآلي المدعوم بالذكاء الاصطناعي (Gemini Pro) لجميع فروعك.</p>
+          <p className={`font-medium ${textMuted}`}>الرد الآلي المدعوم بالذكاء الاصطناعي لجميع فروعك.</p>
         </div>
         
-        {/* زر الربط الديناميكي */}
         {!isGoogleConnected ? (
           <button onClick={handleConnectGoogle} disabled={isConnecting} className="bg-white text-blue-600 hover:bg-slate-50 px-6 py-3 rounded-xl font-bold text-sm shadow-lg flex items-center gap-2 transition-all disabled:opacity-70">
             {isConnecting ? <Loader2 size={18} className="animate-spin" /> : <Globe size={18} />}
@@ -410,7 +432,7 @@ const ReviewsDashboard = ({ isDark }) => {
         )}
       </div>
 
-      {/* مؤشرات الأداء KPIs (تتغير حسب حالة الربط) */}
+      {/* مؤشرات الأداء */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className={`p-6 rounded-2xl border ${cardClass} flex items-center gap-4`}>
           <div className="w-14 h-14 rounded-full bg-blue-500/20 flex items-center justify-center shrink-0">
@@ -444,7 +466,6 @@ const ReviewsDashboard = ({ isDark }) => {
         </div>
       </div>
 
-      {/* منطقة عرض التقييمات أو حالة الفراغ */}
       {!isGoogleConnected ? (
         <div className={`rounded-3xl border flex flex-col items-center justify-center py-20 text-center ${cardClass}`}>
           <div className="w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4">
@@ -457,88 +478,146 @@ const ReviewsDashboard = ({ isDark }) => {
           </button>
         </div>
       ) : (
-        <div className={`rounded-3xl border overflow-hidden shadow-xl animate-in fade-in slide-in-from-bottom-4 duration-500 ${cardClass}`}>
-          <div className={`px-6 py-5 border-b flex justify-between items-center flex-wrap gap-4 ${isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-slate-50 border-slate-200'}`}>
-            <h3 className="font-bold text-lg flex items-center gap-2"><AlignJustify size={20} className="text-pink-500"/> أحدث التقييمات (الفرع الرئيسي)</h3>
-            
-            <div className="flex items-center gap-3 bg-slate-900/10 dark:bg-slate-900/50 px-4 py-2 rounded-xl">
-              <span className={`text-sm font-bold ${textMuted}`}>وضع الرد التلقائي:</span>
-              <div className="w-12 h-6 bg-green-500 rounded-full flex items-center p-1 cursor-pointer">
-                <div className={`w-4 h-4 bg-white rounded-full shadow-sm transform ${translations.ar.dir === 'rtl' ? '-translate-x-6' : 'translate-x-6'}`}></div>
-              </div>
-            </div>
+        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          
+          {/* قسم الإعدادات المتقدمة (Smart Features) */}
+          <div className={`rounded-3xl border p-6 ${cardClass}`}>
+             <h3 className="font-bold text-lg mb-6 flex items-center gap-2"><Settings size={20} className="text-purple-500"/> إعدادات الذكاء الاصطناعي المتقدمة</h3>
+             
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* قواعد الرد المخصصة */}
+                <div className={`p-5 rounded-2xl border ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
+                   <div className="flex justify-between items-center mb-3">
+                      <div className="flex items-center gap-2 font-bold text-sm"><Bot size={18} className="text-blue-500"/> تعليمات خاصة للـ AI</div>
+                      <ToggleSwitch isOn={featCustomPrompt} onToggle={() => setFeatCustomPrompt(!featCustomPrompt)} />
+                   </div>
+                   <p className={`text-xs mb-3 ${textMuted}`}>إعطاء أوامر مخصصة للذكاء الاصطناعي عند الرد (مثال: تقديم خصم للاعتذار).</p>
+                   {featCustomPrompt && (
+                     <textarea value={customPromptText} onChange={e=>setCustomPromptText(e.target.value)} placeholder="مثال: إذا كان التقييم سلبياً، اعتذر للعميل واطلب منه التواصل معنا على الرقم..." className={`w-full p-3 rounded-xl text-sm outline-none border transition-all resize-none mt-2 ${inputBg}`} rows={2}></textarea>
+                   )}
+                </div>
+
+                {/* تتبع المنافسين */}
+                <div className={`p-5 rounded-2xl border ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
+                   <div className="flex justify-between items-center mb-3">
+                      <div className="flex items-center gap-2 font-bold text-sm"><LineChart size={18} className="text-orange-500"/> تتبع المنافسين</div>
+                      <ToggleSwitch isOn={featCompetitor} onToggle={() => setFeatCompetitor(!featCompetitor)} />
+                   </div>
+                   <p className={`text-xs mb-3 ${textMuted}`}>مقارنة تقييمات متجرك بمتجر منافس على خرائط جوجل لاستخراج نقاط الضعف والقوة.</p>
+                   {featCompetitor && (
+                     <input type="url" value={competitorUrl} onChange={e=>setCompetitorUrl(e.target.value)} placeholder="ضع رابط متجر المنافس على خرائط جوجل هنا..." className={`w-full p-3 rounded-xl text-sm outline-none border transition-all mt-2 ${inputBg}`} />
+                   )}
+                </div>
+
+                {/* إشعارات الطوارئ */}
+                <div className={`p-5 rounded-2xl border md:col-span-2 ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
+                   <div className="flex justify-between items-center mb-3">
+                      <div className="flex items-center gap-2 font-bold text-sm"><Bell size={18} className="text-red-500"/> تنبيهات التقييمات السلبية (طوارئ)</div>
+                      <ToggleSwitch isOn={featAlerts} onToggle={() => setFeatAlerts(!featAlerts)} />
+                   </div>
+                   <p className={`text-xs mb-3 ${textMuted}`}>إرسال رسالة واتساب فورية لمدير الفرع عند وصول تقييم بـ 1 نجمة للتدخل السريع.</p>
+                   {featAlerts && (
+                     <div className="flex gap-2 mt-2">
+                       <input type="tel" value={alertPhone} onChange={e=>setAlertPhone(e.target.value)} placeholder="رقم الجوال لتلقي التنبيهات (مثال: 966500000000+)" className={`flex-1 p-3 rounded-xl text-sm outline-none border transition-all ${inputBg}`} dir="ltr" />
+                       <button className="bg-red-500/10 text-red-500 font-bold px-4 py-2 rounded-xl border border-red-500/20 text-sm">تفعيل التنبيه</button>
+                     </div>
+                   )}
+                </div>
+             </div>
           </div>
 
-          <div className="divide-y divide-slate-700/50">
-            {userReviews.map((review) => (
-              <div key={review.id} className={`p-6 transition-colors ${isDark ? 'hover:bg-slate-800/30' : 'hover:bg-slate-50'}`}>
-                <div className="flex flex-col lg:flex-row gap-6">
-                  
-                  {/* معلومات التقييم الأساسية */}
-                  <div className="flex-1 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-slate-400 to-slate-600 flex items-center justify-center text-white font-bold text-lg shadow-sm">
-                          {review.author.charAt(0)}
-                        </div>
-                        <div>
-                          <h4 className="font-bold text-sm">{review.author}</h4>
-                          <p className={`text-xs ${textMuted}`}>{review.date}</p>
-                        </div>
-                      </div>
-                      <div className="flex gap-1">
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} size={16} className={i < review.rating ? "fill-yellow-400 text-yellow-400" : "fill-slate-700 text-slate-700"} />
-                        ))}
-                      </div>
-                    </div>
-                    
-                    <p className="text-sm font-medium leading-relaxed">{review.text}</p>
-                    
-                    <div className="flex flex-wrap gap-2 pt-2">
-                      {review.sentiment === 'positive' && <span className="bg-green-500/10 text-green-500 text-xs font-bold px-3 py-1.5 rounded-lg border border-green-500/20">إيجابي (Positive)</span>}
-                      {review.sentiment === 'negative' && <span className="bg-red-500/10 text-red-500 text-xs font-bold px-3 py-1.5 rounded-lg border border-red-500/20">شكوى (Negative)</span>}
-                      <span className={`text-xs font-bold px-3 py-1.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-slate-100 border-slate-200 text-slate-600'}`}>
-                        التصنيف: {review.tag}
-                      </span>
-                    </div>
-                  </div>
+          {/* جدول التقييمات مع الفلتر */}
+          <div className={`rounded-3xl border overflow-hidden shadow-xl ${cardClass}`}>
+            
+            <div className={`px-6 py-5 border-b flex justify-between items-center flex-wrap gap-4 ${isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-slate-50 border-slate-200'}`}>
+              <h3 className="font-bold text-lg flex items-center gap-2"><AlignJustify size={20} className="text-pink-500"/> أحدث التقييمات</h3>
+              
+              {/* شريط الفلترة */}
+              <div className="flex items-center gap-2 bg-slate-900/10 dark:bg-slate-900/50 p-1 rounded-xl">
+                 <button onClick={()=>setActiveFilter('all')} className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${activeFilter === 'all' ? 'bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-white' : textMuted}`}>الكل</button>
+                 <button onClick={()=>setActiveFilter('drafts')} className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${activeFilter === 'drafts' ? 'bg-white dark:bg-slate-700 shadow-sm text-orange-500' : textMuted}`}>بانتظار المراجعة</button>
+                 <button onClick={()=>setActiveFilter('1star')} className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${activeFilter === '1star' ? 'bg-white dark:bg-slate-700 shadow-sm text-red-500' : textMuted}`}><Star size={12} className={activeFilter === '1star' ? 'fill-red-500' : ''}/> تقييم منخفض</button>
+              </div>
 
-                  {/* رد الذكاء الاصطناعي (تم إصلاح التداخل المرئي هنا) */}
-                  <div className={`flex-1 p-5 rounded-2xl border ${isDark ? 'bg-blue-950/20 border-blue-900/30' : 'bg-blue-50/50 border-blue-100'} flex flex-col justify-between`}>
-                    <div>
-                      {/* حاوية مرنة تفصل بين العنوان وحالة النشر لتجنب التداخل */}
-                      <div className="flex justify-between items-start mb-4 gap-2 border-b border-blue-500/10 pb-3">
-                        <h4 className={`text-xs font-black flex items-center gap-2 mt-1 ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>
-                          <Activity size={16} /> رد الـ AI المقترح:
-                        </h4>
-                        <div>
-                          {review.status === 'published' ? (
-                            <span className="text-xs font-bold text-blue-600 bg-blue-500/20 px-2.5 py-1.5 rounded-lg border border-blue-500/30 flex items-center gap-1.5 whitespace-nowrap">
-                              <CheckCircle2 size={14}/> تم النشر آلياً
-                            </span>
-                          ) : (
-                            <span className="text-xs font-bold text-orange-500 bg-orange-500/10 px-2.5 py-1.5 rounded-lg border border-orange-500/20 flex items-center gap-1.5 whitespace-nowrap">
-                              <Info size={14}/> مسودة للمراجعة
-                            </span>
-                          )}
+              <div className="flex items-center gap-3 bg-slate-900/10 dark:bg-slate-900/50 px-4 py-2 rounded-xl">
+                <span className={`text-sm font-bold ${textMuted}`}>وضع الرد التلقائي:</span>
+                <div className="w-12 h-6 bg-green-500 rounded-full flex items-center p-1 cursor-pointer">
+                  <div className={`w-4 h-4 bg-white rounded-full shadow-sm transform ${t.dir === 'rtl' ? '-translate-x-6' : 'translate-x-6'}`}></div>
+                </div>
+              </div>
+            </div>
+
+            <div className="divide-y divide-slate-700/50">
+              {displayedReviews.length === 0 ? (
+                <div className="p-10 text-center text-sm font-bold text-slate-500">لا توجد تقييمات تطابق هذا الفلتر حالياً.</div>
+              ) : (
+                displayedReviews.map((review) => (
+                <div key={review.id} className={`p-6 transition-colors ${isDark ? 'hover:bg-slate-800/30' : 'hover:bg-slate-50'}`}>
+                  <div className="flex flex-col lg:flex-row gap-6">
+                    
+                    <div className="flex-1 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-slate-400 to-slate-600 flex items-center justify-center text-white font-bold text-lg shadow-sm">
+                            {review.author.charAt(0)}
+                          </div>
+                          <div>
+                            <h4 className="font-bold text-sm">{review.author}</h4>
+                            <p className={`text-xs ${textMuted}`}>{review.date}</p>
+                          </div>
+                        </div>
+                        <div className="flex gap-1">
+                          {[...Array(5)].map((_, i) => (
+                            <Star key={i} size={16} className={i < review.rating ? "fill-yellow-400 text-yellow-400" : "fill-slate-700 text-slate-700"} />
+                          ))}
                         </div>
                       </div>
                       
-                      <p className="text-sm font-medium leading-relaxed mb-4">{review.aiReply}</p>
-                    </div>
-                    
-                    {review.status === 'draft' && (
-                      <div className="flex gap-2 mt-2">
-                        <button className="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-xl text-sm font-bold transition-all">اعتماد ونشر</button>
-                        <button className={`flex-1 py-2 rounded-xl text-sm font-bold border transition-all ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}>تعديل الرد</button>
+                      <p className="text-sm font-medium leading-relaxed">{review.text}</p>
+                      
+                      <div className="flex flex-wrap gap-2 pt-2">
+                        {review.sentiment === 'positive' && <span className="bg-green-500/10 text-green-500 text-xs font-bold px-3 py-1.5 rounded-lg border border-green-500/20">إيجابي (Positive)</span>}
+                        {review.sentiment === 'negative' && <span className="bg-red-500/10 text-red-500 text-xs font-bold px-3 py-1.5 rounded-lg border border-red-500/20">شكوى (Negative)</span>}
+                        <span className={`text-xs font-bold px-3 py-1.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-slate-100 border-slate-200 text-slate-600'}`}>
+                          التصنيف: {review.tag}
+                        </span>
                       </div>
-                    )}
-                  </div>
+                    </div>
 
+                    <div className={`flex-1 p-5 rounded-2xl border ${isDark ? 'bg-blue-950/20 border-blue-900/30' : 'bg-blue-50/50 border-blue-100'} flex flex-col justify-between`}>
+                      <div>
+                        <div className="flex justify-between items-start mb-4 gap-2 border-b border-blue-500/10 pb-3">
+                          <h4 className={`text-xs font-black flex items-center gap-2 mt-1 ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>
+                            <Bot size={16} /> رد الـ AI المقترح:
+                          </h4>
+                          <div>
+                            {review.status === 'published' ? (
+                              <span className="text-xs font-bold text-blue-600 bg-blue-500/20 px-2.5 py-1.5 rounded-lg border border-blue-500/30 flex items-center gap-1.5 whitespace-nowrap">
+                                <CheckCircle2 size={14}/> تم النشر آلياً
+                              </span>
+                            ) : (
+                              <span className="text-xs font-bold text-orange-500 bg-orange-500/10 px-2.5 py-1.5 rounded-lg border border-orange-500/20 flex items-center gap-1.5 whitespace-nowrap">
+                                <Info size={14}/> مسودة للمراجعة
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        
+                        <p className="text-sm font-medium leading-relaxed mb-4">{review.aiReply}</p>
+                      </div>
+                      
+                      {review.status === 'draft' && (
+                        <div className="flex gap-2 mt-2">
+                          <button className="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-xl text-sm font-bold transition-all">اعتماد ونشر</button>
+                          <button className={`flex-1 py-2 rounded-xl text-sm font-bold border transition-all ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}>تعديل الرد</button>
+                        </div>
+                      )}
+                    </div>
+
+                  </div>
                 </div>
-              </div>
-            ))}
+              )))}
+            </div>
           </div>
         </div>
       )}
@@ -553,8 +632,7 @@ const ReviewsDashboard = ({ isDark }) => {
 export default function App() {
   const [session, setSession] = useState<any>(null);
   
-  // حالات التنقل والقائمة (استوديو أو تقييمات)
-  const [activeView, setActiveView] = useState('studio'); // 'studio' | 'reviews'
+  const [activeView, setActiveView] = useState('studio');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const [prompt, setPrompt] = useState("");
@@ -573,11 +651,9 @@ export default function App() {
   const [isTkConnected, setIsTkConnected] = useState(false); 
   const [isConnecting, setIsConnecting] = useState(false);
 
-  // حالات رفع الصورة
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
-  // حالات النماذج الشرطية الذكية
   const [voiceGender, setVoiceGender] = useState("male_sa");
   const [adTone, setAdTone] = useState("enthusiastic");
   const [visualStyle, setVisualStyle] = useState("cinematic");
@@ -735,12 +811,10 @@ export default function App() {
   return (
     <div className={`flex min-h-screen transition-colors duration-500 font-sans ${mainBg}`} dir={t.dir}>
       
-      {/* خلفية الشاشة للجوال عند فتح القائمة */}
       {isSidebarOpen && (
         <div className="fixed inset-0 bg-black/60 z-40 md:hidden backdrop-blur-sm" onClick={() => setIsSidebarOpen(false)} />
       )}
 
-      {/* القائمة الجانبية (Sidebar) */}
       <aside className={`fixed top-0 bottom-0 ${t.dir === 'rtl' ? 'right-0 border-l' : 'left-0 border-r'} w-64 z-50 transition-transform duration-300 transform ${isSidebarOpen ? 'translate-x-0' : (t.dir === 'rtl' ? 'translate-x-full md:translate-x-0' : '-translate-x-full md:translate-x-0')} ${isDark ? 'bg-[#0f172a] border-slate-800' : 'bg-white border-slate-200'}`}>
         <div className="p-6 border-b border-inherit flex justify-between items-center">
           <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 tracking-tight">
@@ -752,19 +826,16 @@ export default function App() {
         </div>
 
         <nav className="p-4 space-y-3">
-          {/* زر الاستوديو الذكي */}
           <button onClick={() => { setActiveView('studio'); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${activeView === 'studio' ? (isDark ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : 'bg-blue-50 text-blue-600 border border-blue-200') : (isDark ? 'text-slate-400 hover:bg-slate-800 border border-transparent' : 'text-slate-600 hover:bg-slate-100 border border-transparent')}`}>
             <Star size={20} className={activeView === 'studio' ? 'text-blue-500' : ''} /> 
             {t.studioTab}
           </button>
 
-          {/* زر تقييمات جوجل */}
           <button onClick={() => { setActiveView('reviews'); setIsSidebarOpen(false); }} className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl font-bold transition-all relative group overflow-hidden border ${activeView === 'reviews' ? (isDark ? 'bg-pink-500/10 text-pink-400 border-pink-500/20' : 'bg-pink-50 text-pink-600 border-pink-200') : (isDark ? 'text-slate-400 hover:bg-slate-800 hover:border-slate-700 border-transparent' : 'text-slate-600 hover:bg-slate-100 hover:border-slate-200 border-transparent')}`}>
             <div className="flex items-center gap-3">
               <MessageCircle size={20} className={activeView === 'reviews' ? 'text-pink-500' : 'group-hover:text-pink-500 transition-colors'} /> 
               <span className="truncate">{t.reviewsTab}</span>
             </div>
-            {/* شارة Soon */}
             <span className="text-[10px] bg-gradient-to-r from-purple-500 to-pink-500 text-white px-2.5 py-1 rounded-full font-black shadow-lg animate-pulse whitespace-nowrap">
               {t.soonBadge}
             </span>
@@ -772,10 +843,8 @@ export default function App() {
         </nav>
       </aside>
 
-      {/* مساحة المحتوى الرئيسية */}
       <main className={`flex-1 flex flex-col items-center overflow-x-hidden relative min-h-screen transition-all duration-300 ${t.dir === 'rtl' ? 'md:pr-64' : 'md:pl-64'}`}>
         
-        {/* نافذة الإعدادات (نفس الكود السابق) */}
         {isSettingsOpen && (
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
             <div className={`${isDark ? 'bg-[#0f172a] border-slate-800' : 'bg-white border-slate-200'} border rounded-3xl w-full max-w-4xl max-h-[85vh] flex flex-col overflow-hidden shadow-2xl relative animate-in fade-in zoom-in duration-200`}>
@@ -919,14 +988,12 @@ export default function App() {
           </div>
         )}
 
-        {/* الشريط العلوي (Header) */}
         <div className="w-full p-4 sm:p-6 flex justify-between items-center z-30">
-          {/* زر إظهار القائمة في الجوال فقط */}
           <button onClick={() => setIsSidebarOpen(true)} className={`md:hidden p-2 rounded-lg border shadow-sm ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-slate-200 text-slate-900'}`}>
             <AlignJustify size={24} />
           </button>
           
-          <div className="hidden md:block"></div> {/* عنصر فارغ للحفاظ على توازن الـ Flex */}
+          <div className="hidden md:block"></div> 
 
           <div className="flex items-center gap-3">
             <div onClick={() => { setIsSettingsOpen(true); setActiveTab('billing'); }} className={`flex items-center gap-2 px-4 py-2 border rounded-full cursor-pointer transition-all backdrop-blur-md shadow-lg ${isDark ? 'bg-slate-900/80 border-slate-700 text-slate-300 hover:text-white hover:border-yellow-500/50' : 'bg-white border-slate-200 text-slate-700 hover:border-yellow-400'}`}>
@@ -959,11 +1026,8 @@ export default function App() {
           </div>
         </div>
 
-        {/* عرض المحتوى حسب القسم المختار (الاستوديو الذكي أو التقييمات) */}
-        
         {activeView === 'studio' && (
           <>
-            {/* كابينة التحكم الأساسية (الاستوديو) */}
             <div className={`relative z-10 backdrop-blur-2xl p-6 sm:p-10 rounded-[2.5rem] border w-full max-w-xl mx-auto mt-4 transition-colors duration-500 ${panelBg}`}>
               <div className="text-center mb-10">
                 <span className="inline-block py-1 px-3 rounded-full bg-blue-500/10 text-blue-500 text-xs font-bold mb-4 border border-blue-500/20">{t.badge}</span>
@@ -1002,7 +1066,6 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* النماذج الشرطية الديناميكية */}
                 {isVisualContent && (
                   <div className={`p-5 rounded-2xl border animate-in fade-in slide-in-from-top-2 duration-300 space-y-4 ${isDark ? 'bg-purple-900/10 border-purple-500/20' : 'bg-purple-50 border-purple-100'}`}>
                     <h3 className={`text-sm font-black mb-3 flex items-center gap-2 ${isDark ? 'text-purple-300' : 'text-purple-700'}`}>{t.visualOptionsTitle}</h3>
@@ -1064,7 +1127,6 @@ export default function App() {
                   </div>
                 )}
 
-                {/* قسم رفع الصورة */}
                 {isVisualContent && (
                   <div className="space-y-2 animate-in fade-in zoom-in duration-300">
                     <label className={`block text-sm font-bold px-1 ${labelColor}`}>{t.uploadImageTitle}</label>
@@ -1104,7 +1166,6 @@ export default function App() {
               </form>
             </div>
 
-            {/* أرشيف الحملات (الاستوديو) */}
             <div className="relative z-10 w-full max-w-5xl mt-16 mb-20 px-4">
               <div className={`flex justify-between items-center mb-8 border-b pb-4 ${isDark ? 'border-slate-800' : 'border-slate-300'}`}>
                 <h2 className={`text-2xl font-black flex items-center gap-3 ${textMain}`}>
@@ -1133,7 +1194,7 @@ export default function App() {
 
         {/* عرض لوحة تحكم التقييمات */}
         {activeView === 'reviews' && (
-          <ReviewsDashboard isDark={isDark} />
+          <ReviewsDashboard isDark={isDark} t={t} />
         )}
 
       </main>
