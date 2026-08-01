@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "./supabase";
 import Auth from "./Auth"; 
-import { User, Settings, LogOut, Crown, Trash2, X, Lock, Globe, Palette, Copy, CheckCircle2, Instagram, Info, Loader2, Wallet, CreditCard, Shield, Sliders, ImagePlus, Mic, Activity, Target, AlignLeft, AlignJustify, Star, MessageCircle, Clapperboard, Filter, Bot, Bell, LineChart, Phone, CalendarRange } from 'lucide-react';
+import { User, Settings, LogOut, Crown, Trash2, X, Lock, Globe, Palette, Copy, CheckCircle2, Instagram, Info, Loader2, Wallet, CreditCard, Shield, Sliders, ImagePlus, Mic, Activity, Target, AlignLeft, AlignJustify, Star, MessageCircle, Clapperboard, CalendarRange, Bot, Bell, LineChart, Phone } from 'lucide-react';
 
 // ==========================================
-// 1. قاموس الترجمة
+// 1. قاموس الترجمة المحدث الشامل
 // ==========================================
 const translations = {
   ar: {
@@ -13,7 +13,7 @@ const translations = {
     appDesc: "وكالتك التسويقية في مكان واحد. ألف، صمم، وانشر بضغطة زر.",
     badge: "الاستوديو الذكي المتكامل",
     studioTab: "الاستوديو الذكي",
-    reviewsTab: "تقييمات جوجل ماب",
+    reviewsTab: "تقييمات قوقل ماب",
     soonBadge: "تجريبي 🧪",
     currentPlan: "الباقة الحالية",
     freePlan: "الباقة المجانية (Free)",
@@ -108,7 +108,55 @@ const translations = {
     tabSecurity: "الأمان والمرور",
     tabConnections: "ربط الحسابات",
     insufficientCredits: "عفواً، رصيد النقاط الخاص بك لا يكفي لإنتاج هذا المحتوى. يرجى شحن محفظتك وإعادة المحاولة لتستمر في إطلاق إبداعاتك! 🚀",
-    serverError: "الاستوديو الذكي يشهد إقبالاً عالياً في هذه اللحظة! 🎬 يرجى المحاولة مرة أخرى بعد قليل.\n\n(اطمئن، لم يتم خصم أي نقاط من رصيدك)"
+    serverError: "الاستوديو الذكي يشهد إقبالاً عالياً في هذه اللحظة! 🎬 يرجى المحاولة مرة أخرى بعد قليل.\n\n(اطمئن، لم يتم خصم أي نقاط من رصيدك)",
+    
+    // إضافات قسم تقييمات قوقل ماب الجديدة
+    reviewsTitle: "إدارة تقييمات قوقل ماب",
+    reviewsSubtitle: "الرد الآلي المدعوم بالذكاء الاصطناعي لجميع فروعك.",
+    connectGoogleBtn: "ربط حساب قوقل بزنس",
+    googleConnecting: "جاري الاتصال بـ Google...",
+    googleConnected: "تم ربط حساب قوقل بنجاح",
+    totalComments: "إجمالي التعليقات",
+    avgRating: "متوسط التقييم",
+    successReplies: "الردود الآلية الناجحة",
+    noDataTitle: "لا توجد بيانات لعرضها",
+    noDataDesc: "قم بربط حساب قوقل بزنس الخاص بنشاطك التجاري لسحب التقييمات والبدء في الرد عليها آلياً.",
+    startConnect: "ابدأ الربط الآن",
+    showLabel: "عرض:",
+    filterLatest: "الأحدث",
+    filterOldest: "الأقدم",
+    filterComment: "تعليق 💬",
+    filterRating: "تقييم فقط ⭐",
+    filterCustom: "مخصص 📅",
+    advSettings: "إعدادات الذكاء الاصطناعي المتقدمة",
+    customPrompt: "تعليمات خاصة للـ AI",
+    customPromptDesc: "إعطاء أوامر مخصصة للذكاء الاصطناعي عند الرد (مثال: تقديم خصم للاعتذار).",
+    customPromptPlaceholder: "مثال: اذا الرد سلبي اعطي خصم 10%...",
+    savePrompt: "حفظ التعليمات",
+    saving: "جاري الحفظ...",
+    trackCompetitor: "تتبع المنافسين",
+    trackCompetitorDesc: "مقارنة تقييمات متجرك بمتجر منافس على خرائط قوقل لاستخراج نقاط الضعف والقوة.",
+    trackPlaceholder: "ضع رابط متجر المنافس على خرائط قوقل هنا...",
+    startTracking: "بدء التتبع",
+    tracking: "جاري التحليل...",
+    negAlerts: "تنبيهات التقييمات السلبية (طوارئ)",
+    negAlertsDesc: "إرسال رسالة واتساب فورية لمدير الفرع عند وصول تقييم بـ 1 نجمة للتدخل السريع.",
+    phonePlaceholder: "رقم الجوال لتلقي التنبيهات (مثال: 966500000000+)",
+    activateAlert: "تفعيل التنبيه",
+    activating: "جاري التفعيل...",
+    latestReviews: "أحدث التقييمات",
+    autoReplyMode: "وضع الرد التلقائي:",
+    noFilterMatch: "لا توجد تقييمات تطابق هذا الفلتر حالياً.",
+    positive: "إيجابي (Positive)",
+    negative: "شكوى (Negative)",
+    category: "التصنيف:",
+    aiReplyTitle: "رد الـ AI المقترح:",
+    autoPublished: "تم النشر آلياً",
+    draftReview: "مسودة للمراجعة",
+    csTeam: "فريق خدمة عملاء",
+    aiEmp: "موظف AI",
+    approvePublish: "اعتماد ونشر",
+    editReply: "تعديل الرد"
   },
   en: {
     dir: "ltr",
@@ -211,7 +259,55 @@ const translations = {
     tabSecurity: "Security",
     tabConnections: "Connections",
     insufficientCredits: "Sorry, your credit balance is insufficient to produce this content. Please top up your plan and try again! 🚀",
-    serverError: "Our Smart Studio is experiencing high demand right now! 🎬 Please try again in a few moments.\n\n(Rest assured, no credits were deducted)"
+    serverError: "Our Smart Studio is experiencing high demand right now! 🎬 Please try again in a few moments.\n\n(Rest assured, no credits were deducted)",
+    
+    // Google Maps Reviews Translation Section
+    reviewsTitle: "Google Maps Reviews Management",
+    reviewsSubtitle: "AI-powered automated replies for all your branches.",
+    connectGoogleBtn: "Connect Google Business",
+    googleConnecting: "Connecting to Google...",
+    googleConnected: "Google Account Connected",
+    totalComments: "Total Comments",
+    avgRating: "Average Rating",
+    successReplies: "Successful AI Replies",
+    noDataTitle: "No Data to Display",
+    noDataDesc: "Connect your Google Business account to fetch reviews and start replying automatically.",
+    startConnect: "Start Connection",
+    showLabel: "Show:",
+    filterLatest: "Latest",
+    filterOldest: "Oldest",
+    filterComment: "Comment 💬",
+    filterRating: "Rating Only ⭐",
+    filterCustom: "Custom 📅",
+    advSettings: "Advanced AI Settings",
+    customPrompt: "Custom AI Instructions",
+    customPromptDesc: "Give specific instructions to AI for replying (e.g., offer a discount for apologies).",
+    customPromptPlaceholder: "e.g., If review is negative, offer 10% discount...",
+    savePrompt: "Save Instructions",
+    saving: "Saving...",
+    trackCompetitor: "Competitor Tracking",
+    trackCompetitorDesc: "Compare your store's reviews with a competitor on Google Maps to extract strengths & weaknesses.",
+    trackPlaceholder: "Paste competitor's Google Maps link here...",
+    startTracking: "Start Tracking",
+    tracking: "Analyzing...",
+    negAlerts: "Negative Review Alerts (Emergency)",
+    negAlertsDesc: "Send an instant WhatsApp message to the branch manager when a 1-star review is received.",
+    phonePlaceholder: "Phone number for alerts (e.g., +966500000000)",
+    activateAlert: "Activate Alert",
+    activating: "Activating...",
+    latestReviews: "Latest Reviews",
+    autoReplyMode: "Auto-Reply Mode:",
+    noFilterMatch: "No reviews match this filter.",
+    positive: "Positive",
+    negative: "Complaint",
+    category: "Category:",
+    aiReplyTitle: "Suggested AI Reply:",
+    autoPublished: "Auto-Published",
+    draftReview: "Draft for Review",
+    csTeam: "Customer Service Team",
+    aiEmp: "AI Agent",
+    approvePublish: "Approve & Publish",
+    editReply: "Edit Reply"
   }
 };
 
@@ -333,14 +429,14 @@ const ContentCard = ({ item, handleDelete, isDark, t }) => {
 // 3. مكون لوحة تحكم التقييمات الجديد (Google Reviews Dashboard)
 // ==========================================
 const ReviewsDashboard = ({ isDark, t }) => {
-  // حالة الربط
   const [isGoogleConnected, setIsGoogleConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   
   // الفلترة
   const [activeFilter, setActiveFilter] = useState('latest');
+  const [customDate, setCustomDate] = useState("");
 
-  // حالات الإعدادات المتقدمة (Toggles)
+  // حالات الإعدادات المتقدمة
   const [featCustomPrompt, setFeatCustomPrompt] = useState(false);
   const [customPromptText, setCustomPromptText] = useState("");
   const [isSavingPrompt, setIsSavingPrompt] = useState(false);
@@ -353,20 +449,19 @@ const ReviewsDashboard = ({ isDark, t }) => {
   const [alertPhone, setAlertPhone] = useState("");
   const [isSavingAlert, setIsSavingAlert] = useState(false);
 
-  // منطق الموظف الرقمي المتغير (محاكى للعمل الحي)
+  // منطق الموظف الرقمي المتغير بناءً على وقت جهاز المستخدم
   const currentHour = new Date().getHours();
   const isDayShift = currentHour >= 6 && currentHour < 18;
   
-  // بيانات التوقيع والموظفين (يتم تعيينها من لوحة الإدارة لكل متجر)
+  // بيانات التوقيع والموظفين
   const storeSettings = {
     storeName: "أسماك المحيط - الفرع الرئيسي",
-    storePhone: "920000000",
     dayEmployeeName: "نورة",
     nightEmployeeName: "خالد"
   };
 
   const aiEmployeeName = isDayShift ? storeSettings.dayEmployeeName : storeSettings.nightEmployeeName;
-  const aiEmployeeAvatar = isDayShift ? "👧" : "👦";
+  const aiEmployeeAvatar = isDayShift ? "👩‍💻" : "👨‍💻";
 
   const handleConnectGoogle = () => {
     setIsConnecting(true);
@@ -378,24 +473,24 @@ const ReviewsDashboard = ({ isDark, t }) => {
 
   const handleSavePrompt = () => {
     setIsSavingPrompt(true);
-    setTimeout(() => { setIsSavingPrompt(false); alert("تم حفظ تعليمات الذكاء الاصطناعي بنجاح!"); }, 1000);
+    setTimeout(() => { setIsSavingPrompt(false); alert(t.savePrompt + " ✅"); }, 1000);
   };
 
   const handleStartTracking = () => {
-    if(!competitorUrl) return alert("الرجاء إدخال رابط المنافس أولاً");
+    if(!competitorUrl) return;
     setIsTracking(true);
-    setTimeout(() => { setIsTracking(false); alert("تم بدء التتبع.. سيظهر التحليل قريباً في لوحة التحكم."); }, 1500);
+    setTimeout(() => { setIsTracking(false); alert(t.startTracking + " ✅"); }, 1500);
   };
 
   const handleSaveAlert = () => {
-    if(!alertPhone) return alert("الرجاء إدخال رقم الجوال");
+    if(!alertPhone) return;
     setIsSavingAlert(true);
-    setTimeout(() => { setIsSavingAlert(false); alert("تم تفعيل التنبيهات على الرقم المدخل بنجاح."); }, 1000);
+    setTimeout(() => { setIsSavingAlert(false); alert(t.activateAlert + " ✅"); }, 1000);
   };
 
   const allReviews = [
     {
-      id: 1,
+      id: 3, // أحدث
       author: "أحمد عبدالله",
       rating: 5,
       text: "تجربة ممتازة جداً! المكان نظيف والخدمة سريعة، لكن الجلسات كانت زحمة شوي.",
@@ -417,7 +512,7 @@ const ReviewsDashboard = ({ isDark, t }) => {
       status: "draft"
     },
     {
-      id: 3,
+      id: 1, // أقدم
       author: "محمد فهد",
       rating: 4,
       text: "الخدمة ممتازة! الأسعار معقولة جداً مقارنة بالمنافسين في نفس المنطقة.",
@@ -426,14 +521,32 @@ const ReviewsDashboard = ({ isDark, t }) => {
       date: "قبل 3 أيام",
       aiReply: "بالعافية عليك أستاذ محمد! شكراً لتقييمك ونسعى دائماً لتقديم أفضل جودة بأنسب سعر لننال رضاكم.",
       status: "published"
+    },
+    {
+      id: 4, // تقييم صامت للتجربة
+      author: "ضيف الله اليامي",
+      rating: 5,
+      text: "",
+      sentiment: "positive",
+      tag: "تقييم عام",
+      date: "قبل 5 أيام",
+      aiReply: "شكراً لك على التقييم الرائع بـ 5 نجوم! نسعد دائماً بخدمتك ونتمنى رؤيتك قريباً.",
+      status: "published"
     }
   ];
 
-  const displayedReviews = allReviews.filter(review => {
-    if (activeFilter === 'rating') return review.rating <= 2;
-    if (activeFilter === 'comment') return review.text.length > 5;
-    return true;
-  });
+  // تطبيق منطق الفلترة الفعلي على البيانات التجريبية
+  let displayedReviews = [...allReviews];
+  
+  if (activeFilter === 'latest') {
+    displayedReviews = displayedReviews.sort((a,b) => b.id - a.id);
+  } else if (activeFilter === 'oldest') {
+    displayedReviews = displayedReviews.sort((a,b) => a.id - b.id);
+  } else if (activeFilter === 'comment') {
+    displayedReviews = displayedReviews.filter(r => r.text && r.text.length > 0);
+  } else if (activeFilter === 'rating') {
+    displayedReviews = displayedReviews.filter(r => !r.text || r.text.trim() === "");
+  }
 
   const cardClass = isDark ? 'bg-slate-900/50 border-slate-700/50 text-white' : 'bg-white border-slate-200 text-slate-900';
   const textMuted = isDark ? 'text-slate-400' : 'text-slate-500';
@@ -448,44 +561,23 @@ const ReviewsDashboard = ({ isDark, t }) => {
   return (
     <div className="w-full max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 animate-in fade-in zoom-in duration-500">
       
-      {/* رأس الصفحة مع الموظف الرقمي الجديد */}
+      {/* رأس الصفحة */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
-          <div className="flex items-center gap-3 mb-2">
-            <h2 className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-pink-500">إدارة السمعة وتقييمات جوجل ماب</h2>
-          </div>
-          <p className={`font-medium ${textMuted}`}>الرد الآلي المدعوم بالذكاء الاصطناعي لجميع فروعك.</p>
+          <h2 className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-pink-500 mb-2">{t.reviewsTitle}</h2>
+          <p className={`font-medium ${textMuted}`}>{t.reviewsSubtitle}</p>
         </div>
         
-        {/* قسم الأزرار وحالة الموظف */}
+        {/* زر الربط */}
         <div className="flex flex-col items-end gap-3 w-full md:w-auto">
           {!isGoogleConnected ? (
             <button onClick={handleConnectGoogle} disabled={isConnecting} className="bg-white text-blue-600 hover:bg-slate-50 px-6 py-3 rounded-xl font-bold text-sm shadow-lg flex items-center gap-2 transition-all disabled:opacity-70 w-full justify-center md:w-auto">
               {isConnecting ? <Loader2 size={18} className="animate-spin" /> : <Globe size={18} />}
-              {isConnecting ? "جاري الاتصال بـ Google..." : "ربط حساب Google Business"}
+              {isConnecting ? t.googleConnecting : t.connectGoogleBtn}
             </button>
           ) : (
             <div className="bg-green-500/10 text-green-500 border border-green-500/20 px-6 py-3 rounded-xl font-bold text-sm flex items-center gap-2 w-full justify-center md:w-auto">
-              <CheckCircle2 size={18} /> تم ربط حساب جوجل بنجاح
-            </div>
-          )}
-          
-          {/* الموظف الرقمي النشط بشكل احترافي */}
-          {isGoogleConnected && (
-            <div className={`flex items-center gap-4 px-5 py-3 rounded-3xl border ${isDark ? 'bg-slate-800/80 border-slate-700' : 'bg-white border-slate-200'} shadow-lg animate-in slide-in-from-right-4`}>
-              <div className="text-5xl drop-shadow-md">
-                {aiEmployeeAvatar}
-              </div>
-              <div className="flex flex-col justify-center gap-1">
-                <div className="flex items-center gap-1.5">
-                   <span className="w-2.5 h-2.5 bg-green-500 rounded-full shadow-[0_0_5px_rgba(34,197,94,0.8)] animate-pulse shrink-0"></span>
-                   <span className={`text-[11px] font-black ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>فريق خدمة عملاء | {storeSettings.storeName}</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="text-base font-black text-blue-500 dark:text-blue-400">{aiEmployeeName}</span>
-                  <span className={`text-xs font-bold text-pink-500 dark:text-pink-400`}>(موظف AI)</span>
-                </div>
-              </div>
+              <CheckCircle2 size={18} /> {t.googleConnected}
             </div>
           )}
         </div>
@@ -496,33 +588,39 @@ const ReviewsDashboard = ({ isDark, t }) => {
           <div className="w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4">
             <Globe size={40} className="text-slate-400" />
           </div>
-          <h3 className="text-xl font-bold mb-2">لا توجد بيانات لعرضها</h3>
-          <p className={`${textMuted} mb-6 max-w-sm`}>قم بربط حساب Google My Business الخاص بنشاطك التجاري لسحب التقييمات والبدء في الرد عليها آلياً.</p>
+          <h3 className="text-xl font-bold mb-2">{t.noDataTitle}</h3>
+          <p className={`${textMuted} mb-6 max-w-sm`}>{t.noDataDesc}</p>
           <button onClick={handleConnectGoogle} disabled={isConnecting} className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg transition-all flex items-center gap-2">
-            {isConnecting ? <Loader2 size={18} className="animate-spin" /> : "ابدأ الربط الآن"}
+            {isConnecting ? <Loader2 size={18} className="animate-spin" /> : t.startConnect}
           </button>
         </div>
       ) : (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
           
-          {/* شريط الفلترة أعلى المؤشرات */}
+          {/* شريط الفلترة الديناميكي أعلى المؤشرات */}
           <div className={`flex items-center gap-2 mb-2 p-2 rounded-2xl overflow-x-auto ${isDark ? 'bg-slate-900/50 border border-slate-800' : 'bg-slate-100 border border-slate-200'}`}>
-            <span className={`text-sm font-bold whitespace-nowrap px-3 ${textMuted}`}>عرض:</span>
-            <button onClick={()=>setActiveFilter('latest')} className={`px-5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${activeFilter === 'latest' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>الأحدث</button>
-            <button onClick={()=>setActiveFilter('oldest')} className={`px-5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${activeFilter === 'oldest' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>الأقدم</button>
-            <button onClick={()=>setActiveFilter('comment')} className={`px-5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${activeFilter === 'comment' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>تعليق</button>
-            <button onClick={()=>setActiveFilter('rating')} className={`px-5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${activeFilter === 'rating' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>تقييم فقط</button>
-            <button onClick={()=>setActiveFilter('custom')} className={`px-5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex items-center gap-1.5 ${activeFilter === 'custom' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}><CalendarRange size={14}/> مخصص</button>
+            <span className={`text-sm font-bold whitespace-nowrap px-3 ${textMuted}`}>{t.showLabel}</span>
+            <button onClick={()=>setActiveFilter('latest')} className={`px-5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${activeFilter === 'latest' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>{t.filterLatest}</button>
+            <button onClick={()=>setActiveFilter('oldest')} className={`px-5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${activeFilter === 'oldest' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>{t.filterOldest}</button>
+            <button onClick={()=>setActiveFilter('comment')} className={`px-5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${activeFilter === 'comment' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>{t.filterComment}</button>
+            <button onClick={()=>setActiveFilter('rating')} className={`px-5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${activeFilter === 'rating' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>{t.filterRating}</button>
+            
+            <div className="flex items-center gap-2">
+              <button onClick={()=>setActiveFilter('custom')} className={`px-5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex items-center gap-1.5 ${activeFilter === 'custom' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>{t.filterCustom}</button>
+              {activeFilter === 'custom' && (
+                <input type="date" value={customDate} onChange={e=>setCustomDate(e.target.value)} className={`h-8 px-2 rounded-lg text-xs outline-none border transition-all animate-in zoom-in duration-200 ${inputBg}`} style={{ colorScheme: isDark ? 'dark' : 'light' }} />
+              )}
+            </div>
           </div>
 
-          {/* مؤشرات الأداء بعد التعديل */}
+          {/* مؤشرات الأداء */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <div className={`p-6 rounded-2xl border ${cardClass} flex items-center gap-4 shadow-sm hover:border-blue-500/30 transition-colors`}>
               <div className="w-14 h-14 rounded-full bg-blue-500/20 flex items-center justify-center shrink-0">
                 <MessageCircle size={24} className="text-blue-500" />
               </div>
               <div>
-                <p className={`text-sm font-bold mb-1 ${textMuted}`}>إجمالي التعليقات</p>
+                <p className={`text-sm font-bold mb-1 ${textMuted}`}>{t.totalComments}</p>
                 <p className="text-2xl font-black">1,284</p>
               </div>
             </div>
@@ -531,9 +629,9 @@ const ReviewsDashboard = ({ isDark, t }) => {
                 <Star size={24} className="text-yellow-500" />
               </div>
               <div>
-                <p className={`text-sm font-bold mb-1 ${textMuted}`}>متوسط التقييم</p>
+                <p className={`text-sm font-bold mb-1 ${textMuted}`}>{t.avgRating}</p>
                 <p className="text-2xl font-black flex items-center gap-2">
-                  4.6 <span className="text-xs font-bold text-green-500 bg-green-500/10 px-2 py-1 rounded-full">+0.2 هذا الشهر</span>
+                  4.6 <span className="text-xs font-bold text-green-500 bg-green-500/10 px-2 py-1 rounded-full">+0.2</span>
                 </p>
               </div>
             </div>
@@ -542,30 +640,30 @@ const ReviewsDashboard = ({ isDark, t }) => {
                 <Activity size={24} className="text-pink-500" />
               </div>
               <div>
-                <p className={`text-sm font-bold mb-1 ${textMuted}`}>الردود الآلية الناجحة</p>
+                <p className={`text-sm font-bold mb-1 ${textMuted}`}>{t.successReplies}</p>
                 <p className="text-2xl font-black">98.5%</p>
               </div>
             </div>
           </div>
 
-          {/* قسم الإعدادات المتقدمة */}
+          {/* قسم الإعدادات المتقدمة (Smart Features) */}
           <div className={`rounded-3xl border p-6 ${cardClass}`}>
-             <h3 className="font-bold text-lg mb-6 flex items-center gap-2"><Settings size={20} className="text-purple-500"/> إعدادات الذكاء الاصطناعي المتقدمة</h3>
+             <h3 className="font-bold text-lg mb-6 flex items-center gap-2"><Settings size={20} className="text-purple-500"/> {t.advSettings}</h3>
              
              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className={`p-5 rounded-2xl border ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
                    <div className="flex justify-between items-center mb-3">
-                      <div className="flex items-center gap-2 font-bold text-sm"><Bot size={18} className="text-blue-500"/> تعليمات خاصة للـ AI</div>
+                      <div className="flex items-center gap-2 font-bold text-sm"><Bot size={18} className="text-blue-500"/> {t.customPrompt}</div>
                       <ToggleSwitch isOn={featCustomPrompt} onToggle={() => setFeatCustomPrompt(!featCustomPrompt)} />
                    </div>
-                   <p className={`text-xs mb-3 ${textMuted}`}>إعطاء أوامر مخصصة للذكاء الاصطناعي عند الرد (مثال: تقديم خصم للاعتذار).</p>
+                   <p className={`text-xs mb-3 ${textMuted}`}>{t.customPromptDesc}</p>
                    {featCustomPrompt && (
                      <div className="mt-3 animate-in fade-in slide-in-from-top-2 duration-300">
-                       <textarea value={customPromptText} onChange={e=>setCustomPromptText(e.target.value)} placeholder="مثال: اذا الرد سلبي اعطي خصم 10%..." className={`w-full p-3 rounded-xl text-sm outline-none border transition-all resize-none ${inputBg}`} rows={2}></textarea>
+                       <textarea value={customPromptText} onChange={e=>setCustomPromptText(e.target.value)} placeholder={t.customPromptPlaceholder} className={`w-full p-3 rounded-xl text-sm outline-none border transition-all resize-none ${inputBg}`} rows={2}></textarea>
                        <div className="flex justify-end mt-2">
                          <button onClick={handleSavePrompt} disabled={isSavingPrompt} className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${isDark ? 'bg-blue-600 hover:bg-blue-500 text-white' : 'bg-blue-100 hover:bg-blue-200 text-blue-700'}`}>
                            {isSavingPrompt ? <Loader2 size={14} className="animate-spin" /> : <CheckCircle2 size={14} />}
-                           {isSavingPrompt ? "جاري الحفظ..." : "حفظ التعليمات"}
+                           {isSavingPrompt ? t.saving : t.savePrompt}
                          </button>
                        </div>
                      </div>
@@ -574,17 +672,17 @@ const ReviewsDashboard = ({ isDark, t }) => {
 
                 <div className={`p-5 rounded-2xl border ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
                    <div className="flex justify-between items-center mb-3">
-                      <div className="flex items-center gap-2 font-bold text-sm"><LineChart size={18} className="text-orange-500"/> تتبع المنافسين</div>
+                      <div className="flex items-center gap-2 font-bold text-sm"><LineChart size={18} className="text-orange-500"/> {t.trackCompetitor}</div>
                       <ToggleSwitch isOn={featCompetitor} onToggle={() => setFeatCompetitor(!featCompetitor)} />
                    </div>
-                   <p className={`text-xs mb-3 ${textMuted}`}>مقارنة تقييمات متجرك بمتجر منافس على خرائط جوجل لاستخراج نقاط الضعف والقوة.</p>
+                   <p className={`text-xs mb-3 ${textMuted}`}>{t.trackCompetitorDesc}</p>
                    {featCompetitor && (
                      <div className="mt-3 animate-in fade-in slide-in-from-top-2 duration-300">
                        <div className="flex flex-col sm:flex-row gap-2">
-                         <input type="url" value={competitorUrl} onChange={e=>setCompetitorUrl(e.target.value)} placeholder="ضع رابط متجر المنافس على خرائط جوجل هنا..." className={`flex-1 p-3 rounded-xl text-sm outline-none border transition-all ${inputBg}`} />
+                         <input type="url" value={competitorUrl} onChange={e=>setCompetitorUrl(e.target.value)} placeholder={t.trackPlaceholder} className={`flex-1 p-3 rounded-xl text-sm outline-none border transition-all ${inputBg}`} />
                          <button onClick={handleStartTracking} disabled={isTracking} className={`px-4 py-2 rounded-xl text-sm font-bold transition-all whitespace-nowrap flex items-center justify-center gap-2 ${isDark ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30 hover:bg-orange-500/30' : 'bg-orange-50 text-orange-600 border border-orange-200 hover:bg-orange-100'}`}>
                            {isTracking ? <Loader2 size={16} className="animate-spin" /> : <Activity size={16} />}
-                           {isTracking ? "جاري التحليل..." : "بدء التتبع"}
+                           {isTracking ? t.tracking : t.startTracking}
                          </button>
                        </div>
                      </div>
@@ -593,16 +691,16 @@ const ReviewsDashboard = ({ isDark, t }) => {
 
                 <div className={`p-5 rounded-2xl border md:col-span-2 ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
                    <div className="flex justify-between items-center mb-3">
-                      <div className="flex items-center gap-2 font-bold text-sm"><Bell size={18} className="text-red-500"/> تنبيهات التقييمات السلبية (طوارئ)</div>
+                      <div className="flex items-center gap-2 font-bold text-sm"><Bell size={18} className="text-red-500"/> {t.negAlerts}</div>
                       <ToggleSwitch isOn={featAlerts} onToggle={() => setFeatAlerts(!featAlerts)} />
                    </div>
-                   <p className={`text-xs mb-3 ${textMuted}`}>إرسال رسالة واتساب فورية لمدير الفرع عند وصول تقييم بـ 1 نجمة للتدخل السريع.</p>
+                   <p className={`text-xs mb-3 ${textMuted}`}>{t.negAlertsDesc}</p>
                    {featAlerts && (
                      <div className="flex flex-col sm:flex-row gap-2 mt-3 animate-in fade-in slide-in-from-top-2 duration-300">
-                       <input type="tel" value={alertPhone} onChange={e=>setAlertPhone(e.target.value)} placeholder="رقم الجوال لتلقي التنبيهات (مثال: 966500000000+)" className={`flex-1 p-3 rounded-xl text-sm outline-none border transition-all ${inputBg}`} dir="ltr" />
+                       <input type="tel" value={alertPhone} onChange={e=>setAlertPhone(e.target.value)} placeholder={t.phonePlaceholder} className={`flex-1 p-3 rounded-xl text-sm outline-none border transition-all ${inputBg}`} dir="ltr" />
                        <button onClick={handleSaveAlert} disabled={isSavingAlert} className={`px-6 py-2 rounded-xl font-bold transition-all text-sm flex items-center justify-center gap-2 whitespace-nowrap ${isDark ? 'bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500/20' : 'bg-red-50 text-red-600 border border-red-200 hover:bg-red-100'}`}>
                          {isSavingAlert ? <Loader2 size={16} className="animate-spin" /> : null}
-                         {isSavingAlert ? "جاري التفعيل..." : "تفعيل التنبيه"}
+                         {isSavingAlert ? t.activating : t.activateAlert}
                        </button>
                      </div>
                    )}
@@ -614,10 +712,10 @@ const ReviewsDashboard = ({ isDark, t }) => {
           <div className={`rounded-3xl border overflow-hidden shadow-xl ${cardClass}`}>
             
             <div className={`px-6 py-5 border-b flex justify-between items-center flex-wrap gap-4 ${isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-slate-50 border-slate-200'}`}>
-              <h3 className="font-bold text-lg flex items-center gap-2"><AlignJustify size={20} className="text-pink-500"/> أحدث التقييمات</h3>
+              <h3 className="font-bold text-lg flex items-center gap-2"><AlignJustify size={20} className="text-pink-500"/> {t.latestReviews}</h3>
               
               <div className="flex items-center gap-3 bg-slate-900/10 dark:bg-slate-900/50 px-4 py-2 rounded-xl">
-                <span className={`text-sm font-bold ${textMuted}`}>وضع الرد التلقائي:</span>
+                <span className={`text-sm font-bold ${textMuted}`}>{t.autoReplyMode}</span>
                 <div className="w-12 h-6 bg-green-500 rounded-full flex items-center p-1 cursor-pointer">
                   <div className={`w-4 h-4 bg-white rounded-full shadow-sm transform ${t.dir === 'rtl' ? '-translate-x-6' : 'translate-x-6'}`}></div>
                 </div>
@@ -626,12 +724,13 @@ const ReviewsDashboard = ({ isDark, t }) => {
 
             <div className="divide-y divide-slate-700/50">
               {displayedReviews.length === 0 ? (
-                <div className="p-10 text-center text-sm font-bold text-slate-500">لا توجد تقييمات تطابق هذا الفلتر حالياً.</div>
+                <div className="p-10 text-center text-sm font-bold text-slate-500">{t.noFilterMatch}</div>
               ) : (
                 displayedReviews.map((review) => (
                 <div key={review.id} className={`p-6 transition-colors ${isDark ? 'hover:bg-slate-800/30' : 'hover:bg-slate-50'}`}>
                   <div className="flex flex-col lg:flex-row gap-6">
                     
+                    {/* معلومات التقييم للعميل */}
                     <div className="flex-1 space-y-3">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
@@ -650,50 +749,63 @@ const ReviewsDashboard = ({ isDark, t }) => {
                         </div>
                       </div>
                       
-                      <p className="text-sm font-medium leading-relaxed">{review.text}</p>
+                      {review.text && <p className="text-sm font-medium leading-relaxed">{review.text}</p>}
                       
                       <div className="flex flex-wrap gap-2 pt-2">
-                        {review.sentiment === 'positive' && <span className="bg-green-500/10 text-green-500 text-xs font-bold px-3 py-1.5 rounded-lg border border-green-500/20">إيجابي (Positive)</span>}
-                        {review.sentiment === 'negative' && <span className="bg-red-500/10 text-red-500 text-xs font-bold px-3 py-1.5 rounded-lg border border-red-500/20">شكوى (Negative)</span>}
+                        {review.sentiment === 'positive' && <span className="bg-green-500/10 text-green-500 text-xs font-bold px-3 py-1.5 rounded-lg border border-green-500/20">{t.positive}</span>}
+                        {review.sentiment === 'negative' && <span className="bg-red-500/10 text-red-500 text-xs font-bold px-3 py-1.5 rounded-lg border border-red-500/20">{t.negative}</span>}
                         <span className={`text-xs font-bold px-3 py-1.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-slate-100 border-slate-200 text-slate-600'}`}>
-                          التصنيف: {review.tag}
+                          {t.category} {review.tag}
                         </span>
                       </div>
                     </div>
 
-                    <div className={`flex-1 p-5 rounded-2xl border ${isDark ? 'bg-blue-950/20 border-blue-900/30' : 'bg-blue-50/50 border-blue-100'} flex flex-col justify-between`}>
+                    {/* مربع رد الذكاء الاصطناعي مع التوقيع الحي */}
+                    <div className={`flex-1 p-5 rounded-2xl border ${isDark ? 'bg-blue-950/20 border-blue-900/30' : 'bg-blue-50/50 border-blue-100'} flex flex-col justify-between relative`}>
                       <div>
                         <div className="flex justify-between items-start mb-4 gap-2 border-b border-blue-500/10 pb-3">
                           <h4 className={`text-xs font-black flex items-center gap-2 mt-1 ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>
-                            <Bot size={16} /> رد الـ AI المقترح:
+                            <Bot size={16} /> {t.aiReplyTitle}
                           </h4>
                           <div>
                             {review.status === 'published' ? (
                               <span className="text-xs font-bold text-blue-600 bg-blue-500/20 px-2.5 py-1.5 rounded-lg border border-blue-500/30 flex items-center gap-1.5 whitespace-nowrap">
-                                <CheckCircle2 size={14}/> تم النشر آلياً
+                                <CheckCircle2 size={14}/> {t.autoPublished}
                               </span>
                             ) : (
                               <span className="text-xs font-bold text-orange-500 bg-orange-500/10 px-2.5 py-1.5 rounded-lg border border-orange-500/20 flex items-center gap-1.5 whitespace-nowrap">
-                                <Info size={14}/> مسودة للمراجعة
+                                <Info size={14}/> {t.draftReview}
                               </span>
                             )}
                           </div>
                         </div>
                         
                         <p className="text-sm font-medium leading-relaxed mb-4">{review.aiReply}</p>
+                      </div>
 
-                        {/* التوقيع الحيوي التلقائي الجديد */}
-                        <div className={`mt-3 pt-3 border-t ${isDark ? 'border-slate-800' : 'border-blue-500/10'} opacity-80`}>
-                           <p className="text-xs font-bold mb-1">فريق خدمة العملاء | {storeSettings.storeName}</p>
-                           <p className="text-[10px] font-medium flex items-center gap-1"><Phone size={10} /> {storeSettings.storePhone}</p>
+                      {/* التوقيع الحيوي للموظف الرقمي أسفل كل رد */}
+                      <div className={`mt-4 pt-4 border-t ${isDark ? 'border-slate-800/80' : 'border-blue-500/10'} flex items-center`}>
+                        <div className="flex items-center gap-3 w-full">
+                          <div className={`text-4xl drop-shadow-md ${t.dir === 'rtl' ? 'ml-1' : 'mr-1'}`}>
+                            {aiEmployeeAvatar}
+                          </div>
+                          <div className="flex flex-col justify-center gap-1 flex-1">
+                            <div className="flex items-center gap-1.5">
+                               <span className="w-2 h-2 bg-green-500 rounded-full shadow-[0_0_5px_rgba(34,197,94,0.8)] animate-pulse shrink-0"></span>
+                               <span className={`text-[11px] font-black ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>{t.csTeam} | {storeSettings.storeName}</span>
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-sm font-black text-blue-500 dark:text-blue-400">{aiEmployeeName}</span>
+                              <span className={`text-xs font-bold text-pink-500 dark:text-pink-400`}>({t.aiEmp})</span>
+                            </div>
+                          </div>
                         </div>
-
                       </div>
                       
                       {review.status === 'draft' && (
                         <div className="flex gap-2 mt-4">
-                          <button className="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-xl text-sm font-bold transition-all">اعتماد ونشر</button>
-                          <button className={`flex-1 py-2 rounded-xl text-sm font-bold border transition-all ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}>تعديل الرد</button>
+                          <button className="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-xl text-sm font-bold transition-all">{t.approvePublish}</button>
+                          <button className={`flex-1 py-2 rounded-xl text-sm font-bold border transition-all ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}>{t.editReply}</button>
                         </div>
                       )}
                     </div>
@@ -919,7 +1031,7 @@ export default function App() {
             <div className="flex items-center gap-3 w-full">
               <MessageCircle size={20} className={activeView === 'reviews' ? 'text-pink-500 shrink-0' : 'group-hover:text-pink-500 transition-colors shrink-0'} /> 
               <span className="truncate flex-1 text-right">{t.reviewsTab}</span>
-              <span className={`text-[10px] bg-gradient-to-r from-purple-500 to-pink-500 text-white px-2 py-0.5 rounded-full font-black shadow-[0_0_12px_rgba(236,72,153,0.8)] border border-pink-300 animate-pulse whitespace-nowrap shrink-0 ${t.dir === 'rtl' ? 'mr-2' : 'ml-2'}`}>
+              <span className={`text-[9px] bg-gradient-to-r from-purple-500 to-pink-500 text-white px-2 py-0.5 rounded-full font-black shadow-[0_0_12px_rgba(236,72,153,0.8)] border border-pink-300 animate-pulse whitespace-nowrap shrink-0 ${t.dir === 'rtl' ? 'mr-3' : 'ml-3'}`}>
                 {t.soonBadge}
               </span>
             </div>
