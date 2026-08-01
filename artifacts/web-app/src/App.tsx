@@ -343,10 +343,15 @@ const ReviewsDashboard = ({ isDark, t }) => {
   // حالات الإعدادات المتقدمة (Toggles)
   const [featCustomPrompt, setFeatCustomPrompt] = useState(false);
   const [customPromptText, setCustomPromptText] = useState("");
+  const [isSavingPrompt, setIsSavingPrompt] = useState(false);
+
   const [featCompetitor, setFeatCompetitor] = useState(false);
   const [competitorUrl, setCompetitorUrl] = useState("");
+  const [isTracking, setIsTracking] = useState(false);
+
   const [featAlerts, setFeatAlerts] = useState(false);
   const [alertPhone, setAlertPhone] = useState("");
+  const [isSavingAlert, setIsSavingAlert] = useState(false);
 
   const handleConnectGoogle = () => {
     setIsConnecting(true);
@@ -354,6 +359,24 @@ const ReviewsDashboard = ({ isDark, t }) => {
       setIsConnecting(false);
       setIsGoogleConnected(true);
     }, 2000);
+  };
+
+  // محاكاة أزرار الحفظ في قسم الإعدادات
+  const handleSavePrompt = () => {
+    setIsSavingPrompt(true);
+    setTimeout(() => { setIsSavingPrompt(false); alert("تم حفظ تعليمات الذكاء الاصطناعي بنجاح!"); }, 1000);
+  };
+
+  const handleStartTracking = () => {
+    if(!competitorUrl) return alert("الرجاء إدخال رابط المنافس أولاً");
+    setIsTracking(true);
+    setTimeout(() => { setIsTracking(false); alert("تم بدء التتبع.. سيظهر التحليل قريباً في لوحة التحكم."); }, 1500);
+  };
+
+  const handleSaveAlert = () => {
+    if(!alertPhone) return alert("الرجاء إدخال رقم الجوال");
+    setIsSavingAlert(true);
+    setTimeout(() => { setIsSavingAlert(false); alert("تم تفعيل التنبيهات على الرقم المدخل بنجاح."); }, 1000);
   };
 
   const allReviews = [
@@ -392,7 +415,6 @@ const ReviewsDashboard = ({ isDark, t }) => {
     }
   ];
 
-  // تطبيق الفلترة
   const displayedReviews = allReviews.filter(review => {
     if (activeFilter === '1star') return review.rating <= 2;
     if (activeFilter === 'drafts') return review.status === 'draft';
@@ -403,7 +425,6 @@ const ReviewsDashboard = ({ isDark, t }) => {
   const textMuted = isDark ? 'text-slate-400' : 'text-slate-500';
   const inputBg = isDark ? 'bg-slate-950/50 border-slate-700/80 text-white focus:border-blue-500/50' : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-blue-500/50';
 
-  // مكون صغير لزر التفعيل (Toggle Switch)
   const ToggleSwitch = ({ isOn, onToggle }) => (
     <div onClick={onToggle} className={`w-12 h-6 rounded-full flex items-center p-1 cursor-pointer transition-colors ${isOn ? 'bg-green-500' : (isDark ? 'bg-slate-700' : 'bg-slate-300')}`}>
       <div className={`w-4 h-4 bg-white rounded-full shadow-sm transform transition-transform duration-300 ${isOn ? (t.dir === 'rtl' ? '-translate-x-6' : 'translate-x-6') : 'translate-x-0'}`}></div>
@@ -480,12 +501,13 @@ const ReviewsDashboard = ({ isDark, t }) => {
       ) : (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
           
-          {/* قسم الإعدادات المتقدمة (Smart Features) */}
+          {/* قسم الإعدادات المتقدمة (Smart Features) المُحدث بأزرار الحفظ */}
           <div className={`rounded-3xl border p-6 ${cardClass}`}>
              <h3 className="font-bold text-lg mb-6 flex items-center gap-2"><Settings size={20} className="text-purple-500"/> إعدادات الذكاء الاصطناعي المتقدمة</h3>
              
              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* قواعد الرد المخصصة */}
+                
+                {/* 1. قواعد الرد المخصصة */}
                 <div className={`p-5 rounded-2xl border ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
                    <div className="flex justify-between items-center mb-3">
                       <div className="flex items-center gap-2 font-bold text-sm"><Bot size={18} className="text-blue-500"/> تعليمات خاصة للـ AI</div>
@@ -493,11 +515,19 @@ const ReviewsDashboard = ({ isDark, t }) => {
                    </div>
                    <p className={`text-xs mb-3 ${textMuted}`}>إعطاء أوامر مخصصة للذكاء الاصطناعي عند الرد (مثال: تقديم خصم للاعتذار).</p>
                    {featCustomPrompt && (
-                     <textarea value={customPromptText} onChange={e=>setCustomPromptText(e.target.value)} placeholder="مثال: إذا كان التقييم سلبياً، اعتذر للعميل واطلب منه التواصل معنا على الرقم..." className={`w-full p-3 rounded-xl text-sm outline-none border transition-all resize-none mt-2 ${inputBg}`} rows={2}></textarea>
+                     <div className="mt-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                       <textarea value={customPromptText} onChange={e=>setCustomPromptText(e.target.value)} placeholder="مثال: اذا الرد سلبي اعطي خصم 10%..." className={`w-full p-3 rounded-xl text-sm outline-none border transition-all resize-none ${inputBg}`} rows={2}></textarea>
+                       <div className="flex justify-end mt-2">
+                         <button onClick={handleSavePrompt} disabled={isSavingPrompt} className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${isDark ? 'bg-blue-600 hover:bg-blue-500 text-white' : 'bg-blue-100 hover:bg-blue-200 text-blue-700'}`}>
+                           {isSavingPrompt ? <Loader2 size={14} className="animate-spin" /> : <CheckCircle2 size={14} />}
+                           {isSavingPrompt ? "جاري الحفظ..." : "حفظ التعليمات"}
+                         </button>
+                       </div>
+                     </div>
                    )}
                 </div>
 
-                {/* تتبع المنافسين */}
+                {/* 2. تتبع المنافسين */}
                 <div className={`p-5 rounded-2xl border ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
                    <div className="flex justify-between items-center mb-3">
                       <div className="flex items-center gap-2 font-bold text-sm"><LineChart size={18} className="text-orange-500"/> تتبع المنافسين</div>
@@ -505,11 +535,19 @@ const ReviewsDashboard = ({ isDark, t }) => {
                    </div>
                    <p className={`text-xs mb-3 ${textMuted}`}>مقارنة تقييمات متجرك بمتجر منافس على خرائط جوجل لاستخراج نقاط الضعف والقوة.</p>
                    {featCompetitor && (
-                     <input type="url" value={competitorUrl} onChange={e=>setCompetitorUrl(e.target.value)} placeholder="ضع رابط متجر المنافس على خرائط جوجل هنا..." className={`w-full p-3 rounded-xl text-sm outline-none border transition-all mt-2 ${inputBg}`} />
+                     <div className="mt-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                       <div className="flex flex-col sm:flex-row gap-2">
+                         <input type="url" value={competitorUrl} onChange={e=>setCompetitorUrl(e.target.value)} placeholder="ضع رابط متجر المنافس على خرائط جوجل هنا..." className={`flex-1 p-3 rounded-xl text-sm outline-none border transition-all ${inputBg}`} />
+                         <button onClick={handleStartTracking} disabled={isTracking} className={`px-4 py-2 rounded-xl text-sm font-bold transition-all whitespace-nowrap flex items-center justify-center gap-2 ${isDark ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30 hover:bg-orange-500/30' : 'bg-orange-50 text-orange-600 border border-orange-200 hover:bg-orange-100'}`}>
+                           {isTracking ? <Loader2 size={16} className="animate-spin" /> : <Activity size={16} />}
+                           {isTracking ? "جاري التحليل..." : "بدء التتبع"}
+                         </button>
+                       </div>
+                     </div>
                    )}
                 </div>
 
-                {/* إشعارات الطوارئ */}
+                {/* 3. إشعارات الطوارئ */}
                 <div className={`p-5 rounded-2xl border md:col-span-2 ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
                    <div className="flex justify-between items-center mb-3">
                       <div className="flex items-center gap-2 font-bold text-sm"><Bell size={18} className="text-red-500"/> تنبيهات التقييمات السلبية (طوارئ)</div>
@@ -517,9 +555,12 @@ const ReviewsDashboard = ({ isDark, t }) => {
                    </div>
                    <p className={`text-xs mb-3 ${textMuted}`}>إرسال رسالة واتساب فورية لمدير الفرع عند وصول تقييم بـ 1 نجمة للتدخل السريع.</p>
                    {featAlerts && (
-                     <div className="flex gap-2 mt-2">
+                     <div className="flex flex-col sm:flex-row gap-2 mt-3 animate-in fade-in slide-in-from-top-2 duration-300">
                        <input type="tel" value={alertPhone} onChange={e=>setAlertPhone(e.target.value)} placeholder="رقم الجوال لتلقي التنبيهات (مثال: 966500000000+)" className={`flex-1 p-3 rounded-xl text-sm outline-none border transition-all ${inputBg}`} dir="ltr" />
-                       <button className="bg-red-500/10 text-red-500 font-bold px-4 py-2 rounded-xl border border-red-500/20 text-sm">تفعيل التنبيه</button>
+                       <button onClick={handleSaveAlert} disabled={isSavingAlert} className={`px-6 py-2 rounded-xl font-bold transition-all text-sm flex items-center justify-center gap-2 whitespace-nowrap ${isDark ? 'bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500/20' : 'bg-red-50 text-red-600 border border-red-200 hover:bg-red-100'}`}>
+                         {isSavingAlert ? <Loader2 size={16} className="animate-spin" /> : null}
+                         {isSavingAlert ? "جاري التفعيل..." : "تفعيل التنبيه"}
+                       </button>
                      </div>
                    )}
                 </div>
