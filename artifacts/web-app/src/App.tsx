@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "./supabase";
 import Auth from "./Auth"; 
-import { User, Settings, LogOut, Crown, Trash2, X, Lock, Globe, Palette, Copy, CheckCircle2, Instagram, Info, Loader2, Wallet, CreditCard, Shield, Sliders, ImagePlus, Mic, Activity, Target, AlignLeft, AlignJustify, Star, MessageCircle, Clapperboard, Filter, Bot, Bell, LineChart, Phone } from 'lucide-react';
+import { User, Settings, LogOut, Crown, Trash2, X, Lock, Globe, Palette, Copy, CheckCircle2, Instagram, Info, Loader2, Wallet, CreditCard, Shield, Sliders, ImagePlus, Mic, Activity, Target, AlignLeft, AlignJustify, Star, MessageCircle, Clapperboard, Filter, Bot, Bell, LineChart, Phone, CalendarRange } from 'lucide-react';
 
 // ==========================================
 // 1. قاموس الترجمة
@@ -338,7 +338,7 @@ const ReviewsDashboard = ({ isDark, t }) => {
   const [isConnecting, setIsConnecting] = useState(false);
   
   // الفلترة
-  const [activeFilter, setActiveFilter] = useState('all');
+  const [activeFilter, setActiveFilter] = useState('latest');
 
   // حالات الإعدادات المتقدمة (Toggles)
   const [featCustomPrompt, setFeatCustomPrompt] = useState(false);
@@ -353,18 +353,20 @@ const ReviewsDashboard = ({ isDark, t }) => {
   const [alertPhone, setAlertPhone] = useState("");
   const [isSavingAlert, setIsSavingAlert] = useState(false);
 
-  // منطق الموظف الرقمي المتغير بناءً على الوقت (نورة / خالد)
+  // منطق الموظف الرقمي المتغير (محاكى للعمل الحي)
   const currentHour = new Date().getHours();
   const isDayShift = currentHour >= 6 && currentHour < 18;
-  const aiEmployeeName = isDayShift ? "نورة (موظف AI)" : "خالد (موظف AI)";
-  const aiEmployeeAvatar = isDayShift ? "👩‍💻" : "👨‍💻";
-  const shiftName = isDayShift ? "الوردية الصباحية" : "الوردية المسائية";
-
-  // بيانات التوقيع (وهمية لمحاكاة متجر مسجل)
+  
+  // بيانات التوقيع والموظفين (يتم تعيينها من لوحة الإدارة لكل متجر)
   const storeSettings = {
     storeName: "أسماك المحيط - الفرع الرئيسي",
-    storePhone: "920000000"
+    storePhone: "920000000",
+    dayEmployeeName: "نورة",
+    nightEmployeeName: "خالد"
   };
+
+  const aiEmployeeName = isDayShift ? storeSettings.dayEmployeeName : storeSettings.nightEmployeeName;
+  const aiEmployeeAvatar = isDayShift ? "👧" : "👦";
 
   const handleConnectGoogle = () => {
     setIsConnecting(true);
@@ -428,8 +430,8 @@ const ReviewsDashboard = ({ isDark, t }) => {
   ];
 
   const displayedReviews = allReviews.filter(review => {
-    if (activeFilter === '1star') return review.rating <= 2;
-    if (activeFilter === 'drafts') return review.status === 'draft';
+    if (activeFilter === 'rating') return review.rating <= 2;
+    if (activeFilter === 'comment') return review.text.length > 5;
     return true;
   });
 
@@ -446,7 +448,7 @@ const ReviewsDashboard = ({ isDark, t }) => {
   return (
     <div className="w-full max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 animate-in fade-in zoom-in duration-500">
       
-      {/* رأس الصفحة مع عنصر الموظف الرقمي الحي */}
+      {/* رأس الصفحة مع الموظف الرقمي الجديد */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
           <div className="flex items-center gap-3 mb-2">
@@ -468,53 +470,24 @@ const ReviewsDashboard = ({ isDark, t }) => {
             </div>
           )}
           
-          {/* الموظف الرقمي النشط */}
+          {/* الموظف الرقمي النشط بشكل احترافي */}
           {isGoogleConnected && (
-            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'} shadow-sm animate-in slide-in-from-right-4`}>
-              <div className="relative">
-                <span className="text-xl">{aiEmployeeAvatar}</span>
-                <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white dark:border-slate-800 rounded-full"></span>
+            <div className={`flex items-center gap-4 px-5 py-3 rounded-3xl border ${isDark ? 'bg-slate-800/80 border-slate-700' : 'bg-white border-slate-200'} shadow-lg animate-in slide-in-from-right-4`}>
+              <div className="text-5xl drop-shadow-md">
+                {aiEmployeeAvatar}
               </div>
-              <div className="flex flex-col">
-                <span className={`text-[10px] font-bold ${textMuted}`}>{shiftName}</span>
-                <span className="text-xs font-black">{aiEmployeeName}</span>
+              <div className="flex flex-col justify-center gap-1">
+                <div className="flex items-center gap-1.5">
+                   <span className="w-2.5 h-2.5 bg-green-500 rounded-full shadow-[0_0_5px_rgba(34,197,94,0.8)] animate-pulse shrink-0"></span>
+                   <span className={`text-[11px] font-black ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>فريق خدمة عملاء | {storeSettings.storeName}</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-base font-black text-blue-500 dark:text-blue-400">{aiEmployeeName}</span>
+                  <span className={`text-xs font-bold text-pink-500 dark:text-pink-400`}>(موظف AI)</span>
+                </div>
               </div>
             </div>
           )}
-        </div>
-      </div>
-
-      {/* مؤشرات الأداء */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className={`p-6 rounded-2xl border ${cardClass} flex items-center gap-4`}>
-          <div className="w-14 h-14 rounded-full bg-blue-500/20 flex items-center justify-center shrink-0">
-            <MessageCircle size={24} className="text-blue-500" />
-          </div>
-          <div>
-            <p className={`text-sm font-bold mb-1 ${textMuted}`}>إجمالي التقييمات المسحوبة</p>
-            <p className="text-2xl font-black">{isGoogleConnected ? "1,284" : "0"}</p>
-          </div>
-        </div>
-        <div className={`p-6 rounded-2xl border ${cardClass} flex items-center gap-4`}>
-          <div className="w-14 h-14 rounded-full bg-yellow-500/20 flex items-center justify-center shrink-0">
-            <Star size={24} className="text-yellow-500" />
-          </div>
-          <div>
-            <p className={`text-sm font-bold mb-1 ${textMuted}`}>متوسط التقييم (جميع الفروع)</p>
-            <p className="text-2xl font-black flex items-center gap-2">
-              {isGoogleConnected ? "4.6" : "0.0"} 
-              {isGoogleConnected && <span className="text-xs font-bold text-green-500 bg-green-500/10 px-2 py-1 rounded-full">+0.2 هذا الشهر</span>}
-            </p>
-          </div>
-        </div>
-        <div className={`p-6 rounded-2xl border ${cardClass} flex items-center gap-4`}>
-          <div className="w-14 h-14 rounded-full bg-pink-500/20 flex items-center justify-center shrink-0">
-            <Activity size={24} className="text-pink-500" />
-          </div>
-          <div>
-            <p className={`text-sm font-bold mb-1 ${textMuted}`}>الردود الآلية الناجحة</p>
-            <p className="text-2xl font-black">{isGoogleConnected ? "98.5%" : "0%"}</p>
-          </div>
         </div>
       </div>
 
@@ -530,15 +503,56 @@ const ReviewsDashboard = ({ isDark, t }) => {
           </button>
         </div>
       ) : (
-        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
           
-          {/* قسم الإعدادات المتقدمة (Smart Features) */}
+          {/* شريط الفلترة أعلى المؤشرات */}
+          <div className={`flex items-center gap-2 mb-2 p-2 rounded-2xl overflow-x-auto ${isDark ? 'bg-slate-900/50 border border-slate-800' : 'bg-slate-100 border border-slate-200'}`}>
+            <span className={`text-sm font-bold whitespace-nowrap px-3 ${textMuted}`}>عرض:</span>
+            <button onClick={()=>setActiveFilter('latest')} className={`px-5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${activeFilter === 'latest' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>الأحدث</button>
+            <button onClick={()=>setActiveFilter('oldest')} className={`px-5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${activeFilter === 'oldest' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>الأقدم</button>
+            <button onClick={()=>setActiveFilter('comment')} className={`px-5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${activeFilter === 'comment' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>تعليق</button>
+            <button onClick={()=>setActiveFilter('rating')} className={`px-5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${activeFilter === 'rating' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>تقييم فقط</button>
+            <button onClick={()=>setActiveFilter('custom')} className={`px-5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex items-center gap-1.5 ${activeFilter === 'custom' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}><CalendarRange size={14}/> مخصص</button>
+          </div>
+
+          {/* مؤشرات الأداء بعد التعديل */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className={`p-6 rounded-2xl border ${cardClass} flex items-center gap-4 shadow-sm hover:border-blue-500/30 transition-colors`}>
+              <div className="w-14 h-14 rounded-full bg-blue-500/20 flex items-center justify-center shrink-0">
+                <MessageCircle size={24} className="text-blue-500" />
+              </div>
+              <div>
+                <p className={`text-sm font-bold mb-1 ${textMuted}`}>إجمالي التعليقات</p>
+                <p className="text-2xl font-black">1,284</p>
+              </div>
+            </div>
+            <div className={`p-6 rounded-2xl border ${cardClass} flex items-center gap-4 shadow-sm hover:border-yellow-500/30 transition-colors`}>
+              <div className="w-14 h-14 rounded-full bg-yellow-500/20 flex items-center justify-center shrink-0">
+                <Star size={24} className="text-yellow-500" />
+              </div>
+              <div>
+                <p className={`text-sm font-bold mb-1 ${textMuted}`}>متوسط التقييم</p>
+                <p className="text-2xl font-black flex items-center gap-2">
+                  4.6 <span className="text-xs font-bold text-green-500 bg-green-500/10 px-2 py-1 rounded-full">+0.2 هذا الشهر</span>
+                </p>
+              </div>
+            </div>
+            <div className={`p-6 rounded-2xl border ${cardClass} flex items-center gap-4 shadow-sm hover:border-pink-500/30 transition-colors`}>
+              <div className="w-14 h-14 rounded-full bg-pink-500/20 flex items-center justify-center shrink-0">
+                <Activity size={24} className="text-pink-500" />
+              </div>
+              <div>
+                <p className={`text-sm font-bold mb-1 ${textMuted}`}>الردود الآلية الناجحة</p>
+                <p className="text-2xl font-black">98.5%</p>
+              </div>
+            </div>
+          </div>
+
+          {/* قسم الإعدادات المتقدمة */}
           <div className={`rounded-3xl border p-6 ${cardClass}`}>
              <h3 className="font-bold text-lg mb-6 flex items-center gap-2"><Settings size={20} className="text-purple-500"/> إعدادات الذكاء الاصطناعي المتقدمة</h3>
              
              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                
-                {/* 1. قواعد الرد المخصصة */}
                 <div className={`p-5 rounded-2xl border ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
                    <div className="flex justify-between items-center mb-3">
                       <div className="flex items-center gap-2 font-bold text-sm"><Bot size={18} className="text-blue-500"/> تعليمات خاصة للـ AI</div>
@@ -558,7 +572,6 @@ const ReviewsDashboard = ({ isDark, t }) => {
                    )}
                 </div>
 
-                {/* 2. تتبع المنافسين */}
                 <div className={`p-5 rounded-2xl border ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
                    <div className="flex justify-between items-center mb-3">
                       <div className="flex items-center gap-2 font-bold text-sm"><LineChart size={18} className="text-orange-500"/> تتبع المنافسين</div>
@@ -578,7 +591,6 @@ const ReviewsDashboard = ({ isDark, t }) => {
                    )}
                 </div>
 
-                {/* 3. إشعارات الطوارئ */}
                 <div className={`p-5 rounded-2xl border md:col-span-2 ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
                    <div className="flex justify-between items-center mb-3">
                       <div className="flex items-center gap-2 font-bold text-sm"><Bell size={18} className="text-red-500"/> تنبيهات التقييمات السلبية (طوارئ)</div>
@@ -598,19 +610,12 @@ const ReviewsDashboard = ({ isDark, t }) => {
              </div>
           </div>
 
-          {/* جدول التقييمات مع الفلتر */}
+          {/* جدول التقييمات */}
           <div className={`rounded-3xl border overflow-hidden shadow-xl ${cardClass}`}>
             
             <div className={`px-6 py-5 border-b flex justify-between items-center flex-wrap gap-4 ${isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-slate-50 border-slate-200'}`}>
               <h3 className="font-bold text-lg flex items-center gap-2"><AlignJustify size={20} className="text-pink-500"/> أحدث التقييمات</h3>
               
-              {/* شريط الفلترة */}
-              <div className="flex items-center gap-2 bg-slate-900/10 dark:bg-slate-900/50 p-1 rounded-xl">
-                 <button onClick={()=>setActiveFilter('all')} className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${activeFilter === 'all' ? 'bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-white' : textMuted}`}>الكل</button>
-                 <button onClick={()=>setActiveFilter('drafts')} className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${activeFilter === 'drafts' ? 'bg-white dark:bg-slate-700 shadow-sm text-orange-500' : textMuted}`}>بانتظار المراجعة</button>
-                 <button onClick={()=>setActiveFilter('1star')} className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${activeFilter === '1star' ? 'bg-white dark:bg-slate-700 shadow-sm text-red-500' : textMuted}`}><Star size={12} className={activeFilter === '1star' ? 'fill-red-500' : ''}/> تقييم منخفض</button>
-              </div>
-
               <div className="flex items-center gap-3 bg-slate-900/10 dark:bg-slate-900/50 px-4 py-2 rounded-xl">
                 <span className={`text-sm font-bold ${textMuted}`}>وضع الرد التلقائي:</span>
                 <div className="w-12 h-6 bg-green-500 rounded-full flex items-center p-1 cursor-pointer">
@@ -677,7 +682,7 @@ const ReviewsDashboard = ({ isDark, t }) => {
                         
                         <p className="text-sm font-medium leading-relaxed mb-4">{review.aiReply}</p>
 
-                        {/* التوقيع الحيوي التلقائي */}
+                        {/* التوقيع الحيوي التلقائي الجديد */}
                         <div className={`mt-3 pt-3 border-t ${isDark ? 'border-slate-800' : 'border-blue-500/10'} opacity-80`}>
                            <p className="text-xs font-bold mb-1">فريق خدمة العملاء | {storeSettings.storeName}</p>
                            <p className="text-[10px] font-medium flex items-center gap-1"><Phone size={10} /> {storeSettings.storePhone}</p>
@@ -911,13 +916,13 @@ export default function App() {
           </button>
 
           <button onClick={() => { setActiveView('reviews'); setIsSidebarOpen(false); }} className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl font-bold transition-all relative group overflow-hidden border ${activeView === 'reviews' ? (isDark ? 'bg-pink-500/10 text-pink-400 border-pink-500/20' : 'bg-pink-50 text-pink-600 border-pink-200') : (isDark ? 'text-slate-400 hover:bg-slate-800 hover:border-slate-700 border-transparent' : 'text-slate-600 hover:bg-slate-100 hover:border-slate-200 border-transparent')}`}>
-            <div className="flex items-center gap-3">
-              <MessageCircle size={20} className={activeView === 'reviews' ? 'text-pink-500' : 'group-hover:text-pink-500 transition-colors'} /> 
-              <span className="truncate">{t.reviewsTab}</span>
+            <div className="flex items-center gap-3 w-full">
+              <MessageCircle size={20} className={activeView === 'reviews' ? 'text-pink-500 shrink-0' : 'group-hover:text-pink-500 transition-colors shrink-0'} /> 
+              <span className="truncate flex-1 text-right">{t.reviewsTab}</span>
+              <span className={`text-[10px] bg-gradient-to-r from-purple-500 to-pink-500 text-white px-2 py-0.5 rounded-full font-black shadow-[0_0_12px_rgba(236,72,153,0.8)] border border-pink-300 animate-pulse whitespace-nowrap shrink-0 ${t.dir === 'rtl' ? 'mr-2' : 'ml-2'}`}>
+                {t.soonBadge}
+              </span>
             </div>
-            <span className="text-[10px] bg-gradient-to-r from-purple-500 to-pink-500 text-white px-2.5 py-1 rounded-full font-black shadow-lg animate-pulse whitespace-nowrap">
-              {t.soonBadge}
-            </span>
           </button>
         </nav>
       </aside>
