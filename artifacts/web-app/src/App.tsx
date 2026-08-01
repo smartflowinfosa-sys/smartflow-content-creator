@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "./supabase";
 import Auth from "./Auth"; 
-import { User, Settings, LogOut, Crown, Trash2, X, Lock, Globe, Palette, Copy, CheckCircle2, Instagram, Info, Loader2, Wallet, CreditCard, Shield, Sliders, ImagePlus, Mic, Activity, Clapperboard, Target, AlignLeft, AlignJustify, Star, MessageCircle } from 'lucide-react';
+import { User, Settings, LogOut, Crown, Trash2, X, Lock, Globe, Palette, Copy, CheckCircle2, Instagram, Info, Loader2, Wallet, CreditCard, Shield, Sliders, ImagePlus, Mic, Activity, Target, AlignLeft, AlignJustify, Star, MessageCircle } from 'lucide-react';
 
 // ==========================================
 // 1. قاموس الترجمة المحدث
@@ -14,7 +14,7 @@ const translations = {
     badge: "الاستوديو الذكي المتكامل",
     studioTab: "الاستوديو الذكي",
     reviewsTab: "تقييمات جوجل ماب",
-    soonBadge: "قريباً 🚀",
+    soonBadge: "تجريبي 🧪",
     currentPlan: "الباقة الحالية",
     freePlan: "الباقة المجانية (Free)",
     settings: "إعدادات الحساب",
@@ -117,7 +117,7 @@ const translations = {
     badge: "Integrated Smart Studio",
     studioTab: "Smart Studio",
     reviewsTab: "Google Reviews",
-    soonBadge: "Soon 🚀",
+    soonBadge: "Beta 🧪",
     currentPlan: "Current Plan",
     freePlan: "Free Plan",
     settings: "Account Settings",
@@ -330,12 +330,181 @@ const ContentCard = ({ item, handleDelete, isDark, t }) => {
 };
 
 // ==========================================
-// 3. التطبيق الرئيسي (App) مع القائمة الجانبية
+// 3. مكون لوحة تحكم التقييمات الجديد (Google Reviews Dashboard)
+// ==========================================
+const ReviewsDashboard = ({ isDark }) => {
+  // بيانات تجريبية وهمية مبنية على سياق مطعم "أسماك المحيط"
+  const mockReviews = [
+    {
+      id: 1,
+      author: "أحمد عبدالله",
+      rating: 5,
+      text: "تجربة ممتازة جداً! السمك طازج والمكان نظيف، لكن الجلسات كانت زحمة شوي وقت العشاء.",
+      sentiment: "positive",
+      tag: "جودة الطعام",
+      date: "قبل ساعتين",
+      aiReply: "نسعد بتجربتك أستاذ أحمد! شهادتك بجودة أسماكنا وسام نعتز به. نعمل حالياً على خطة لتوسعة الجلسات لراحتكم. ننتظر زيارتك القادمة قريباً!",
+      status: "published" // منشور آلياً
+    },
+    {
+      id: 2,
+      author: "سارة خالد",
+      rating: 2,
+      text: "للأسف الطلب تأخر أكثر من 45 دقيقة، ولما وصل كان الأكل بارد.",
+      sentiment: "negative",
+      tag: "خدمة العملاء",
+      date: "أمس",
+      aiReply: "نعتذر جداً عن هذا التأخير غير المقبول أستاذة سارة، وهذا ليس مستوى الخدمة الذي نعد به في مطاعمنا. يرجى التواصل معنا عبر الرسائل الخاصة لتعويضك وتصحيح الخطأ فوراً.",
+      status: "draft" // ينتظر مراجعة بشرية
+    },
+    {
+      id: 3,
+      author: "محمد فهد",
+      rating: 4,
+      text: "الربيان المقلي خرافي! الأسعار معقولة جداً مقارنة بالمطاعم الثانية في نفس المنطقة.",
+      sentiment: "positive",
+      tag: "الأسعار والجودة",
+      date: "قبل 3 أيام",
+      aiReply: "بالعافية عليك أستاذ محمد! الربيان المقلي من أكثر أطباقنا طلباً. شكراً لتقييمك ونسعى دائماً لتقديم أفضل جودة بأنسب سعر.",
+      status: "published"
+    }
+  ];
+
+  const cardClass = isDark ? 'bg-slate-900/50 border-slate-700/50 text-white' : 'bg-white border-slate-200 text-slate-900';
+  const textMuted = isDark ? 'text-slate-400' : 'text-slate-500';
+
+  return (
+    <div className="w-full max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 animate-in fade-in zoom-in duration-500">
+      
+      {/* رأس الصفحة */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+        <div>
+          <h2 className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-pink-500 mb-2">إدارة السمعة وتقييمات الفروع</h2>
+          <p className={`font-medium ${textMuted}`}>الرد الآلي المدعوم بالذكاء الاصطناعي (Gemini Pro) لجميع فروعك.</p>
+        </div>
+        <button className="bg-white text-blue-600 hover:bg-slate-50 px-6 py-3 rounded-xl font-bold text-sm shadow-lg flex items-center gap-2 transition-all">
+          <Globe size={18} /> ربط حساب Google Business
+        </button>
+      </div>
+
+      {/* مؤشرات الأداء KPIs */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className={`p-6 rounded-2xl border ${cardClass} flex items-center gap-4`}>
+          <div className="w-14 h-14 rounded-full bg-blue-500/20 flex items-center justify-center shrink-0">
+            <MessageCircle size={24} className="text-blue-500" />
+          </div>
+          <div>
+            <p className={`text-sm font-bold mb-1 ${textMuted}`}>إجمالي التقييمات المسحوبة</p>
+            <p className="text-2xl font-black">1,284</p>
+          </div>
+        </div>
+        <div className={`p-6 rounded-2xl border ${cardClass} flex items-center gap-4`}>
+          <div className="w-14 h-14 rounded-full bg-yellow-500/20 flex items-center justify-center shrink-0">
+            <Star size={24} className="text-yellow-500" />
+          </div>
+          <div>
+            <p className={`text-sm font-bold mb-1 ${textMuted}`}>متوسط التقييم (فروع الرياض)</p>
+            <p className="text-2xl font-black flex items-center gap-2">4.6 <span className="text-xs font-bold text-green-500 bg-green-500/10 px-2 py-1 rounded-full">+0.2 هذا الشهر</span></p>
+          </div>
+        </div>
+        <div className={`p-6 rounded-2xl border ${cardClass} flex items-center gap-4`}>
+          <div className="w-14 h-14 rounded-full bg-pink-500/20 flex items-center justify-center shrink-0">
+            <Activity size={24} className="text-pink-500" />
+          </div>
+          <div>
+            <p className={`text-sm font-bold mb-1 ${textMuted}`}>الردود الآلية الناجحة</p>
+            <p className="text-2xl font-black">98.5%</p>
+          </div>
+        </div>
+      </div>
+
+      {/* جدول التقييمات */}
+      <div className={`rounded-3xl border overflow-hidden shadow-xl ${cardClass}`}>
+        <div className={`px-6 py-5 border-b flex justify-between items-center ${isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-slate-50 border-slate-200'}`}>
+          <h3 className="font-bold text-lg flex items-center gap-2"><AlignJustify size={20} className="text-pink-500"/> أحدث التقييمات (فرع أسماك المحيط - الفرع الرئيسي)</h3>
+          
+          <div className="flex items-center gap-3">
+            <span className={`text-sm font-bold ${textMuted}`}>وضع الطيار الآلي:</span>
+            <div className="w-12 h-6 bg-green-500 rounded-full flex items-center p-1 cursor-pointer">
+              <div className="w-4 h-4 bg-white rounded-full shadow-sm transform translate-x-0"></div>
+            </div>
+          </div>
+        </div>
+
+        <div className="divide-y divide-slate-700/50">
+          {mockReviews.map((review) => (
+            <div key={review.id} className={`p-6 transition-colors ${isDark ? 'hover:bg-slate-800/30' : 'hover:bg-slate-50'}`}>
+              <div className="flex flex-col lg:flex-row gap-6">
+                
+                {/* معلومات التقييم الأساسية */}
+                <div className="flex-1 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-slate-400 to-slate-600 flex items-center justify-center text-white font-bold text-lg shadow-sm">
+                        {review.author.charAt(0)}
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-sm">{review.author}</h4>
+                        <p className={`text-xs ${textMuted}`}>{review.date}</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-1">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} size={16} className={i < review.rating ? "fill-yellow-400 text-yellow-400" : "fill-slate-700 text-slate-700"} />
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <p className="text-sm font-medium leading-relaxed">{review.text}</p>
+                  
+                  <div className="flex flex-wrap gap-2 pt-2">
+                    {review.sentiment === 'positive' && <span className="bg-green-500/10 text-green-500 text-xs font-bold px-3 py-1.5 rounded-lg border border-green-500/20">إيجابي (Positive)</span>}
+                    {review.sentiment === 'negative' && <span className="bg-red-500/10 text-red-500 text-xs font-bold px-3 py-1.5 rounded-lg border border-red-500/20">شكوى (Negative)</span>}
+                    <span className={`text-xs font-bold px-3 py-1.5 rounded-lg border ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-slate-100 border-slate-200 text-slate-600'}`}>
+                      التصنيف: {review.tag}
+                    </span>
+                  </div>
+                </div>
+
+                {/* رد الذكاء الاصطناعي */}
+                <div className={`flex-1 p-5 rounded-2xl border ${isDark ? 'bg-blue-950/20 border-blue-900/30' : 'bg-blue-50/50 border-blue-100'} relative`}>
+                  <div className="absolute top-4 right-4 flex gap-2">
+                     {review.status === 'published' ? (
+                        <span className="text-xs font-bold text-blue-500 flex items-center gap-1"><CheckCircle2 size={14}/> تم النشر آلياً</span>
+                     ) : (
+                        <span className="text-xs font-bold text-orange-500 flex items-center gap-1"><Info size={14}/> مسودة للمراجعة</span>
+                     )}
+                  </div>
+                  <h4 className={`text-xs font-black mb-3 flex items-center gap-2 ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>
+                    <Activity size={16} /> رد الذكاء الاصطناعي المقترح:
+                  </h4>
+                  <p className="text-sm font-medium leading-relaxed mb-4">{review.aiReply}</p>
+                  
+                  {review.status === 'draft' && (
+                    <div className="flex gap-2 mt-4 pt-4 border-t border-blue-500/10">
+                      <button className="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-xl text-sm font-bold transition-all">اعتماد ونشر</button>
+                      <button className={`flex-1 py-2 rounded-xl text-sm font-bold border transition-all ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}>تعديل الرد</button>
+                    </div>
+                  )}
+                </div>
+
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
+// ==========================================
+// 4. التطبيق الرئيسي (App) مع القائمة الجانبية
 // ==========================================
 export default function App() {
   const [session, setSession] = useState<any>(null);
   
-  // حالات التنقل والقائمة
+  // حالات التنقل والقائمة (استوديو أو تقييمات)
   const [activeView, setActiveView] = useState('studio'); // 'studio' | 'reviews'
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -522,7 +691,7 @@ export default function App() {
         <div className="fixed inset-0 bg-black/60 z-40 md:hidden backdrop-blur-sm" onClick={() => setIsSidebarOpen(false)} />
       )}
 
-      {/* 4. القائمة الجانبية (Sidebar) */}
+      {/* القائمة الجانبية (Sidebar) */}
       <aside className={`fixed top-0 bottom-0 ${t.dir === 'rtl' ? 'right-0 border-l' : 'left-0 border-r'} w-64 z-50 transition-transform duration-300 transform ${isSidebarOpen ? 'translate-x-0' : (t.dir === 'rtl' ? 'translate-x-full md:translate-x-0' : '-translate-x-full md:translate-x-0')} ${isDark ? 'bg-[#0f172a] border-slate-800' : 'bg-white border-slate-200'}`}>
         <div className="p-6 border-b border-inherit flex justify-between items-center">
           <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 tracking-tight">
@@ -540,13 +709,13 @@ export default function App() {
             {t.studioTab}
           </button>
 
-          {/* زر تقييمات جوجل (القسم الجديد) */}
-          <button onClick={() => { alert("سيتم تفعيل لوحة تحكم التقييمات قريباً جداً!"); }} className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl font-bold transition-all relative group overflow-hidden border border-transparent ${activeView === 'reviews' ? (isDark ? 'bg-pink-500/10 text-pink-400' : 'bg-pink-50 text-pink-600') : (isDark ? 'text-slate-400 hover:bg-slate-800 hover:border-slate-700' : 'text-slate-600 hover:bg-slate-100 hover:border-slate-200')}`}>
+          {/* زر تقييمات جوجل (يفتح اللوحة الآن) */}
+          <button onClick={() => { setActiveView('reviews'); setIsSidebarOpen(false); }} className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl font-bold transition-all relative group overflow-hidden border ${activeView === 'reviews' ? (isDark ? 'bg-pink-500/10 text-pink-400 border-pink-500/20' : 'bg-pink-50 text-pink-600 border-pink-200') : (isDark ? 'text-slate-400 hover:bg-slate-800 hover:border-slate-700 border-transparent' : 'text-slate-600 hover:bg-slate-100 hover:border-slate-200 border-transparent')}`}>
             <div className="flex items-center gap-3">
-              <MessageCircle size={20} className="group-hover:text-pink-500 transition-colors" /> 
+              <MessageCircle size={20} className={activeView === 'reviews' ? 'text-pink-500' : 'group-hover:text-pink-500 transition-colors'} /> 
               <span className="truncate">{t.reviewsTab}</span>
             </div>
-            {/* شارة Soon النابضة */}
+            {/* شارة Soon */}
             <span className="text-[10px] bg-gradient-to-r from-purple-500 to-pink-500 text-white px-2.5 py-1 rounded-full font-black shadow-lg animate-pulse whitespace-nowrap">
               {t.soonBadge}
             </span>
@@ -741,10 +910,11 @@ export default function App() {
           </div>
         </div>
 
-        {/* عرض المحتوى حسب القسم المختار (الاستوديو الذكي) */}
+        {/* عرض المحتوى حسب القسم المختار (الاستوديو الذكي أو التقييمات) */}
+        
         {activeView === 'studio' && (
           <>
-            {/* كابينة التحكم الأساسية */}
+            {/* كابينة التحكم الأساسية (الاستوديو) */}
             <div className={`relative z-10 backdrop-blur-2xl p-6 sm:p-10 rounded-[2.5rem] border w-full max-w-xl mx-auto mt-4 transition-colors duration-500 ${panelBg}`}>
               <div className="text-center mb-10">
                 <span className="inline-block py-1 px-3 rounded-full bg-blue-500/10 text-blue-500 text-xs font-bold mb-4 border border-blue-500/20">{t.badge}</span>
@@ -885,7 +1055,7 @@ export default function App() {
               </form>
             </div>
 
-            {/* أرشيف الحملات */}
+            {/* أرشيف الحملات (الاستوديو) */}
             <div className="relative z-10 w-full max-w-5xl mt-16 mb-20 px-4">
               <div className={`flex justify-between items-center mb-8 border-b pb-4 ${isDark ? 'border-slate-800' : 'border-slate-300'}`}>
                 <h2 className={`text-2xl font-black flex items-center gap-3 ${textMain}`}>
@@ -911,6 +1081,12 @@ export default function App() {
             </div>
           </>
         )}
+
+        {/* عرض لوحة تحكم التقييمات */}
+        {activeView === 'reviews' && (
+          <ReviewsDashboard isDark={isDark} />
+        )}
+
       </main>
     </div>
   );
