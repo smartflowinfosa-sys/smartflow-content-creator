@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "./supabase";
 import Auth from "./Auth"; 
-import { User, Settings, LogOut, Crown, Trash2, X, Lock, Globe, Palette, Copy, CheckCircle2, Instagram, Info, Loader2, Wallet, CreditCard, Shield, Sliders, ImagePlus, Mic, Activity, Clapperboard, Target, AlignLeft, Menu, Wand2, MessageSquareStar } from 'lucide-react';
+import { User, Settings, LogOut, Crown, Trash2, X, Lock, Globe, Palette, Copy, CheckCircle2, Instagram, Info, Loader2, Wallet, CreditCard, Shield, Sliders, ImagePlus, Mic, Activity, Clapperboard, Target, AlignLeft, AlignJustify, Star, MessageCircle } from 'lucide-react';
 
 // ==========================================
 // 1. قاموس الترجمة المحدث
@@ -536,14 +536,14 @@ export default function App() {
         <nav className="p-4 space-y-3">
           {/* زر الاستوديو الذكي */}
           <button onClick={() => { setActiveView('studio'); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${activeView === 'studio' ? (isDark ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : 'bg-blue-50 text-blue-600 border border-blue-200') : (isDark ? 'text-slate-400 hover:bg-slate-800 border border-transparent' : 'text-slate-600 hover:bg-slate-100 border border-transparent')}`}>
-            <Wand2 size={20} className={activeView === 'studio' ? 'text-blue-500' : ''} /> 
+            <Star size={20} className={activeView === 'studio' ? 'text-blue-500' : ''} /> 
             {t.studioTab}
           </button>
 
           {/* زر تقييمات جوجل (القسم الجديد) */}
           <button onClick={() => { alert("سيتم تفعيل لوحة تحكم التقييمات قريباً جداً!"); }} className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl font-bold transition-all relative group overflow-hidden border border-transparent ${activeView === 'reviews' ? (isDark ? 'bg-pink-500/10 text-pink-400' : 'bg-pink-50 text-pink-600') : (isDark ? 'text-slate-400 hover:bg-slate-800 hover:border-slate-700' : 'text-slate-600 hover:bg-slate-100 hover:border-slate-200')}`}>
             <div className="flex items-center gap-3">
-              <MessageSquareStar size={20} className="group-hover:text-pink-500 transition-colors" /> 
+              <MessageCircle size={20} className="group-hover:text-pink-500 transition-colors" /> 
               <span className="truncate">{t.reviewsTab}</span>
             </div>
             {/* شارة Soon النابضة */}
@@ -705,7 +705,7 @@ export default function App() {
         <div className="w-full p-4 sm:p-6 flex justify-between items-center z-30">
           {/* زر إظهار القائمة في الجوال فقط */}
           <button onClick={() => setIsSidebarOpen(true)} className={`md:hidden p-2 rounded-lg border shadow-sm ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-slate-200 text-slate-900'}`}>
-            <Menu size={24} />
+            <AlignJustify size={24} />
           </button>
           
           <div className="hidden md:block"></div> {/* عنصر فارغ للحفاظ على توازن الـ Flex */}
