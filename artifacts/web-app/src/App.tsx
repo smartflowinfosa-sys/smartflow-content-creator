@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "./supabase";
 import Auth from "./Auth"; 
-import { User, Settings, LogOut, Crown, Trash2, X, Lock, Globe, Palette, Copy, CheckCircle2, Instagram, Info, Loader2, Wallet, CreditCard, Shield, Sliders, ImagePlus, Mic, Activity, Target, AlignLeft, AlignJustify, Star, MessageCircle, Clapperboard, Filter, Bot, Bell, LineChart } from 'lucide-react';
+import { User, Settings, LogOut, Crown, Trash2, X, Lock, Globe, Palette, Copy, CheckCircle2, Instagram, Info, Loader2, Wallet, CreditCard, Shield, Sliders, ImagePlus, Mic, Activity, Target, AlignLeft, AlignJustify, Star, MessageCircle, Clapperboard, Filter, Bot, Bell, LineChart, Phone } from 'lucide-react';
 
 // ==========================================
 // 1. قاموس الترجمة
@@ -353,6 +353,19 @@ const ReviewsDashboard = ({ isDark, t }) => {
   const [alertPhone, setAlertPhone] = useState("");
   const [isSavingAlert, setIsSavingAlert] = useState(false);
 
+  // منطق الموظف الرقمي المتغير بناءً على الوقت (نورة / خالد)
+  const currentHour = new Date().getHours();
+  const isDayShift = currentHour >= 6 && currentHour < 18;
+  const aiEmployeeName = isDayShift ? "نورة (موظف AI)" : "خالد (موظف AI)";
+  const aiEmployeeAvatar = isDayShift ? "👩‍💻" : "👨‍💻";
+  const shiftName = isDayShift ? "الوردية الصباحية" : "الوردية المسائية";
+
+  // بيانات التوقيع (وهمية لمحاكاة متجر مسجل)
+  const storeSettings = {
+    storeName: "أسماك المحيط - الفرع الرئيسي",
+    storePhone: "920000000"
+  };
+
   const handleConnectGoogle = () => {
     setIsConnecting(true);
     setTimeout(() => {
@@ -361,7 +374,6 @@ const ReviewsDashboard = ({ isDark, t }) => {
     }, 2000);
   };
 
-  // محاكاة أزرار الحفظ في قسم الإعدادات
   const handleSavePrompt = () => {
     setIsSavingPrompt(true);
     setTimeout(() => { setIsSavingPrompt(false); alert("تم حفظ تعليمات الذكاء الاصطناعي بنجاح!"); }, 1000);
@@ -434,23 +446,42 @@ const ReviewsDashboard = ({ isDark, t }) => {
   return (
     <div className="w-full max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 animate-in fade-in zoom-in duration-500">
       
-      {/* رأس الصفحة */}
+      {/* رأس الصفحة مع عنصر الموظف الرقمي الحي */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
-          <h2 className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-pink-500 mb-2">إدارة السمعة وتقييمات جوجل ماب</h2>
+          <div className="flex items-center gap-3 mb-2">
+            <h2 className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-pink-500">إدارة السمعة وتقييمات جوجل ماب</h2>
+          </div>
           <p className={`font-medium ${textMuted}`}>الرد الآلي المدعوم بالذكاء الاصطناعي لجميع فروعك.</p>
         </div>
         
-        {!isGoogleConnected ? (
-          <button onClick={handleConnectGoogle} disabled={isConnecting} className="bg-white text-blue-600 hover:bg-slate-50 px-6 py-3 rounded-xl font-bold text-sm shadow-lg flex items-center gap-2 transition-all disabled:opacity-70">
-            {isConnecting ? <Loader2 size={18} className="animate-spin" /> : <Globe size={18} />}
-            {isConnecting ? "جاري الاتصال بـ Google..." : "ربط حساب Google Business"}
-          </button>
-        ) : (
-          <div className="bg-green-500/10 text-green-500 border border-green-500/20 px-6 py-3 rounded-xl font-bold text-sm flex items-center gap-2">
-            <CheckCircle2 size={18} /> تم ربط حساب جوجل بنجاح
-          </div>
-        )}
+        {/* قسم الأزرار وحالة الموظف */}
+        <div className="flex flex-col items-end gap-3 w-full md:w-auto">
+          {!isGoogleConnected ? (
+            <button onClick={handleConnectGoogle} disabled={isConnecting} className="bg-white text-blue-600 hover:bg-slate-50 px-6 py-3 rounded-xl font-bold text-sm shadow-lg flex items-center gap-2 transition-all disabled:opacity-70 w-full justify-center md:w-auto">
+              {isConnecting ? <Loader2 size={18} className="animate-spin" /> : <Globe size={18} />}
+              {isConnecting ? "جاري الاتصال بـ Google..." : "ربط حساب Google Business"}
+            </button>
+          ) : (
+            <div className="bg-green-500/10 text-green-500 border border-green-500/20 px-6 py-3 rounded-xl font-bold text-sm flex items-center gap-2 w-full justify-center md:w-auto">
+              <CheckCircle2 size={18} /> تم ربط حساب جوجل بنجاح
+            </div>
+          )}
+          
+          {/* الموظف الرقمي النشط */}
+          {isGoogleConnected && (
+            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'} shadow-sm animate-in slide-in-from-right-4`}>
+              <div className="relative">
+                <span className="text-xl">{aiEmployeeAvatar}</span>
+                <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white dark:border-slate-800 rounded-full"></span>
+              </div>
+              <div className="flex flex-col">
+                <span className={`text-[10px] font-bold ${textMuted}`}>{shiftName}</span>
+                <span className="text-xs font-black">{aiEmployeeName}</span>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* مؤشرات الأداء */}
@@ -501,7 +532,7 @@ const ReviewsDashboard = ({ isDark, t }) => {
       ) : (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
           
-          {/* قسم الإعدادات المتقدمة (Smart Features) المُحدث بأزرار الحفظ */}
+          {/* قسم الإعدادات المتقدمة (Smart Features) */}
           <div className={`rounded-3xl border p-6 ${cardClass}`}>
              <h3 className="font-bold text-lg mb-6 flex items-center gap-2"><Settings size={20} className="text-purple-500"/> إعدادات الذكاء الاصطناعي المتقدمة</h3>
              
@@ -645,10 +676,17 @@ const ReviewsDashboard = ({ isDark, t }) => {
                         </div>
                         
                         <p className="text-sm font-medium leading-relaxed mb-4">{review.aiReply}</p>
+
+                        {/* التوقيع الحيوي التلقائي */}
+                        <div className={`mt-3 pt-3 border-t ${isDark ? 'border-slate-800' : 'border-blue-500/10'} opacity-80`}>
+                           <p className="text-xs font-bold mb-1">فريق خدمة العملاء | {storeSettings.storeName}</p>
+                           <p className="text-[10px] font-medium flex items-center gap-1"><Phone size={10} /> {storeSettings.storePhone}</p>
+                        </div>
+
                       </div>
                       
                       {review.status === 'draft' && (
-                        <div className="flex gap-2 mt-2">
+                        <div className="flex gap-2 mt-4">
                           <button className="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-xl text-sm font-bold transition-all">اعتماد ونشر</button>
                           <button className={`flex-1 py-2 rounded-xl text-sm font-bold border transition-all ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}>تعديل الرد</button>
                         </div>
