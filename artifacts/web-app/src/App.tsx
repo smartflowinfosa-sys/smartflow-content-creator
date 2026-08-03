@@ -444,7 +444,7 @@ const ReviewsDashboard = ({ isDark, t }) => {
   
   // الفلترة
   const [activeFilter, setActiveFilter] = useState('latest');
-  const [timeFilter, setTimeFilter] = useState('all'); // all, today, week, month, custom
+  const [timeFilter, setTimeFilter] = useState('all');
   const [customDateFrom, setCustomDateFrom] = useState("");
   const [customDateTo, setCustomDateTo] = useState("");
 
@@ -607,39 +607,7 @@ const ReviewsDashboard = ({ isDark, t }) => {
         </div>
       </div>
 
-      {isGoogleConnected && (
-        <div className={`flex flex-wrap items-center gap-2 mb-4 p-2 rounded-2xl ${isDark ? 'bg-slate-900/50 border border-slate-800' : 'bg-slate-100 border border-slate-200'}`}>
-          <AlignJustify size={20} className="text-pink-500 shrink-0 mx-2 hidden md:block"/>
-          <span className={`text-sm font-bold whitespace-nowrap px-1 ${textMuted}`}>{t.showLabel}</span>
-          
-          {/* فلتر الوقت القائمة المنسدلة */}
-          <select value={timeFilter} onChange={e => setTimeFilter(e.target.value)} className={`px-4 py-2 rounded-xl text-xs font-bold outline-none border transition-all cursor-pointer ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-slate-200 text-slate-900'}`}>
-             <option value="all">{t.filterTimeAll}</option>
-             <option value="today">{t.filterTimeToday}</option>
-             <option value="week">{t.filterTimeWeek}</option>
-             <option value="month">{t.filterTimeMonth}</option>
-             <option value="custom">{t.filterCustom}</option>
-          </select>
-
-          {/* تحديد التاريخ من - إلى عند اختيار مخصص */}
-          {timeFilter === 'custom' && (
-             <div className="flex items-center gap-2 animate-in fade-in zoom-in duration-300">
-                <input type="date" value={customDateFrom} onChange={e=>setCustomDateFrom(e.target.value)} className={`h-8 px-2 rounded-lg text-xs outline-none border transition-all ${inputBg}`} style={{ colorScheme: isDark ? 'dark' : 'light' }} />
-                <span className={`text-xs font-bold ${textMuted}`}>-</span>
-                <input type="date" value={customDateTo} onChange={e=>setCustomDateTo(e.target.value)} className={`h-8 px-2 rounded-lg text-xs outline-none border transition-all ${inputBg}`} style={{ colorScheme: isDark ? 'dark' : 'light' }} />
-             </div>
-          )}
-
-          <div className="w-px h-6 bg-slate-300 dark:bg-slate-700 mx-1 hidden sm:block"></div>
-
-          {/* أزرار الفلترة المعتادة */}
-          <button onClick={()=>setActiveFilter('latest')} className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${activeFilter === 'latest' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>{t.filterLatest}</button>
-          <button onClick={()=>setActiveFilter('oldest')} className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${activeFilter === 'oldest' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>{t.filterOldest}</button>
-          <button onClick={()=>setActiveFilter('comment')} className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${activeFilter === 'comment' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>{t.filterComment}</button>
-          <button onClick={()=>setActiveFilter('rating')} className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${activeFilter === 'rating' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>{t.filterRating}</button>
-        </div>
-      )}
-
+      {/* مؤشرات الأداء */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className={`p-6 rounded-2xl border ${cardClass} flex items-center gap-4 shadow-sm hover:border-blue-500/30 transition-colors`}>
           <div className="w-14 h-14 rounded-full bg-blue-500/20 flex items-center justify-center shrink-0">
@@ -748,11 +716,39 @@ const ReviewsDashboard = ({ isDark, t }) => {
              </div>
           </div>
 
+          {/* جدول التقييمات */}
           <div className={`rounded-3xl border overflow-hidden shadow-xl ${cardClass}`}>
             
-            <div className={`px-6 py-5 border-b flex justify-between items-center flex-wrap gap-4 ${isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-slate-50 border-slate-200'}`}>
+            <div className={`px-6 py-5 border-b flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 ${isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-slate-50 border-slate-200'}`}>
               
-              <div className="flex items-center gap-3 bg-slate-900/10 dark:bg-slate-900/50 px-4 py-2 rounded-xl">
+              <div className="flex flex-wrap items-center gap-2 w-full xl:w-auto">
+                <span className={`text-sm font-bold whitespace-nowrap px-1 ${textMuted}`}>{t.showLabel}</span>
+                
+                <select value={timeFilter} onChange={e => setTimeFilter(e.target.value)} className={`px-4 py-2 rounded-xl text-xs font-bold outline-none border transition-all cursor-pointer ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-slate-200 text-slate-900'}`}>
+                   <option value="all">{t.filterTimeAll}</option>
+                   <option value="today">{t.filterTimeToday}</option>
+                   <option value="week">{t.filterTimeWeek}</option>
+                   <option value="month">{t.filterTimeMonth}</option>
+                   <option value="custom">{t.filterCustom}</option>
+                </select>
+
+                {timeFilter === 'custom' && (
+                   <div className="flex items-center gap-2 animate-in fade-in zoom-in duration-300">
+                      <input type="date" lang="en-US" dir="ltr" value={customDateFrom} onChange={e=>setCustomDateFrom(e.target.value)} className={`h-8 px-2 rounded-lg text-xs outline-none border transition-all ${inputBg}`} style={{ colorScheme: isDark ? 'dark' : 'light', fontFamily: 'Arial, sans-serif' }} />
+                      <span className={`text-xs font-bold ${textMuted}`}>-</span>
+                      <input type="date" lang="en-US" dir="ltr" value={customDateTo} onChange={e=>setCustomDateTo(e.target.value)} className={`h-8 px-2 rounded-lg text-xs outline-none border transition-all ${inputBg}`} style={{ colorScheme: isDark ? 'dark' : 'light', fontFamily: 'Arial, sans-serif' }} />
+                   </div>
+                )}
+
+                <div className="w-px h-6 bg-slate-300 dark:bg-slate-700 mx-1 hidden sm:block"></div>
+
+                <button onClick={()=>setActiveFilter('latest')} className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${activeFilter === 'latest' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>{t.filterLatest}</button>
+                <button onClick={()=>setActiveFilter('oldest')} className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${activeFilter === 'oldest' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>{t.filterOldest}</button>
+                <button onClick={()=>setActiveFilter('comment')} className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${activeFilter === 'comment' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>{t.filterComment}</button>
+                <button onClick={()=>setActiveFilter('rating')} className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${activeFilter === 'rating' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>{t.filterRating}</button>
+              </div>
+
+              <div className={`flex items-center gap-3 bg-slate-900/10 dark:bg-slate-900/50 px-4 py-2 rounded-xl shrink-0 ${t.dir === 'rtl' ? 'mr-auto' : 'ml-auto'}`}>
                 <span className={`text-sm font-bold ${textMuted}`}>{t.autoReplyMode}</span>
                 <div className="w-12 h-6 bg-green-500 rounded-full flex items-center p-1 cursor-pointer">
                   <div className={`w-4 h-4 bg-white rounded-full shadow-sm transform ${t.dir === 'rtl' ? '-translate-x-6' : 'translate-x-6'}`}></div>
@@ -1428,7 +1424,6 @@ export default function App() {
                   </div>
                 )}
 
-                {/* حقل الفكرة التسويقية مع زر المساعد الذكي */}
                 <div className="space-y-2">
                   <div className="flex justify-between items-center px-1 mb-2">
                     <label className={`block text-sm font-bold ${labelColor}`}>{t.idea}</label>
@@ -1450,7 +1445,7 @@ export default function App() {
                         {generatedPrompt && (
                             <>
                                 <div className={`p-3 rounded-xl border ${isDark ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-200'} mb-3`}>
-                                    <p className="text-sm font-medium leading-relaxed">{generatedPrompt}</p>
+                                    <p className={`text-sm font-medium leading-relaxed ${isDark ? 'text-white' : 'text-slate-900'}`}>{generatedPrompt}</p>
                                 </div>
                                 <button type="button" onClick={handleApplyPrompt} className="w-full bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-xl text-sm font-bold flex justify-center items-center gap-2 transition-colors">
                                     <CheckCircle2 size={16}/> {t.aiAssistApply}
