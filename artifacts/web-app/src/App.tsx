@@ -424,11 +424,9 @@ const ReviewsDashboard = ({ isDark, t }) => {
   const [isGoogleConnected, setIsGoogleConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   
-  // الفلترة
   const [activeFilter, setActiveFilter] = useState('latest');
   const [customDate, setCustomDate] = useState("");
 
-  // حالات الإعدادات المتقدمة
   const [featCustomPrompt, setFeatCustomPrompt] = useState(false);
   const [customPromptText, setCustomPromptText] = useState("");
   const [isSavingPrompt, setIsSavingPrompt] = useState(false);
@@ -441,19 +439,19 @@ const ReviewsDashboard = ({ isDark, t }) => {
   const [alertPhone, setAlertPhone] = useState("");
   const [isSavingAlert, setIsSavingAlert] = useState(false);
 
-  // منطق الموظف الرقمي المتغير بناءً على وقت جهاز المستخدم
+  // منطق الموظف الرقمي بناءً على الوقت الحالي
   const currentHour = new Date().getHours();
   const isDayShift = currentHour >= 6 && currentHour < 18;
   
-  // بيانات التوقيع والموظفين
   const storeSettings = {
-    storeName: "أسماك المحيط - الفرع الرئيسي",
+    storeName: "أسماك المحيط",
+    storePhone: "+966 50 000 0000",
     dayEmployeeName: "نورة",
     nightEmployeeName: "خالد"
   };
 
   const aiEmployeeName = isDayShift ? storeSettings.dayEmployeeName : storeSettings.nightEmployeeName;
-  const aiEmployeeAvatar = isDayShift ? "👧" : "👦"; // تم تغيير الأيقونات
+  const aiEmployeeAvatar = isDayShift ? "👩‍💻" : "👨‍💻"; 
 
   const handleConnectGoogle = () => {
     setIsConnecting(true);
@@ -493,7 +491,7 @@ const ReviewsDashboard = ({ isDark, t }) => {
       status: "published"
     },
     {
-      id: 5, // تعليق جديد يحتوي على صورة
+      id: 5, 
       author: "سالم الدوسري",
       rating: 5,
       text: "طعم السمك خيالي والطبخ ممتاز جداً. هذه صور لطلبنا اليوم.",
@@ -501,7 +499,7 @@ const ReviewsDashboard = ({ isDark, t }) => {
       sentiment: "positive",
       tag: "جودة الطعام",
       date: "قبل ٤ ساعات",
-      aiReply: "ألف صحة وعافية أستاذ سالم! صور تفتح النفس 😍، سعداء جداً أن الطبخ نال على إعجابك ونتطلع لزيارتك القادمة.",
+      aiReply: "ألف صحة وعافية أستاذ سالم! صور تفتح النفس 😍، سعداء جداً أن الطبخ نال إعجابك ونتطلع لزيارتك القادمة.",
       status: "published"
     },
     {
@@ -512,7 +510,7 @@ const ReviewsDashboard = ({ isDark, t }) => {
       sentiment: "negative",
       tag: "خدمة العملاء",
       date: "أمس",
-      aiReply: "نعتذر جداً عن هذا التأخير غير المقبول أستاذة سارة، وهذا ليس مستوى الخدمة الذي نعد به في فروعنا. يرجى التواصل معنا عبر الرسائل الخاصة لتعويضك وتصحيح الخطأ فوراً.",
+      aiReply: "نعتذر جداً عن هذا التأخير غير المقبول أستاذة سارة، وهذا ليس مستوى الخدمة الذي نعد به في فروعنا. يرجى التواصل معنا عبر الرقم الموضح أدناه لتعويضك وتصحيح الخطأ فوراً.",
       status: "draft"
     },
     {
@@ -527,7 +525,7 @@ const ReviewsDashboard = ({ isDark, t }) => {
       status: "published"
     },
     {
-      id: 4, // تقييم صامت للتجربة
+      id: 4, 
       author: "ضيف الله اليامي",
       rating: 5,
       text: "",
@@ -539,9 +537,7 @@ const ReviewsDashboard = ({ isDark, t }) => {
     }
   ];
 
-  // تطبيق منطق الفلترة الفعلي على البيانات التجريبية
   let displayedReviews = [...allReviews];
-  
   if (activeFilter === 'latest') {
     displayedReviews = displayedReviews.sort((a,b) => b.id - a.id);
   } else if (activeFilter === 'oldest') {
@@ -565,14 +561,14 @@ const ReviewsDashboard = ({ isDark, t }) => {
   return (
     <div className="w-full max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 animate-in fade-in zoom-in duration-500">
       
-      {/* رأس الصفحة */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
-          <h2 className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-pink-500 mb-2">{t.reviewsTitle}</h2>
+          <div className="flex items-center gap-3 mb-2">
+            <h2 className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-pink-500">{t.reviewsTitle}</h2>
+          </div>
           <p className={`font-medium ${textMuted}`}>{t.reviewsSubtitle}</p>
         </div>
         
-        {/* زر الربط */}
         <div className="flex flex-col items-end gap-3 w-full md:w-auto">
           {!isGoogleConnected ? (
             <button onClick={handleConnectGoogle} disabled={isConnecting} className="bg-white text-blue-600 hover:bg-slate-50 px-6 py-3 rounded-xl font-bold text-sm shadow-lg flex items-center gap-2 transition-all disabled:opacity-70 w-full justify-center md:w-auto">
@@ -584,6 +580,69 @@ const ReviewsDashboard = ({ isDark, t }) => {
               <CheckCircle2 size={18} /> {t.googleConnected}
             </div>
           )}
+        </div>
+      </div>
+
+      {isGoogleConnected && (
+        <div className={`flex items-center gap-2 mb-4 p-2 rounded-2xl overflow-x-auto ${isDark ? 'bg-slate-900/50 border border-slate-800' : 'bg-slate-100 border border-slate-200'}`}>
+          <span className={`text-sm font-bold whitespace-nowrap px-3 ${textMuted}`}>{t.showLabel}</span>
+          <button onClick={()=>setActiveFilter('latest')} className={`px-5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${activeFilter === 'latest' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>{t.filterLatest}</button>
+          <button onClick={()=>setActiveFilter('oldest')} className={`px-5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${activeFilter === 'oldest' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>{t.filterOldest}</button>
+          <button onClick={()=>setActiveFilter('comment')} className={`px-5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${activeFilter === 'comment' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>{t.filterComment}</button>
+          <button onClick={()=>setActiveFilter('rating')} className={`px-5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${activeFilter === 'rating' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>{t.filterRating}</button>
+          
+          <div className="flex items-center gap-2">
+            <button onClick={()=>setActiveFilter('custom')} className={`px-5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex items-center gap-1.5 ${activeFilter === 'custom' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>
+              {t.filterCustom}
+            </button>
+            {activeFilter === 'custom' && (
+              <input 
+                 type={customDate ? "date" : "text"} 
+                 onMouseEnter={(e) => e.target.type = 'date'}
+                 onMouseLeave={(e) => { if(!e.target.value) e.target.type = 'text'; }}
+                 onFocus={(e) => e.target.type = 'date'}
+                 onBlur={(e) => { if(!e.target.value) e.target.type = 'text'; }}
+                 value={customDate} 
+                 onChange={e=>setCustomDate(e.target.value)} 
+                 className={`h-8 w-32 px-2 rounded-lg text-xs outline-none border transition-all animate-in zoom-in duration-200 cursor-pointer text-center ${inputBg}`} 
+                 style={{ colorScheme: isDark ? 'dark' : 'light' }} 
+                 placeholder=""
+              />
+            )}
+          </div>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className={`p-6 rounded-2xl border ${cardClass} flex items-center gap-4 shadow-sm hover:border-blue-500/30 transition-colors`}>
+          <div className="w-14 h-14 rounded-full bg-blue-500/20 flex items-center justify-center shrink-0">
+            <MessageCircle size={24} className="text-blue-500" />
+          </div>
+          <div>
+            <p className={`text-sm font-bold mb-1 ${textMuted}`}>{t.totalComments}</p>
+            <p className="text-2xl font-black">{isGoogleConnected ? "1,284" : "0"}</p>
+          </div>
+        </div>
+        <div className={`p-6 rounded-2xl border ${cardClass} flex items-center gap-4 shadow-sm hover:border-yellow-500/30 transition-colors`}>
+          <div className="w-14 h-14 rounded-full bg-yellow-500/20 flex items-center justify-center shrink-0">
+            <Star size={24} className="text-yellow-500" />
+          </div>
+          <div>
+            <p className={`text-sm font-bold mb-1 ${textMuted}`}>{t.avgRating}</p>
+            <p className="text-2xl font-black flex items-center gap-2">
+              {isGoogleConnected ? "4.6" : "0.0"} 
+              {isGoogleConnected && <span className="text-xs font-bold text-green-500 bg-green-500/10 px-2 py-1 rounded-full">+0.2</span>}
+            </p>
+          </div>
+        </div>
+        <div className={`p-6 rounded-2xl border ${cardClass} flex items-center gap-4 shadow-sm hover:border-pink-500/30 transition-colors`}>
+          <div className="w-14 h-14 rounded-full bg-pink-500/20 flex items-center justify-center shrink-0">
+            <Activity size={24} className="text-pink-500" />
+          </div>
+          <div>
+            <p className={`text-sm font-bold mb-1 ${textMuted}`}>{t.successReplies}</p>
+            <p className="text-2xl font-black">{isGoogleConnected ? "98.5%" : "0%"}</p>
+          </div>
         </div>
       </div>
 
@@ -601,40 +660,6 @@ const ReviewsDashboard = ({ isDark, t }) => {
       ) : (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
           
-          {/* مؤشرات الأداء */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div className={`p-6 rounded-2xl border ${cardClass} flex items-center gap-4 shadow-sm hover:border-blue-500/30 transition-colors`}>
-              <div className="w-14 h-14 rounded-full bg-blue-500/20 flex items-center justify-center shrink-0">
-                <MessageCircle size={24} className="text-blue-500" />
-              </div>
-              <div>
-                <p className={`text-sm font-bold mb-1 ${textMuted}`}>{t.totalComments}</p>
-                <p className="text-2xl font-black">1,284</p>
-              </div>
-            </div>
-            <div className={`p-6 rounded-2xl border ${cardClass} flex items-center gap-4 shadow-sm hover:border-yellow-500/30 transition-colors`}>
-              <div className="w-14 h-14 rounded-full bg-yellow-500/20 flex items-center justify-center shrink-0">
-                <Star size={24} className="text-yellow-500" />
-              </div>
-              <div>
-                <p className={`text-sm font-bold mb-1 ${textMuted}`}>{t.avgRating}</p>
-                <p className="text-2xl font-black flex items-center gap-2">
-                  4.6 <span className="text-xs font-bold text-green-500 bg-green-500/10 px-2 py-1 rounded-full">+0.2</span>
-                </p>
-              </div>
-            </div>
-            <div className={`p-6 rounded-2xl border ${cardClass} flex items-center gap-4 shadow-sm hover:border-pink-500/30 transition-colors`}>
-              <div className="w-14 h-14 rounded-full bg-pink-500/20 flex items-center justify-center shrink-0">
-                <Activity size={24} className="text-pink-500" />
-              </div>
-              <div>
-                <p className={`text-sm font-bold mb-1 ${textMuted}`}>{t.successReplies}</p>
-                <p className="text-2xl font-black">98.5%</p>
-              </div>
-            </div>
-          </div>
-
-          {/* قسم الإعدادات المتقدمة (Smart Features) */}
           <div className={`rounded-3xl border p-6 ${cardClass}`}>
              <h3 className="font-bold text-lg mb-6 flex items-center gap-2"><Settings size={20} className="text-purple-500"/> {t.advSettings}</h3>
              
@@ -696,29 +721,11 @@ const ReviewsDashboard = ({ isDark, t }) => {
              </div>
           </div>
 
-          {/* جدول التقييمات */}
           <div className={`rounded-3xl border overflow-hidden shadow-xl ${cardClass}`}>
             
-            {/* شريط الفلترة المدمج بجوار الثلاث شرطات */}
-            <div className={`px-4 py-4 border-b flex justify-between items-center flex-wrap gap-4 ${isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-slate-50 border-slate-200'}`}>
+            <div className={`px-6 py-5 border-b flex justify-between items-center flex-wrap gap-4 ${isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-slate-50 border-slate-200'}`}>
               
-              <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0">
-                 <AlignJustify size={20} className="text-pink-500 shrink-0 mx-2"/>
-                 <span className={`text-sm font-bold whitespace-nowrap px-1 ${textMuted}`}>{t.showLabel}</span>
-                 <button onClick={()=>setActiveFilter('latest')} className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${activeFilter === 'latest' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>{t.filterLatest}</button>
-                 <button onClick={()=>setActiveFilter('oldest')} className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${activeFilter === 'oldest' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>{t.filterOldest}</button>
-                 <button onClick={()=>setActiveFilter('comment')} className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${activeFilter === 'comment' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>{t.filterComment}</button>
-                 <button onClick={()=>setActiveFilter('rating')} className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${activeFilter === 'rating' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>{t.filterRating}</button>
-                 
-                 <div className="flex items-center gap-2 shrink-0">
-                   <button onClick={()=>setActiveFilter('custom')} className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap flex items-center gap-1.5 ${activeFilter === 'custom' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>{t.filterCustom} <CalendarRange size={14}/></button>
-                   {activeFilter === 'custom' && (
-                     <input type="date" value={customDate} onChange={e=>setCustomDate(e.target.value)} className={`h-8 px-2 rounded-lg text-xs outline-none border transition-all animate-in zoom-in duration-200 ${inputBg}`} style={{ colorScheme: isDark ? 'dark' : 'light' }} />
-                   )}
-                 </div>
-              </div>
-
-              <div className="flex items-center gap-3 bg-slate-900/10 dark:bg-slate-900/50 px-4 py-2 rounded-xl shrink-0">
+              <div className="flex items-center gap-3 bg-slate-900/10 dark:bg-slate-900/50 px-4 py-2 rounded-xl">
                 <span className={`text-sm font-bold ${textMuted}`}>{t.autoReplyMode}</span>
                 <div className="w-12 h-6 bg-green-500 rounded-full flex items-center p-1 cursor-pointer">
                   <div className={`w-4 h-4 bg-white rounded-full shadow-sm transform ${t.dir === 'rtl' ? '-translate-x-6' : 'translate-x-6'}`}></div>
@@ -734,7 +741,6 @@ const ReviewsDashboard = ({ isDark, t }) => {
                 <div key={review.id} className={`p-6 transition-colors ${isDark ? 'hover:bg-slate-800/30' : 'hover:bg-slate-50'}`}>
                   <div className="flex flex-col lg:flex-row gap-6">
                     
-                    {/* معلومات التقييم للعميل */}
                     <div className="flex-1 space-y-3">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
@@ -755,7 +761,6 @@ const ReviewsDashboard = ({ isDark, t }) => {
                       
                       {review.text && <p className="text-sm font-medium leading-relaxed">{review.text}</p>}
                       
-                      {/* عرض صورة التقييم إن وجدت محاكاة لقوقل ماب */}
                       {review.reviewImage && (
                         <div className="mt-2 mb-2">
                            <img src={review.reviewImage} alt="Review" className="w-24 h-24 object-cover rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm hover:scale-105 transition-transform cursor-pointer" />
@@ -771,7 +776,6 @@ const ReviewsDashboard = ({ isDark, t }) => {
                       </div>
                     </div>
 
-                    {/* مربع رد الذكاء الاصطناعي مع التوقيع الحي */}
                     <div className={`flex-1 p-5 rounded-2xl border ${isDark ? 'bg-blue-950/20 border-blue-900/30' : 'bg-blue-50/50 border-blue-100'} flex flex-col justify-between relative`}>
                       <div>
                         <div className="flex justify-between items-start mb-4 gap-2 border-b border-blue-500/10 pb-3">
@@ -794,22 +798,26 @@ const ReviewsDashboard = ({ isDark, t }) => {
                         <p className="text-sm font-medium leading-relaxed mb-4">{review.aiReply}</p>
                       </div>
 
-                      {/* التوقيع الحيوي للموظف الرقمي أسفل كل رد */}
-                      <div className={`mt-4 pt-4 border-t ${isDark ? 'border-slate-800/80' : 'border-blue-500/10'} flex items-center`}>
-                        <div className="flex items-center gap-3 w-full">
+                      <div className={`mt-4 pt-4 border-t ${isDark ? 'border-slate-800/80' : 'border-blue-500/10'} flex items-center justify-between`}>
+                        <div className="flex items-center gap-3">
                           <div className={`text-[42px] drop-shadow-md ${t.dir === 'rtl' ? 'ml-1' : 'mr-1'}`}>
                             {aiEmployeeAvatar}
                           </div>
-                          <div className="flex flex-col justify-center gap-1 flex-1">
+                          <div className="flex flex-col justify-center gap-1">
                             <div className="flex items-center gap-1.5">
                                <span className="w-2 h-2 bg-green-500 rounded-full shadow-[0_0_5px_rgba(34,197,94,0.8)] animate-pulse shrink-0"></span>
-                               <span className={`text-[11px] font-black ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>{t.csTeam} | {storeSettings.storeName}</span>
+                               <span className={`text-[11px] font-black ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>{t.csTeam} ({storeSettings.storeName})</span>
                             </div>
                             <div className="flex items-center gap-1.5">
                               <span className="text-sm font-black text-blue-500 dark:text-blue-400">{aiEmployeeName}</span>
                               <span className={`text-xs font-bold text-pink-500 dark:text-pink-400`}>({t.aiEmp})</span>
                             </div>
                           </div>
+                        </div>
+                        
+                        <div className="flex items-center gap-1.5 opacity-80 shrink-0">
+                           <span className={`text-xs font-bold ${isDark ? 'text-slate-400' : 'text-slate-500'}`} dir="ltr">{storeSettings.storePhone}</span>
+                           <Phone size={12} className={isDark ? 'text-slate-400' : 'text-slate-500'} />
                         </div>
                       </div>
                       
@@ -834,13 +842,13 @@ const ReviewsDashboard = ({ isDark, t }) => {
 
 
 // ==========================================
-// 4. التطبيق الرئيسي (App) مع القائمة الجانبية
+// 4. التطبيق الرئيسي (App)
 // ==========================================
 export default function App() {
   const [session, setSession] = useState<any>(null);
   
   const [activeView, setActiveView] = useState('studio');
-  const [isSidebarVisible, setIsSidebarVisible] = useState(true); // متحكم رئيسي للإخفاء والإظهار
+  const [isSidebarVisible, setIsSidebarVisible] = useState(true);
 
   const [prompt, setPrompt] = useState("");
   const [contentType, setContentType] = useState("promo_video");
@@ -878,7 +886,6 @@ export default function App() {
   const isVisualContent = contentType === "promo_video" || contentType === "delivery_campaign" || contentType === "product_shot";
   const isTextContent = contentType === "social_caption" || contentType === "ad_script" || contentType === "customer_response";
 
-  // إغلاق القائمة الجانبية تلقائياً في الشاشات الصغيرة عند التحميل
   useEffect(() => {
     if (window.innerWidth < 768) {
       setIsSidebarVisible(false);
@@ -1025,17 +1032,13 @@ export default function App() {
   return (
     <div className={`flex min-h-screen transition-colors duration-500 font-sans ${mainBg}`} dir={t.dir}>
       
-      {/* خلفية الشاشة للجوال عند فتح القائمة */}
       {isSidebarVisible && (
         <div className="fixed inset-0 bg-black/60 z-40 md:hidden backdrop-blur-sm" onClick={() => setIsSidebarVisible(false)} />
       )}
 
-      {/* القائمة الجانبية (Sidebar) */}
       <aside className={`fixed top-0 bottom-0 ${t.dir === 'rtl' ? 'right-0 border-l' : 'left-0 border-r'} w-64 z-50 transition-transform duration-300 transform ${isSidebarVisible ? 'translate-x-0' : (t.dir === 'rtl' ? 'translate-x-full' : '-translate-x-full')} ${isDark ? 'bg-[#0f172a] border-slate-800' : 'bg-white border-slate-200'}`}>
         
-        {/* اللوجو الجديد البارز والمتحرك */}
         <div className="p-6 border-b border-inherit flex justify-center items-center relative">
-          {/* زر إغلاق القائمة في الجوال */}
           <button onClick={() => setIsSidebarVisible(false)} className={`absolute top-4 ${t.dir === 'rtl' ? 'left-4' : 'right-4'} md:hidden p-1.5 rounded-lg transition-colors ${isDark ? 'text-slate-400 hover:bg-slate-800' : 'text-slate-500 hover:bg-slate-100'}`}>
             <X size={18} />
           </button>
@@ -1061,10 +1064,6 @@ export default function App() {
             <div className="flex items-center gap-3 w-full">
               <MessageCircle size={20} className={activeView === 'reviews' ? 'text-pink-500 shrink-0' : 'group-hover:text-pink-500 transition-colors shrink-0'} /> 
               <span className="truncate flex-1 text-right">{t.reviewsTab}</span>
-              {/* شارة تجريبي بإضاءة متوهجة */}
-              <span className={`text-[9px] bg-gradient-to-r from-purple-500 to-pink-500 text-white px-2 py-0.5 rounded-full font-black shadow-[0_0_12px_rgba(236,72,153,0.8)] border border-pink-300 animate-pulse whitespace-nowrap shrink-0 ${t.dir === 'rtl' ? 'mr-3' : 'ml-3'}`}>
-                {t.soonBadge}
-              </span>
             </div>
           </button>
         </nav>
@@ -1216,7 +1215,6 @@ export default function App() {
         )}
 
         <div className="w-full p-4 sm:p-6 flex justify-between items-center z-30">
-          {/* زر التبديل الجديد للقائمة الجانبية (يعمل على الجوال والكمبيوتر) */}
           <button onClick={() => setIsSidebarVisible(!isSidebarVisible)} className={`p-2 rounded-lg border shadow-sm transition-colors ${isDark ? 'bg-slate-800 border-slate-700 text-white hover:bg-slate-700' : 'bg-white border-slate-200 text-slate-900 hover:bg-slate-50'}`}>
             <AlignJustify size={24} />
           </button>
