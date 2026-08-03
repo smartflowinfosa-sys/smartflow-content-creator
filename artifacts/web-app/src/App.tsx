@@ -163,7 +163,7 @@ const translations = {
     aiAssistGenerate: "توليد الصياغة",
     aiAssistApply: "اعتماد واستخدام",
     pendingTitle: "حسابك قيد المراجعة ⏳",
-    pendingDesc: "شكراً لاهتمامك بـ SmartFlow! نظراً للإقبال العالي، المنصة حالياً في المرحلة التجريبية المغلقة. لقد تم إدراج حسابك بنجاح وسنقوم بإشعارك فور تفعيله لتنطلق معنا.",
+    pendingDesc: "شكراً لاهتمامك بـ SmartFlow! لقد تم إدراج حسابك بنجاح وسنقوم بإشعارك فور تفعيله لتنطلق معنا.",
     pendingRefresh: "تحديث الحالة"
   },
   en: {
@@ -322,7 +322,7 @@ const translations = {
     aiAssistGenerate: "Generate Prompt",
     aiAssistApply: "Apply & Use",
     pendingTitle: "Account Under Review ⏳",
-    pendingDesc: "Thank you for joining SmartFlow! We are currently in closed beta. Your account is on our waitlist and we will notify you as soon as it is activated.",
+    pendingDesc: "Thank you for joining SmartFlow! Your account has been successfully registered and we will notify you as soon as it is activated.",
     pendingRefresh: "Refresh Status"
   }
 };
@@ -1499,6 +1499,7 @@ export default function App() {
                   </div>
                 )}
 
+                {/* حقل الفكرة التسويقية مع زر المساعد الذكي */}
                 <div className="space-y-2">
                   <div className="flex justify-between items-center px-1 mb-2">
                     <label className={`block text-sm font-bold ${labelColor}`}>{t.idea}</label>
