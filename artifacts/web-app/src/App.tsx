@@ -14,7 +14,6 @@ const translations = {
     badge: "الاستوديو الذكي المتكامل",
     studioTab: "الاستوديو الذكي",
     reviewsTab: "تقييمات قوقل ماب",
-    soonBadge: "تجريبي 🧪",
     currentPlan: "الباقة الحالية",
     freePlan: "الباقة المجانية (Free)",
     settings: "إعدادات الحساب",
@@ -109,8 +108,6 @@ const translations = {
     tabConnections: "ربط الحسابات",
     insufficientCredits: "عفواً، رصيد النقاط الخاص بك لا يكفي لإنتاج هذا المحتوى. يرجى شحن محفظتك وإعادة المحاولة لتستمر في إطلاق إبداعاتك! 🚀",
     serverError: "الاستوديو الذكي يشهد إقبالاً عالياً في هذه اللحظة! 🎬 يرجى المحاولة مرة أخرى بعد قليل.\n\n(اطمئن، لم يتم خصم أي نقاط من رصيدك)",
-    
-    // إضافات قسم تقييمات قوقل ماب الجديدة
     reviewsTitle: "إدارة تقييمات قوقل ماب",
     reviewsSubtitle: "الرد الآلي المدعوم بالذكاء الاصطناعي لجميع فروعك.",
     connectGoogleBtn: "ربط حساب قوقل بزنس",
@@ -127,7 +124,7 @@ const translations = {
     filterOldest: "الأقدم",
     filterComment: "تعليق 💬",
     filterRating: "تقييم فقط ⭐",
-    filterCustom: "مخصص 📅",
+    filterCustom: "مخصص",
     advSettings: "إعدادات الذكاء الاصطناعي المتقدمة",
     customPrompt: "تعليمات خاصة للـ AI",
     customPromptDesc: "إعطاء أوامر مخصصة للذكاء الاصطناعي عند الرد (مثال: تقديم خصم للاعتذار).",
@@ -144,7 +141,6 @@ const translations = {
     phonePlaceholder: "رقم الجوال لتلقي التنبيهات (مثال: 966500000000+)",
     activateAlert: "تفعيل التنبيه",
     activating: "جاري التفعيل...",
-    latestReviews: "أحدث التقييمات",
     autoReplyMode: "وضع الرد التلقائي:",
     noFilterMatch: "لا توجد تقييمات تطابق هذا الفلتر حالياً.",
     positive: "إيجابي (Positive)",
@@ -165,7 +161,6 @@ const translations = {
     badge: "Integrated Smart Studio",
     studioTab: "Smart Studio",
     reviewsTab: "Google Reviews",
-    soonBadge: "Beta 🧪",
     currentPlan: "Current Plan",
     freePlan: "Free Plan",
     settings: "Account Settings",
@@ -260,8 +255,6 @@ const translations = {
     tabConnections: "Connections",
     insufficientCredits: "Sorry, your credit balance is insufficient to produce this content. Please top up your plan and try again! 🚀",
     serverError: "Our Smart Studio is experiencing high demand right now! 🎬 Please try again in a few moments.\n\n(Rest assured, no credits were deducted)",
-    
-    // Google Maps Reviews Translation Section
     reviewsTitle: "Google Maps Reviews Management",
     reviewsSubtitle: "AI-powered automated replies for all your branches.",
     connectGoogleBtn: "Connect Google Business",
@@ -278,7 +271,7 @@ const translations = {
     filterOldest: "Oldest",
     filterComment: "Comment 💬",
     filterRating: "Rating Only ⭐",
-    filterCustom: "Custom 📅",
+    filterCustom: "Custom",
     advSettings: "Advanced AI Settings",
     customPrompt: "Custom AI Instructions",
     customPromptDesc: "Give specific instructions to AI for replying (e.g., offer a discount for apologies).",
@@ -295,7 +288,6 @@ const translations = {
     phonePlaceholder: "Phone number for alerts (e.g., +966500000000)",
     activateAlert: "Activate Alert",
     activating: "Activating...",
-    latestReviews: "Latest Reviews",
     autoReplyMode: "Auto-Reply Mode:",
     noFilterMatch: "No reviews match this filter.",
     positive: "Positive",
@@ -461,7 +453,7 @@ const ReviewsDashboard = ({ isDark, t }) => {
   };
 
   const aiEmployeeName = isDayShift ? storeSettings.dayEmployeeName : storeSettings.nightEmployeeName;
-  const aiEmployeeAvatar = isDayShift ? "👩‍💻" : "👨‍💻";
+  const aiEmployeeAvatar = isDayShift ? "👧" : "👦"; // تم تغيير الأيقونات
 
   const handleConnectGoogle = () => {
     setIsConnecting(true);
@@ -490,7 +482,7 @@ const ReviewsDashboard = ({ isDark, t }) => {
 
   const allReviews = [
     {
-      id: 3, // أحدث
+      id: 3, 
       author: "أحمد عبدالله",
       rating: 5,
       text: "تجربة ممتازة جداً! المكان نظيف والخدمة سريعة، لكن الجلسات كانت زحمة شوي.",
@@ -498,6 +490,18 @@ const ReviewsDashboard = ({ isDark, t }) => {
       tag: "الخدمة والجودة",
       date: "قبل ساعتين",
       aiReply: "نسعد بتجربتك أستاذ أحمد! شهادتك بجودة خدمتنا وسام نعتز به. نعمل حالياً على خطة لتوسعة الجلسات لراحتكم. ننتظر زيارتك القادمة قريباً!",
+      status: "published"
+    },
+    {
+      id: 5, // تعليق جديد يحتوي على صورة
+      author: "سالم الدوسري",
+      rating: 5,
+      text: "طعم السمك خيالي والطبخ ممتاز جداً. هذه صور لطلبنا اليوم.",
+      reviewImage: "https://images.unsplash.com/photo-1615141982883-c7ad0e69fd62?auto=format&fit=crop&q=80&w=200&h=200", 
+      sentiment: "positive",
+      tag: "جودة الطعام",
+      date: "قبل ٤ ساعات",
+      aiReply: "ألف صحة وعافية أستاذ سالم! صور تفتح النفس 😍، سعداء جداً أن الطبخ نال على إعجابك ونتطلع لزيارتك القادمة.",
       status: "published"
     },
     {
@@ -512,7 +516,7 @@ const ReviewsDashboard = ({ isDark, t }) => {
       status: "draft"
     },
     {
-      id: 1, // أقدم
+      id: 1, 
       author: "محمد فهد",
       rating: 4,
       text: "الخدمة ممتازة! الأسعار معقولة جداً مقارنة بالمنافسين في نفس المنطقة.",
@@ -597,22 +601,6 @@ const ReviewsDashboard = ({ isDark, t }) => {
       ) : (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
           
-          {/* شريط الفلترة الديناميكي أعلى المؤشرات */}
-          <div className={`flex items-center gap-2 mb-2 p-2 rounded-2xl overflow-x-auto ${isDark ? 'bg-slate-900/50 border border-slate-800' : 'bg-slate-100 border border-slate-200'}`}>
-            <span className={`text-sm font-bold whitespace-nowrap px-3 ${textMuted}`}>{t.showLabel}</span>
-            <button onClick={()=>setActiveFilter('latest')} className={`px-5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${activeFilter === 'latest' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>{t.filterLatest}</button>
-            <button onClick={()=>setActiveFilter('oldest')} className={`px-5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${activeFilter === 'oldest' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>{t.filterOldest}</button>
-            <button onClick={()=>setActiveFilter('comment')} className={`px-5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${activeFilter === 'comment' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>{t.filterComment}</button>
-            <button onClick={()=>setActiveFilter('rating')} className={`px-5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${activeFilter === 'rating' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>{t.filterRating}</button>
-            
-            <div className="flex items-center gap-2">
-              <button onClick={()=>setActiveFilter('custom')} className={`px-5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex items-center gap-1.5 ${activeFilter === 'custom' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>{t.filterCustom}</button>
-              {activeFilter === 'custom' && (
-                <input type="date" value={customDate} onChange={e=>setCustomDate(e.target.value)} className={`h-8 px-2 rounded-lg text-xs outline-none border transition-all animate-in zoom-in duration-200 ${inputBg}`} style={{ colorScheme: isDark ? 'dark' : 'light' }} />
-              )}
-            </div>
-          </div>
-
           {/* مؤشرات الأداء */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <div className={`p-6 rounded-2xl border ${cardClass} flex items-center gap-4 shadow-sm hover:border-blue-500/30 transition-colors`}>
@@ -711,10 +699,26 @@ const ReviewsDashboard = ({ isDark, t }) => {
           {/* جدول التقييمات */}
           <div className={`rounded-3xl border overflow-hidden shadow-xl ${cardClass}`}>
             
-            <div className={`px-6 py-5 border-b flex justify-between items-center flex-wrap gap-4 ${isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-slate-50 border-slate-200'}`}>
-              <h3 className="font-bold text-lg flex items-center gap-2"><AlignJustify size={20} className="text-pink-500"/> {t.latestReviews}</h3>
+            {/* شريط الفلترة المدمج بجوار الثلاث شرطات */}
+            <div className={`px-4 py-4 border-b flex justify-between items-center flex-wrap gap-4 ${isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-slate-50 border-slate-200'}`}>
               
-              <div className="flex items-center gap-3 bg-slate-900/10 dark:bg-slate-900/50 px-4 py-2 rounded-xl">
+              <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0">
+                 <AlignJustify size={20} className="text-pink-500 shrink-0 mx-2"/>
+                 <span className={`text-sm font-bold whitespace-nowrap px-1 ${textMuted}`}>{t.showLabel}</span>
+                 <button onClick={()=>setActiveFilter('latest')} className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${activeFilter === 'latest' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>{t.filterLatest}</button>
+                 <button onClick={()=>setActiveFilter('oldest')} className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${activeFilter === 'oldest' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>{t.filterOldest}</button>
+                 <button onClick={()=>setActiveFilter('comment')} className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${activeFilter === 'comment' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>{t.filterComment}</button>
+                 <button onClick={()=>setActiveFilter('rating')} className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${activeFilter === 'rating' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>{t.filterRating}</button>
+                 
+                 <div className="flex items-center gap-2 shrink-0">
+                   <button onClick={()=>setActiveFilter('custom')} className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap flex items-center gap-1.5 ${activeFilter === 'custom' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>{t.filterCustom} <CalendarRange size={14}/></button>
+                   {activeFilter === 'custom' && (
+                     <input type="date" value={customDate} onChange={e=>setCustomDate(e.target.value)} className={`h-8 px-2 rounded-lg text-xs outline-none border transition-all animate-in zoom-in duration-200 ${inputBg}`} style={{ colorScheme: isDark ? 'dark' : 'light' }} />
+                   )}
+                 </div>
+              </div>
+
+              <div className="flex items-center gap-3 bg-slate-900/10 dark:bg-slate-900/50 px-4 py-2 rounded-xl shrink-0">
                 <span className={`text-sm font-bold ${textMuted}`}>{t.autoReplyMode}</span>
                 <div className="w-12 h-6 bg-green-500 rounded-full flex items-center p-1 cursor-pointer">
                   <div className={`w-4 h-4 bg-white rounded-full shadow-sm transform ${t.dir === 'rtl' ? '-translate-x-6' : 'translate-x-6'}`}></div>
@@ -751,6 +755,13 @@ const ReviewsDashboard = ({ isDark, t }) => {
                       
                       {review.text && <p className="text-sm font-medium leading-relaxed">{review.text}</p>}
                       
+                      {/* عرض صورة التقييم إن وجدت محاكاة لقوقل ماب */}
+                      {review.reviewImage && (
+                        <div className="mt-2 mb-2">
+                           <img src={review.reviewImage} alt="Review" className="w-24 h-24 object-cover rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm hover:scale-105 transition-transform cursor-pointer" />
+                        </div>
+                      )}
+
                       <div className="flex flex-wrap gap-2 pt-2">
                         {review.sentiment === 'positive' && <span className="bg-green-500/10 text-green-500 text-xs font-bold px-3 py-1.5 rounded-lg border border-green-500/20">{t.positive}</span>}
                         {review.sentiment === 'negative' && <span className="bg-red-500/10 text-red-500 text-xs font-bold px-3 py-1.5 rounded-lg border border-red-500/20">{t.negative}</span>}
@@ -786,7 +797,7 @@ const ReviewsDashboard = ({ isDark, t }) => {
                       {/* التوقيع الحيوي للموظف الرقمي أسفل كل رد */}
                       <div className={`mt-4 pt-4 border-t ${isDark ? 'border-slate-800/80' : 'border-blue-500/10'} flex items-center`}>
                         <div className="flex items-center gap-3 w-full">
-                          <div className={`text-4xl drop-shadow-md ${t.dir === 'rtl' ? 'ml-1' : 'mr-1'}`}>
+                          <div className={`text-[42px] drop-shadow-md ${t.dir === 'rtl' ? 'ml-1' : 'mr-1'}`}>
                             {aiEmployeeAvatar}
                           </div>
                           <div className="flex flex-col justify-center gap-1 flex-1">
@@ -829,7 +840,7 @@ export default function App() {
   const [session, setSession] = useState<any>(null);
   
   const [activeView, setActiveView] = useState('studio');
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarVisible, setIsSidebarVisible] = useState(true); // متحكم رئيسي للإخفاء والإظهار
 
   const [prompt, setPrompt] = useState("");
   const [contentType, setContentType] = useState("promo_video");
@@ -866,6 +877,13 @@ export default function App() {
 
   const isVisualContent = contentType === "promo_video" || contentType === "delivery_campaign" || contentType === "product_shot";
   const isTextContent = contentType === "social_caption" || contentType === "ad_script" || contentType === "customer_response";
+
+  // إغلاق القائمة الجانبية تلقائياً في الشاشات الصغيرة عند التحميل
+  useEffect(() => {
+    if (window.innerWidth < 768) {
+      setIsSidebarVisible(false);
+    }
+  }, []);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => setSession(session));
@@ -1007,30 +1025,43 @@ export default function App() {
   return (
     <div className={`flex min-h-screen transition-colors duration-500 font-sans ${mainBg}`} dir={t.dir}>
       
-      {isSidebarOpen && (
-        <div className="fixed inset-0 bg-black/60 z-40 md:hidden backdrop-blur-sm" onClick={() => setIsSidebarOpen(false)} />
+      {/* خلفية الشاشة للجوال عند فتح القائمة */}
+      {isSidebarVisible && (
+        <div className="fixed inset-0 bg-black/60 z-40 md:hidden backdrop-blur-sm" onClick={() => setIsSidebarVisible(false)} />
       )}
 
-      <aside className={`fixed top-0 bottom-0 ${t.dir === 'rtl' ? 'right-0 border-l' : 'left-0 border-r'} w-64 z-50 transition-transform duration-300 transform ${isSidebarOpen ? 'translate-x-0' : (t.dir === 'rtl' ? 'translate-x-full md:translate-x-0' : '-translate-x-full md:translate-x-0')} ${isDark ? 'bg-[#0f172a] border-slate-800' : 'bg-white border-slate-200'}`}>
-        <div className="p-6 border-b border-inherit flex justify-between items-center">
-          <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 tracking-tight">
-            {t.appTitle}
-          </h2>
-          <button onClick={() => setIsSidebarOpen(false)} className={`md:hidden p-2 rounded-lg transition-colors ${isDark ? 'text-slate-400 hover:bg-slate-800' : 'text-slate-500 hover:bg-slate-100'}`}>
-            <X size={20} />
+      {/* القائمة الجانبية (Sidebar) */}
+      <aside className={`fixed top-0 bottom-0 ${t.dir === 'rtl' ? 'right-0 border-l' : 'left-0 border-r'} w-64 z-50 transition-transform duration-300 transform ${isSidebarVisible ? 'translate-x-0' : (t.dir === 'rtl' ? 'translate-x-full' : '-translate-x-full')} ${isDark ? 'bg-[#0f172a] border-slate-800' : 'bg-white border-slate-200'}`}>
+        
+        {/* اللوجو الجديد البارز والمتحرك */}
+        <div className="p-6 border-b border-inherit flex justify-center items-center relative">
+          {/* زر إغلاق القائمة في الجوال */}
+          <button onClick={() => setIsSidebarVisible(false)} className={`absolute top-4 ${t.dir === 'rtl' ? 'left-4' : 'right-4'} md:hidden p-1.5 rounded-lg transition-colors ${isDark ? 'text-slate-400 hover:bg-slate-800' : 'text-slate-500 hover:bg-slate-100'}`}>
+            <X size={18} />
           </button>
+          
+          <div className="flex justify-center items-center w-full mt-2 mb-2">
+            <div className="relative rounded-2xl p-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 animate-pulse shadow-[0_0_20px_rgba(168,85,247,0.5)] w-full text-center">
+               <div className={`px-4 py-3 rounded-xl ${isDark ? 'bg-[#0f172a]' : 'bg-white'}`}>
+                 <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 tracking-tight">
+                    {t.appTitle}
+                 </h2>
+               </div>
+            </div>
+          </div>
         </div>
 
         <nav className="p-4 space-y-3">
-          <button onClick={() => { setActiveView('studio'); setIsSidebarOpen(false); }} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${activeView === 'studio' ? (isDark ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : 'bg-blue-50 text-blue-600 border border-blue-200') : (isDark ? 'text-slate-400 hover:bg-slate-800 border border-transparent' : 'text-slate-600 hover:bg-slate-100 border border-transparent')}`}>
+          <button onClick={() => { setActiveView('studio'); if(window.innerWidth < 768) setIsSidebarVisible(false); }} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${activeView === 'studio' ? (isDark ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : 'bg-blue-50 text-blue-600 border border-blue-200') : (isDark ? 'text-slate-400 hover:bg-slate-800 border border-transparent' : 'text-slate-600 hover:bg-slate-100 border border-transparent')}`}>
             <Star size={20} className={activeView === 'studio' ? 'text-blue-500' : ''} /> 
             {t.studioTab}
           </button>
 
-          <button onClick={() => { setActiveView('reviews'); setIsSidebarOpen(false); }} className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl font-bold transition-all relative group overflow-hidden border ${activeView === 'reviews' ? (isDark ? 'bg-pink-500/10 text-pink-400 border-pink-500/20' : 'bg-pink-50 text-pink-600 border-pink-200') : (isDark ? 'text-slate-400 hover:bg-slate-800 hover:border-slate-700 border-transparent' : 'text-slate-600 hover:bg-slate-100 hover:border-slate-200 border-transparent')}`}>
+          <button onClick={() => { setActiveView('reviews'); if(window.innerWidth < 768) setIsSidebarVisible(false); }} className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl font-bold transition-all relative group overflow-hidden border ${activeView === 'reviews' ? (isDark ? 'bg-pink-500/10 text-pink-400 border-pink-500/20' : 'bg-pink-50 text-pink-600 border-pink-200') : (isDark ? 'text-slate-400 hover:bg-slate-800 hover:border-slate-700 border-transparent' : 'text-slate-600 hover:bg-slate-100 hover:border-slate-200 border-transparent')}`}>
             <div className="flex items-center gap-3 w-full">
               <MessageCircle size={20} className={activeView === 'reviews' ? 'text-pink-500 shrink-0' : 'group-hover:text-pink-500 transition-colors shrink-0'} /> 
               <span className="truncate flex-1 text-right">{t.reviewsTab}</span>
+              {/* شارة تجريبي بإضاءة متوهجة */}
               <span className={`text-[9px] bg-gradient-to-r from-purple-500 to-pink-500 text-white px-2 py-0.5 rounded-full font-black shadow-[0_0_12px_rgba(236,72,153,0.8)] border border-pink-300 animate-pulse whitespace-nowrap shrink-0 ${t.dir === 'rtl' ? 'mr-3' : 'ml-3'}`}>
                 {t.soonBadge}
               </span>
@@ -1039,7 +1070,7 @@ export default function App() {
         </nav>
       </aside>
 
-      <main className={`flex-1 flex flex-col items-center overflow-x-hidden relative min-h-screen transition-all duration-300 ${t.dir === 'rtl' ? 'md:pr-64' : 'md:pl-64'}`}>
+      <main className={`flex-1 flex flex-col items-center overflow-x-hidden relative min-h-screen transition-all duration-300 ${isSidebarVisible ? (t.dir === 'rtl' ? 'md:pr-64' : 'md:pl-64') : ''}`}>
         
         {isSettingsOpen && (
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
@@ -1185,7 +1216,8 @@ export default function App() {
         )}
 
         <div className="w-full p-4 sm:p-6 flex justify-between items-center z-30">
-          <button onClick={() => setIsSidebarOpen(true)} className={`md:hidden p-2 rounded-lg border shadow-sm ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-slate-200 text-slate-900'}`}>
+          {/* زر التبديل الجديد للقائمة الجانبية (يعمل على الجوال والكمبيوتر) */}
+          <button onClick={() => setIsSidebarVisible(!isSidebarVisible)} className={`p-2 rounded-lg border shadow-sm transition-colors ${isDark ? 'bg-slate-800 border-slate-700 text-white hover:bg-slate-700' : 'bg-white border-slate-200 text-slate-900 hover:bg-slate-50'}`}>
             <AlignJustify size={24} />
           </button>
           
