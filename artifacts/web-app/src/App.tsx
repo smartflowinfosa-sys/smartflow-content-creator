@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "./supabase";
 import Auth from "./Auth"; 
-import { User, Settings, LogOut, Crown, Trash2, X, Lock, Globe, Palette, Copy, CheckCircle2, Instagram, Info, Loader2, Wallet, CreditCard, Shield, Sliders, ImagePlus, Mic, Activity, Target, AlignLeft, AlignJustify, Star, MessageCircle, Clapperboard, CalendarRange, Bot, Bell, LineChart, Phone } from 'lucide-react';
+import { User, Settings, LogOut, Crown, Trash2, X, Lock, Globe, Palette, Copy, CheckCircle2, Instagram, Info, Loader2, Wallet, CreditCard, Shield, Sliders, ImagePlus, Mic, Activity, Target, AlignLeft, AlignJustify, Star, MessageCircle, Clapperboard, CalendarRange, Bot, Bell, LineChart, Phone, Wand2 } from 'lucide-react';
 
 // ==========================================
 // 1. قاموس الترجمة المحدث الشامل
@@ -70,7 +70,7 @@ const translations = {
     uploadImageTitle: "صورة المنتج (اختياري، لتحويلها إلى فيديو أو تصميم):",
     uploadImageBtn: "ارفع صورة منتجك من هنا",
     changeImage: "تغيير الصورة",
-    launchBtn: "أطلق الحملة الآن",
+    launchBtn: "ابدأ التنفيذ",
     producing: "جاري الإنتاج في الاستوديو...",
     libraryTitle: "مكتبة الحملات الجاهزة",
     syncBtn: "تزامن القائمة",
@@ -120,11 +120,15 @@ const translations = {
     noDataDesc: "قم بربط حساب قوقل بزنس الخاص بنشاطك التجاري لسحب التقييمات والبدء في الرد عليها آلياً.",
     startConnect: "ابدأ الربط الآن",
     showLabel: "عرض:",
+    filterTimeAll: "كل الأوقات",
+    filterTimeToday: "اليوم",
+    filterTimeWeek: "الأسبوع",
+    filterTimeMonth: "الشهر",
+    filterCustom: "مخصص",
     filterLatest: "الأحدث",
     filterOldest: "الأقدم",
     filterComment: "تعليق 💬",
     filterRating: "تقييم فقط ⭐",
-    filterCustom: "مخصص",
     advSettings: "إعدادات الذكاء الاصطناعي المتقدمة",
     customPrompt: "تعليمات خاصة للـ AI",
     customPromptDesc: "إعطاء أوامر مخصصة للذكاء الاصطناعي عند الرد (مثال: تقديم خصم للاعتذار).",
@@ -152,7 +156,12 @@ const translations = {
     csTeam: "فريق خدمة عملاء",
     aiEmp: "موظف AI",
     approvePublish: "اعتماد ونشر",
-    editReply: "تعديل الرد"
+    editReply: "تعديل الرد",
+    aiAssistBtn: "مساعد الصياغة الذكي",
+    aiAssistDesc: "اكتب فكرتك باختصار، وسيقوم الذكاء الاصطناعي بتحويلها إلى أمر (Prompt) احترافي ودقيق.",
+    aiAssistPlaceholder: "مثال: أبي إعلان قوي لقهوة باردة للصيف...",
+    aiAssistGenerate: "توليد الصياغة",
+    aiAssistApply: "اعتماد واستخدام"
   },
   en: {
     dir: "ltr",
@@ -217,7 +226,7 @@ const translations = {
     uploadImageTitle: "Product Image (Optional, for image-to-video/poster):",
     uploadImageBtn: "Upload your product image here",
     changeImage: "Change Image",
-    launchBtn: "Launch Campaign Now",
+    launchBtn: "Start Execution",
     producing: "Producing in studio...",
     libraryTitle: "Campaign Library",
     syncBtn: "Sync List",
@@ -267,11 +276,15 @@ const translations = {
     noDataDesc: "Connect your Google Business account to fetch reviews and start replying automatically.",
     startConnect: "Start Connection",
     showLabel: "Show:",
+    filterTimeAll: "All Time",
+    filterTimeToday: "Today",
+    filterTimeWeek: "This Week",
+    filterTimeMonth: "This Month",
+    filterCustom: "Custom",
     filterLatest: "Latest",
     filterOldest: "Oldest",
     filterComment: "Comment 💬",
     filterRating: "Rating Only ⭐",
-    filterCustom: "Custom",
     advSettings: "Advanced AI Settings",
     customPrompt: "Custom AI Instructions",
     customPromptDesc: "Give specific instructions to AI for replying (e.g., offer a discount for apologies).",
@@ -299,7 +312,12 @@ const translations = {
     csTeam: "Customer Service Team",
     aiEmp: "AI Agent",
     approvePublish: "Approve & Publish",
-    editReply: "Edit Reply"
+    editReply: "Edit Reply",
+    aiAssistBtn: "AI Prompt Assistant",
+    aiAssistDesc: "Type a short idea, and AI will expand it into a detailed, professional prompt.",
+    aiAssistPlaceholder: "e.g., I need a strong ad for iced coffee...",
+    aiAssistGenerate: "Generate Prompt",
+    aiAssistApply: "Apply & Use"
   }
 };
 
@@ -424,9 +442,13 @@ const ReviewsDashboard = ({ isDark, t }) => {
   const [isGoogleConnected, setIsGoogleConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   
+  // الفلترة
   const [activeFilter, setActiveFilter] = useState('latest');
-  const [customDate, setCustomDate] = useState("");
+  const [timeFilter, setTimeFilter] = useState('all'); // all, today, week, month, custom
+  const [customDateFrom, setCustomDateFrom] = useState("");
+  const [customDateTo, setCustomDateTo] = useState("");
 
+  // حالات الإعدادات المتقدمة
   const [featCustomPrompt, setFeatCustomPrompt] = useState(false);
   const [customPromptText, setCustomPromptText] = useState("");
   const [isSavingPrompt, setIsSavingPrompt] = useState(false);
@@ -443,6 +465,7 @@ const ReviewsDashboard = ({ isDark, t }) => {
   const currentHour = new Date().getHours();
   const isDayShift = currentHour >= 6 && currentHour < 18;
   
+  // بيانات التوقيع والموظفين
   const storeSettings = {
     storeName: "أسماك المحيط",
     storePhone: "+966 50 000 0000",
@@ -561,6 +584,7 @@ const ReviewsDashboard = ({ isDark, t }) => {
   return (
     <div className="w-full max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 animate-in fade-in zoom-in duration-500">
       
+      {/* رأس الصفحة */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
           <div className="flex items-center gap-3 mb-2">
@@ -584,32 +608,35 @@ const ReviewsDashboard = ({ isDark, t }) => {
       </div>
 
       {isGoogleConnected && (
-        <div className={`flex items-center gap-2 mb-4 p-2 rounded-2xl overflow-x-auto ${isDark ? 'bg-slate-900/50 border border-slate-800' : 'bg-slate-100 border border-slate-200'}`}>
-          <span className={`text-sm font-bold whitespace-nowrap px-3 ${textMuted}`}>{t.showLabel}</span>
-          <button onClick={()=>setActiveFilter('latest')} className={`px-5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${activeFilter === 'latest' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>{t.filterLatest}</button>
-          <button onClick={()=>setActiveFilter('oldest')} className={`px-5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${activeFilter === 'oldest' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>{t.filterOldest}</button>
-          <button onClick={()=>setActiveFilter('comment')} className={`px-5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${activeFilter === 'comment' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>{t.filterComment}</button>
-          <button onClick={()=>setActiveFilter('rating')} className={`px-5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${activeFilter === 'rating' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>{t.filterRating}</button>
+        <div className={`flex flex-wrap items-center gap-2 mb-4 p-2 rounded-2xl ${isDark ? 'bg-slate-900/50 border border-slate-800' : 'bg-slate-100 border border-slate-200'}`}>
+          <AlignJustify size={20} className="text-pink-500 shrink-0 mx-2 hidden md:block"/>
+          <span className={`text-sm font-bold whitespace-nowrap px-1 ${textMuted}`}>{t.showLabel}</span>
           
-          <div className="flex items-center gap-2">
-            <button onClick={()=>setActiveFilter('custom')} className={`px-5 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex items-center gap-1.5 ${activeFilter === 'custom' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>
-              {t.filterCustom}
-            </button>
-            {activeFilter === 'custom' && (
-              <input 
-                 type={customDate ? "date" : "text"} 
-                 onMouseEnter={(e) => e.target.type = 'date'}
-                 onMouseLeave={(e) => { if(!e.target.value) e.target.type = 'text'; }}
-                 onFocus={(e) => e.target.type = 'date'}
-                 onBlur={(e) => { if(!e.target.value) e.target.type = 'text'; }}
-                 value={customDate} 
-                 onChange={e=>setCustomDate(e.target.value)} 
-                 className={`h-8 w-32 px-2 rounded-lg text-xs outline-none border transition-all animate-in zoom-in duration-200 cursor-pointer text-center ${inputBg}`} 
-                 style={{ colorScheme: isDark ? 'dark' : 'light' }} 
-                 placeholder=""
-              />
-            )}
-          </div>
+          {/* فلتر الوقت القائمة المنسدلة */}
+          <select value={timeFilter} onChange={e => setTimeFilter(e.target.value)} className={`px-4 py-2 rounded-xl text-xs font-bold outline-none border transition-all cursor-pointer ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-slate-200 text-slate-900'}`}>
+             <option value="all">{t.filterTimeAll}</option>
+             <option value="today">{t.filterTimeToday}</option>
+             <option value="week">{t.filterTimeWeek}</option>
+             <option value="month">{t.filterTimeMonth}</option>
+             <option value="custom">{t.filterCustom}</option>
+          </select>
+
+          {/* تحديد التاريخ من - إلى عند اختيار مخصص */}
+          {timeFilter === 'custom' && (
+             <div className="flex items-center gap-2 animate-in fade-in zoom-in duration-300">
+                <input type="date" value={customDateFrom} onChange={e=>setCustomDateFrom(e.target.value)} className={`h-8 px-2 rounded-lg text-xs outline-none border transition-all ${inputBg}`} style={{ colorScheme: isDark ? 'dark' : 'light' }} />
+                <span className={`text-xs font-bold ${textMuted}`}>-</span>
+                <input type="date" value={customDateTo} onChange={e=>setCustomDateTo(e.target.value)} className={`h-8 px-2 rounded-lg text-xs outline-none border transition-all ${inputBg}`} style={{ colorScheme: isDark ? 'dark' : 'light' }} />
+             </div>
+          )}
+
+          <div className="w-px h-6 bg-slate-300 dark:bg-slate-700 mx-1 hidden sm:block"></div>
+
+          {/* أزرار الفلترة المعتادة */}
+          <button onClick={()=>setActiveFilter('latest')} className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${activeFilter === 'latest' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>{t.filterLatest}</button>
+          <button onClick={()=>setActiveFilter('oldest')} className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${activeFilter === 'oldest' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>{t.filterOldest}</button>
+          <button onClick={()=>setActiveFilter('comment')} className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${activeFilter === 'comment' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>{t.filterComment}</button>
+          <button onClick={()=>setActiveFilter('rating')} className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${activeFilter === 'rating' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>{t.filterRating}</button>
         </div>
       )}
 
@@ -798,25 +825,25 @@ const ReviewsDashboard = ({ isDark, t }) => {
                         <p className="text-sm font-medium leading-relaxed mb-4">{review.aiReply}</p>
                       </div>
 
-                      <div className={`mt-4 pt-4 border-t ${isDark ? 'border-slate-800/80' : 'border-blue-500/10'} flex items-center justify-between`}>
+                      <div className={`mt-4 pt-4 border-t ${isDark ? 'border-slate-800/80' : 'border-blue-500/10'} flex flex-col md:flex-row gap-3 items-start md:items-center justify-between`}>
                         <div className="flex items-center gap-3">
                           <div className={`text-[42px] drop-shadow-md ${t.dir === 'rtl' ? 'ml-1' : 'mr-1'}`}>
                             {aiEmployeeAvatar}
                           </div>
                           <div className="flex flex-col justify-center gap-1">
                             <div className="flex items-center gap-1.5">
-                               <span className="w-2 h-2 bg-green-500 rounded-full shadow-[0_0_5px_rgba(34,197,94,0.8)] animate-pulse shrink-0"></span>
-                               <span className={`text-[11px] font-black ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>{t.csTeam} ({storeSettings.storeName})</span>
-                            </div>
-                            <div className="flex items-center gap-1.5">
                               <span className="text-sm font-black text-blue-500 dark:text-blue-400">{aiEmployeeName}</span>
                               <span className={`text-xs font-bold text-pink-500 dark:text-pink-400`}>({t.aiEmp})</span>
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                               <span className="w-2 h-2 bg-green-500 rounded-full shadow-[0_0_5px_rgba(34,197,94,0.8)] animate-pulse shrink-0"></span>
+                               <span className={`text-[11px] font-bold ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>{t.csTeam} ({storeSettings.storeName})</span>
                             </div>
                           </div>
                         </div>
                         
                         <div className="flex items-center gap-1.5 opacity-80 shrink-0">
-                           <span className={`text-xs font-bold ${isDark ? 'text-slate-400' : 'text-slate-500'}`} dir="ltr">{storeSettings.storePhone}</span>
+                           <span className={`text-xs font-bold ${isDark ? 'text-slate-300' : 'text-slate-600'}`} dir="ltr">{storeSettings.storePhone}</span>
                            <Phone size={12} className={isDark ? 'text-slate-400' : 'text-slate-500'} />
                         </div>
                       </div>
@@ -849,6 +876,12 @@ export default function App() {
   
   const [activeView, setActiveView] = useState('studio');
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
+
+  // حالات المساعد الذكي للأوامر
+  const [isAiAssistOpen, setIsAiAssistOpen] = useState(false);
+  const [rawIdea, setRawIdea] = useState("");
+  const [generatedPrompt, setGeneratedPrompt] = useState("");
+  const [isGeneratingPrompt, setIsGeneratingPrompt] = useState(false);
 
   const [prompt, setPrompt] = useState("");
   const [contentType, setContentType] = useState("promo_video");
@@ -951,6 +984,24 @@ export default function App() {
       reader.onloadend = () => setImagePreview(reader.result as string);
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleGeneratePrompt = (e) => {
+    e.preventDefault();
+    if(!rawIdea) return;
+    setIsGeneratingPrompt(true);
+    setTimeout(() => {
+        setGeneratedPrompt(`قم بصياغة إعلان احترافي وجذاب لـ: ${rawIdea}. ركز على إبراز الجودة العالية، واستخدم نبرة تسويقية مقنعة تحفز العميل على الطلب، مع إضافة عبارة تحث على اتخاذ إجراء (CTA) واضحة وقوية.`);
+        setIsGeneratingPrompt(false);
+    }, 1500);
+  };
+
+  const handleApplyPrompt = (e) => {
+    e.preventDefault();
+    setPrompt(generatedPrompt);
+    setIsAiAssistOpen(false);
+    setRawIdea("");
+    setGeneratedPrompt("");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -1377,8 +1428,38 @@ export default function App() {
                   </div>
                 )}
 
+                {/* حقل الفكرة التسويقية مع زر المساعد الذكي */}
                 <div className="space-y-2">
-                  <label className={`block text-sm font-bold px-1 ${labelColor}`}>{t.idea}</label>
+                  <div className="flex justify-between items-center px-1 mb-2">
+                    <label className={`block text-sm font-bold ${labelColor}`}>{t.idea}</label>
+                    <button type="button" onClick={() => setIsAiAssistOpen(!isAiAssistOpen)} className={`text-xs font-bold flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-colors ${isAiAssistOpen ? 'bg-purple-500 text-white' : 'text-purple-500 bg-purple-500/10 hover:bg-purple-500/20'}`}>
+                        <Wand2 size={14}/> {t.aiAssistBtn}
+                    </button>
+                  </div>
+                  
+                  {isAiAssistOpen && (
+                    <div className={`p-4 mb-4 rounded-2xl border ${isDark ? 'bg-slate-800/50 border-purple-500/30' : 'bg-purple-50/50 border-purple-200'} animate-in fade-in slide-in-from-top-2`}>
+                        <p className={`text-xs font-bold mb-3 ${isDark ? 'text-purple-400' : 'text-purple-700'}`}>{t.aiAssistDesc}</p>
+                        <div className="flex flex-col sm:flex-row gap-2 mb-3">
+                            <input type="text" value={rawIdea} onChange={e=>setRawIdea(e.target.value)} placeholder={t.aiAssistPlaceholder} className={`flex-1 px-3 py-2 text-sm rounded-xl outline-none border ${inputBg}`} />
+                            <button type="button" onClick={handleGeneratePrompt} disabled={isGeneratingPrompt} className="bg-purple-600 hover:bg-purple-500 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-2 whitespace-nowrap transition-colors">
+                                {isGeneratingPrompt ? <Loader2 size={14} className="animate-spin" /> : <Bot size={14} />}
+                                {t.aiAssistGenerate}
+                            </button>
+                        </div>
+                        {generatedPrompt && (
+                            <>
+                                <div className={`p-3 rounded-xl border ${isDark ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-200'} mb-3`}>
+                                    <p className="text-sm font-medium leading-relaxed">{generatedPrompt}</p>
+                                </div>
+                                <button type="button" onClick={handleApplyPrompt} className="w-full bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-xl text-sm font-bold flex justify-center items-center gap-2 transition-colors">
+                                    <CheckCircle2 size={16}/> {t.aiAssistApply}
+                                </button>
+                            </>
+                        )}
+                    </div>
+                  )}
+
                   <textarea value={prompt} onChange={(e) => setPrompt(e.target.value)} required className={`w-full px-5 py-4 border rounded-2xl outline-none resize-none leading-relaxed transition-all ${inputBg}`} rows={4} placeholder={t.ideaPlaceholder}></textarea>
                 </div>
 
