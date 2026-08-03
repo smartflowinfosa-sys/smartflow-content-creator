@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "./supabase";
 import Auth from "./Auth"; 
-import { User, Settings, LogOut, Crown, Trash2, X, Lock, Globe, Palette, Copy, CheckCircle2, Instagram, Info, Loader2, Wallet, CreditCard, Shield, Sliders, ImagePlus, Mic, Activity, Target, AlignLeft, AlignJustify, Star, MessageCircle, Clapperboard, CalendarRange, Bot, Bell, LineChart, Phone, Wand2 } from 'lucide-react';
+import { User, Settings, LogOut, Crown, Trash2, X, Lock, Globe, Palette, Copy, CheckCircle2, Instagram, Info, Loader2, Wallet, CreditCard, Shield, Sliders, ImagePlus, Mic, Activity, Target, AlignLeft, AlignJustify, Star, MessageCircle, Clapperboard, CalendarRange, Bot, Bell, LineChart, Phone, Wand2, Hourglass } from 'lucide-react';
 
 // ==========================================
 // 1. قاموس الترجمة المحدث الشامل
@@ -161,7 +161,10 @@ const translations = {
     aiAssistDesc: "اكتب فكرتك باختصار، وسيقوم الذكاء الاصطناعي بتحويلها إلى أمر (Prompt) احترافي ودقيق.",
     aiAssistPlaceholder: "مثال: أبي إعلان قوي لقهوة باردة للصيف...",
     aiAssistGenerate: "توليد الصياغة",
-    aiAssistApply: "اعتماد واستخدام"
+    aiAssistApply: "اعتماد واستخدام",
+    pendingTitle: "حسابك قيد المراجعة ⏳",
+    pendingDesc: "شكراً لاهتمامك بـ SmartFlow! نظراً للإقبال العالي، المنصة حالياً في المرحلة التجريبية المغلقة. لقد تم إدراج حسابك بنجاح وسنقوم بإشعارك فور تفعيله لتنطلق معنا.",
+    pendingRefresh: "تحديث الحالة"
   },
   en: {
     dir: "ltr",
@@ -317,12 +320,45 @@ const translations = {
     aiAssistDesc: "Type a short idea, and AI will expand it into a detailed, professional prompt.",
     aiAssistPlaceholder: "e.g., I need a strong ad for iced coffee...",
     aiAssistGenerate: "Generate Prompt",
-    aiAssistApply: "Apply & Use"
+    aiAssistApply: "Apply & Use",
+    pendingTitle: "Account Under Review ⏳",
+    pendingDesc: "Thank you for joining SmartFlow! We are currently in closed beta. Your account is on our waitlist and we will notify you as soon as it is activated.",
+    pendingRefresh: "Refresh Status"
   }
 };
 
 // ==========================================
-// 2. مكون كارت المحتوى المستقل (الاستوديو)
+// شاشة الحسابات قيد الانتظار (Pending Screen)
+// ==========================================
+const PendingScreen = ({ isDark, t, checkStatus, isChecking }) => {
+  return (
+    <div className={`min-h-screen flex items-center justify-center p-4 transition-colors duration-500 ${isDark ? 'bg-[#0b1121] text-white' : 'bg-slate-50 text-slate-900'}`} dir={t.dir}>
+      <div className={`max-w-md w-full p-8 rounded-3xl border text-center shadow-2xl animate-in zoom-in duration-500 ${isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-white border-slate-200'}`}>
+        <div className="w-24 h-24 mx-auto mb-6 bg-yellow-500/10 rounded-full flex items-center justify-center">
+          <Hourglass className="text-yellow-500 animate-pulse" size={40} />
+        </div>
+        <h2 className="text-2xl font-black mb-4 bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 to-orange-500">
+          {t.pendingTitle}
+        </h2>
+        <p className={`font-medium mb-8 leading-relaxed ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+          {t.pendingDesc}
+        </p>
+        <div className="flex flex-col gap-3">
+          <button onClick={checkStatus} disabled={isChecking} className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3.5 rounded-xl transition-all flex justify-center items-center gap-2">
+            {isChecking ? <Loader2 size={18} className="animate-spin" /> : <Activity size={18} />}
+            {isChecking ? t.updating : t.pendingRefresh}
+          </button>
+          <button onClick={() => supabase.auth.signOut()} className={`w-full py-3.5 rounded-xl font-bold transition-all ${isDark ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>
+            {t.logout}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ==========================================
+// مكون كارت المحتوى المستقل (الاستوديو)
 // ==========================================
 const ContentCard = ({ item, handleDelete, isDark, t }) => {
   let aiData: any = null;
@@ -436,19 +472,17 @@ const ContentCard = ({ item, handleDelete, isDark, t }) => {
 };
 
 // ==========================================
-// 3. مكون لوحة تحكم التقييمات الجديد (Google Reviews Dashboard)
+// مكون لوحة تحكم التقييمات الجديد
 // ==========================================
 const ReviewsDashboard = ({ isDark, t }) => {
   const [isGoogleConnected, setIsGoogleConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   
-  // الفلترة
   const [activeFilter, setActiveFilter] = useState('latest');
   const [timeFilter, setTimeFilter] = useState('all');
   const [customDateFrom, setCustomDateFrom] = useState("");
   const [customDateTo, setCustomDateTo] = useState("");
 
-  // حالات الإعدادات المتقدمة
   const [featCustomPrompt, setFeatCustomPrompt] = useState(false);
   const [customPromptText, setCustomPromptText] = useState("");
   const [isSavingPrompt, setIsSavingPrompt] = useState(false);
@@ -461,11 +495,9 @@ const ReviewsDashboard = ({ isDark, t }) => {
   const [alertPhone, setAlertPhone] = useState("");
   const [isSavingAlert, setIsSavingAlert] = useState(false);
 
-  // منطق الموظف الرقمي بناءً على الوقت الحالي
   const currentHour = new Date().getHours();
   const isDayShift = currentHour >= 6 && currentHour < 18;
   
-  // بيانات التوقيع والموظفين
   const storeSettings = {
     storeName: "أسماك المحيط",
     storePhone: "+966 50 000 0000",
@@ -716,12 +748,18 @@ const ReviewsDashboard = ({ isDark, t }) => {
              </div>
           </div>
 
-          {/* جدول التقييمات */}
           <div className={`rounded-3xl border overflow-hidden shadow-xl ${cardClass}`}>
             
             <div className={`px-6 py-5 border-b flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 ${isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-slate-50 border-slate-200'}`}>
               
-              <div className="flex flex-wrap items-center gap-2 w-full xl:w-auto">
+              <div className={`flex items-center gap-3 bg-slate-900/10 dark:bg-slate-900/50 px-4 py-2 rounded-xl shrink-0 ${t.dir === 'rtl' ? 'ml-auto' : 'mr-auto'}`}>
+                <span className={`text-sm font-bold ${textMuted}`}>{t.autoReplyMode}</span>
+                <div className="w-12 h-6 bg-green-500 rounded-full flex items-center p-1 cursor-pointer">
+                  <div className={`w-4 h-4 bg-white rounded-full shadow-sm transform ${t.dir === 'rtl' ? '-translate-x-6' : 'translate-x-6'}`}></div>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2 w-full xl:w-auto justify-end">
                 <span className={`text-sm font-bold whitespace-nowrap px-1 ${textMuted}`}>{t.showLabel}</span>
                 
                 <select value={timeFilter} onChange={e => setTimeFilter(e.target.value)} className={`px-4 py-2 rounded-xl text-xs font-bold outline-none border transition-all cursor-pointer ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-slate-200 text-slate-900'}`}>
@@ -746,13 +784,6 @@ const ReviewsDashboard = ({ isDark, t }) => {
                 <button onClick={()=>setActiveFilter('oldest')} className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${activeFilter === 'oldest' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>{t.filterOldest}</button>
                 <button onClick={()=>setActiveFilter('comment')} className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${activeFilter === 'comment' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>{t.filterComment}</button>
                 <button onClick={()=>setActiveFilter('rating')} className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${activeFilter === 'rating' ? 'bg-white dark:bg-slate-700 shadow-md text-slate-900 dark:text-white' : `hover:bg-slate-200 dark:hover:bg-slate-800 ${textMuted}`}`}>{t.filterRating}</button>
-              </div>
-
-              <div className={`flex items-center gap-3 bg-slate-900/10 dark:bg-slate-900/50 px-4 py-2 rounded-xl shrink-0 ${t.dir === 'rtl' ? 'mr-auto' : 'ml-auto'}`}>
-                <span className={`text-sm font-bold ${textMuted}`}>{t.autoReplyMode}</span>
-                <div className="w-12 h-6 bg-green-500 rounded-full flex items-center p-1 cursor-pointer">
-                  <div className={`w-4 h-4 bg-white rounded-full shadow-sm transform ${t.dir === 'rtl' ? '-translate-x-6' : 'translate-x-6'}`}></div>
-                </div>
               </div>
             </div>
 
@@ -870,10 +901,13 @@ const ReviewsDashboard = ({ isDark, t }) => {
 export default function App() {
   const [session, setSession] = useState<any>(null);
   
+  // دالة فحص حالة المستخدم للحسابات المعلقة
+  const [userStatus, setUserStatus] = useState<'loading' | 'pending' | 'active'>('loading');
+  const [isCheckingStatus, setIsCheckingStatus] = useState(false);
+
   const [activeView, setActiveView] = useState('studio');
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
 
-  // حالات المساعد الذكي للأوامر
   const [isAiAssistOpen, setIsAiAssistOpen] = useState(false);
   const [rawIdea, setRawIdea] = useState("");
   const [generatedPrompt, setGeneratedPrompt] = useState("");
@@ -921,9 +955,38 @@ export default function App() {
     }
   }, []);
 
+  const checkUserStatus = async (user) => {
+    if (!user) return;
+    try {
+      const { data, error } = await supabase.from('profiles').select('status').eq('id', user.id).single();
+      if (data) {
+        setUserStatus(data.status);
+      } else {
+        setUserStatus('pending'); // احتياط في حال تأخر التريجر
+      }
+    } catch (e) {
+      console.error(e);
+      setUserStatus('pending');
+    }
+  };
+
+  const handleRefreshStatus = async () => {
+    setIsCheckingStatus(true);
+    await checkUserStatus(session?.user);
+    setIsCheckingStatus(false);
+  };
+
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => setSession(session));
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => setSession(session));
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      if(session) checkUserStatus(session.user);
+      else setUserStatus('loading');
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      if(session) checkUserStatus(session.user);
+      else setUserStatus('loading');
+    });
     return () => subscription.unsubscribe();
   }, []);
 
@@ -937,7 +1000,7 @@ export default function App() {
     } catch (error) { console.error(error); } finally { setIsLoadingResults(false); }
   };
 
-  useEffect(() => { if (session) fetchResults(); }, [session]);
+  useEffect(() => { if (session && userStatus === 'active') fetchResults(); }, [session, userStatus]);
 
   const handleDelete = async (id: string) => {
     if (window.confirm(t.deleteConfirm)) {
@@ -1067,8 +1130,20 @@ export default function App() {
     }
   };
 
+  // 1. إذا لم يسجل الدخول
   if (!session) return <Auth />;
+  
+  // 2. إذا كان الحساب يتم فحصه الآن
+  if (userStatus === 'loading') {
+    return <div className={`min-h-screen flex items-center justify-center ${isDark ? 'bg-[#0b1121]' : 'bg-slate-50'}`}><Loader2 className="animate-spin text-blue-500" size={40} /></div>;
+  }
 
+  // 3. إذا كان الحساب في قائمة الانتظار (Pending)
+  if (userStatus === 'pending') {
+    return <PendingScreen isDark={isDark} t={t} checkStatus={handleRefreshStatus} isChecking={isCheckingStatus} />;
+  }
+
+  // 4. إذا كان الحساب (Active) يظهر التطبيق كامل
   const mainBg = isDark ? 'bg-[#0b1121]' : 'bg-slate-50';
   const textMain = isDark ? 'text-white' : 'text-slate-900';
   const panelBg = isDark ? 'bg-slate-900/40 border-slate-800' : 'bg-white/80 border-slate-200 shadow-2xl';
