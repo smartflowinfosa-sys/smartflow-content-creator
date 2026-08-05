@@ -890,10 +890,6 @@ const ReviewsDashboard = ({ isDark, t }) => {
           </div>
         </div>
       )}
-    </div>
-  );
-};
-
 
 // ==========================================
 // 4. التطبيق الرئيسي (App)
@@ -1090,7 +1086,8 @@ export default function App() {
       }
     }
 
-    const webhookUrl = "https://n8n-p10bgpahkliy9hghak21zv3e.178.105.219.96.sslip.io/webhook/generate-content";
+    // 🛑 تم تغيير الرابط هنا إلى رابط الاختبار (Test URL) 🛑
+    const webhookUrl = "https://n8n-p10bgpahkliy9hghak21zv3e.178.105.219.96.sslip.io/webhook-test/generate-content";
 
     const payload = {
       store_id: session.user.id, 
