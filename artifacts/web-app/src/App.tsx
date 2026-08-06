@@ -31,7 +31,7 @@ const translations = {
     connectIg: "ربط إنستقرام",
     connectTk: "ربط تيك توك",
     disconnectIg: "فصل الحساب",
-    disconnectConfirm: "هل أنت متأكد أنك تريد فصل الحساب عن المنصة؟ سيتم إيقاف النشر التلقائي.",
+    disconnectConfirm: "هل أنت متأكد أن تريد فصل الحساب عن المنصة؟ سيتم إيقاف النشر التلقائي.",
     disconnected: "تم فصل الحساب بنجاح.",
     igTrustMsg: "يتم الربط رسمياً ومباشرة عبر خوادم المنصات (OAuth 2.0). نحن لا نطلب أو نحفظ كلمات المرور الخاصة بك، ونطلب فقط صلاحية النشر الآلي لتسهيل عملك.",
     bizCategory: "نوع النشاط التجاري:",
@@ -311,7 +311,7 @@ const translations = {
     category: "Category:",
     aiReplyTitle: "Suggested AI Reply:",
     autoPublished: "Auto-Published",
-    draftReview: "Draft for Review",
+    draftReview: "Draft Review",
     csTeam: "Customer Service Team",
     aiEmp: "AI Agent",
     approvePublish: "Approve & Publish",
@@ -358,7 +358,7 @@ const PendingScreen = ({ isDark, t, checkStatus, isChecking }) => {
 };
 
 // ==========================================
-// مكون كارت المحتوى المستقل (الاستوديو)
+// مكون كارت المحتوى المستقل (الاستوديو) - محدث لعرض الصور والفيديو 📸
 // ==========================================
 const ContentCard = ({ item, handleDelete, isDark, t }) => {
   let aiData: any = null;
@@ -372,6 +372,9 @@ const ContentCard = ({ item, handleDelete, isDark, t }) => {
 
   const hook = aiData?.social_media_copy?.hook || '';
   const caption = aiData?.social_media_copy?.caption || item.user_prompt || '...';
+  
+  // 👉 استخراج رابط الصورة أو الفيديو من قاعدة البيانات
+  const mediaUrl = aiData?.media_url || item.media_url || '';
 
   const [tkPost, setTkPost] = useState(false);
   const [tkStory, setTkStory] = useState(false);
@@ -411,11 +414,16 @@ const ContentCard = ({ item, handleDelete, isDark, t }) => {
   const textSecondary = isDark ? 'text-slate-300' : 'text-slate-600';
   const inputBg = isDark ? 'bg-slate-900 border-slate-700 text-slate-300 focus:border-purple-500' : 'bg-white border-slate-300 text-slate-900 focus:border-purple-500';
 
+  // 👉 تحديد نوع الشارة (Badge) بناءً على نوع المحتوى
+  let badgeText = t.textBadge;
+  if (item.content_type === 'promo_video') badgeText = t.videoBadge;
+  else if (item.content_type === 'product_shot') badgeText = "📸 تصميم (بوستر)";
+
   return (
     <div className={`${cardBg} backdrop-blur-xl rounded-[2rem] border overflow-hidden transition-all duration-300 flex flex-col h-full group hover:border-purple-500/50`}>
       <div className={`p-5 flex justify-between items-center border-b ${headerBg}`}>
         <span className="text-xs font-black text-white bg-gradient-to-r from-blue-600 to-blue-500 px-3 py-1.5 rounded-lg shadow-md">
-          {item.content_type === 'promo_video' ? t.videoBadge : t.textBadge}
+          {badgeText}
         </span>
         <div className="flex items-center gap-2">
           <button onClick={copyToClipboard} className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors border flex items-center gap-2 ${copied ? 'bg-green-500/20 text-green-500 border-green-500/50' : isDark ? 'text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 border-slate-700' : 'text-slate-600 hover:text-slate-900 bg-white hover:bg-slate-100 border-slate-300'}`}>
@@ -429,6 +437,23 @@ const ContentCard = ({ item, handleDelete, isDark, t }) => {
 
       <div className="p-6 flex-1 flex flex-col">
         {hook && <h3 className={`font-black text-lg mb-4 pb-4 border-b leading-snug ${textPrimary}`}>{hook}</h3>}
+        
+        {/* 👉 هذا هو الكود السحري الذي يعرض الصورة بدلاً من إخفائها 📸 */}
+        {mediaUrl && (
+          <div className="mb-4 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 relative group/media h-48 sm:h-56">
+            {item.content_type === 'promo_video' ? (
+              <video src={mediaUrl} controls className="w-full h-full object-cover" />
+            ) : (
+              <img src={mediaUrl} alt="Generated Content" className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+            )}
+            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/media:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
+               <a href={mediaUrl} target="_blank" rel="noreferrer" className="bg-white text-slate-900 px-4 py-2 rounded-lg text-xs font-bold shadow-xl hover:scale-105 transition-transform">
+                 عرض بحجم كامل
+               </a>
+            </div>
+          </div>
+        )}
+
         <p className={`text-sm leading-relaxed flex-1 whitespace-pre-wrap font-medium ${textSecondary}`}>{caption}</p>
       </div>
 
@@ -890,9 +915,6 @@ const ReviewsDashboard = ({ isDark, t }) => {
           </div>
         </div>
       )}
-    </div>
-  );
-};
 
 // ==========================================
 // 4. التطبيق الرئيسي (App)
