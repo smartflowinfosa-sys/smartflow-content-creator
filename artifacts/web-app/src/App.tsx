@@ -6,7 +6,7 @@ import { User, Settings, LogOut, Crown, Trash2, X, Lock, Globe, Palette, Copy, C
 // ==========================================
 // 1. قاموس الترجمة المحدث الشامل
 // ==========================================
-const translations = {
+const translations: any = {
   ar: {
     dir: "rtl",
     appTitle: "SmartFlow",
@@ -330,7 +330,7 @@ const translations = {
 // ==========================================
 // شاشة الحسابات قيد الانتظار (Pending Screen)
 // ==========================================
-const PendingScreen = ({ isDark, t, checkStatus, isChecking }) => {
+const PendingScreen = ({ isDark, t, checkStatus, isChecking }: any) => {
   return (
     <div className={`min-h-screen flex items-center justify-center p-4 transition-colors duration-500 ${isDark ? 'bg-[#0b1121] text-white' : 'bg-slate-50 text-slate-900'}`} dir={t.dir}>
       <div className={`max-w-md w-full p-8 rounded-3xl border text-center shadow-2xl animate-in zoom-in duration-500 ${isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-white border-slate-200'}`}>
@@ -360,7 +360,7 @@ const PendingScreen = ({ isDark, t, checkStatus, isChecking }) => {
 // ==========================================
 // مكون كارت المحتوى المستقل (الاستوديو) - محدث لعرض الصور والفيديو 📸
 // ==========================================
-const ContentCard = ({ item, handleDelete, isDark, t }) => {
+const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
   let aiData: any = null;
   try {
     if (item.ai_generated_json) {
@@ -442,12 +442,12 @@ const ContentCard = ({ item, handleDelete, isDark, t }) => {
         {mediaUrl && (
           <div className="mb-4 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 relative group/media h-48 sm:h-56">
             {item.content_type === 'promo_video' ? (
-              <video src={mediaUrl} controls className="w-full h-full object-cover" />
+              <video src={mediaUrl} controls className="w-full h-full object-cover"></video>
             ) : (
               <img src={mediaUrl} alt="Generated Content" className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
             )}
             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/media:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
-               <a href={mediaUrl} target="_blank" rel="noreferrer" className="bg-white text-slate-900 px-4 py-2 rounded-lg text-xs font-bold shadow-xl hover:scale-105 transition-transform">
+               <a href={mediaUrl} target="_blank" rel="noopener noreferrer" className="bg-white text-slate-900 px-4 py-2 rounded-lg text-xs font-bold shadow-xl hover:scale-105 transition-transform">
                  عرض بحجم كامل
                </a>
             </div>
@@ -499,7 +499,7 @@ const ContentCard = ({ item, handleDelete, isDark, t }) => {
 // ==========================================
 // مكون لوحة تحكم التقييمات الجديد
 // ==========================================
-const ReviewsDashboard = ({ isDark, t }) => {
+const ReviewsDashboard = ({ isDark, t }: any) => {
   const [isGoogleConnected, setIsGoogleConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   
@@ -632,7 +632,7 @@ const ReviewsDashboard = ({ isDark, t }) => {
   const textMuted = isDark ? 'text-slate-400' : 'text-slate-500';
   const inputBg = isDark ? 'bg-slate-950/50 border-slate-700/80 text-white focus:border-blue-500/50' : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-blue-500/50';
 
-  const ToggleSwitch = ({ isOn, onToggle }) => (
+  const ToggleSwitch = ({ isOn, onToggle }: any) => (
     <div onClick={onToggle} className={`w-12 h-6 rounded-full flex items-center p-1 cursor-pointer transition-colors ${isOn ? 'bg-green-500' : (isDark ? 'bg-slate-700' : 'bg-slate-300')}`}>
       <div className={`w-4 h-4 bg-white rounded-full shadow-sm transform transition-transform duration-300 ${isOn ? (t.dir === 'rtl' ? '-translate-x-6' : 'translate-x-6') : 'translate-x-0'}`}></div>
     </div>
@@ -976,7 +976,7 @@ export default function App() {
     }
   }, []);
 
-  const checkUserStatus = async (user) => {
+  const checkUserStatus = async (user: any) => {
     if (!user) return;
     try {
       const { data, error } = await supabase.from('profiles').select('status').eq('id', user.id).single();
@@ -1066,7 +1066,7 @@ export default function App() {
     }
   };
 
-  const handleGeneratePrompt = (e) => {
+  const handleGeneratePrompt = (e: any) => {
     e.preventDefault();
     if(!rawIdea) return;
     setIsGeneratingPrompt(true);
@@ -1076,7 +1076,7 @@ export default function App() {
     }, 1500);
   };
 
-  const handleApplyPrompt = (e) => {
+  const handleApplyPrompt = (e: any) => {
     e.preventDefault();
     setPrompt(generatedPrompt);
     setIsAiAssistOpen(false);
@@ -1410,7 +1410,7 @@ export default function App() {
                   <div className="relative">
                     <select value={activityType} onChange={(e) => setActivityType(e.target.value)} required className={`w-full px-5 py-4 border rounded-2xl outline-none font-medium appearance-none transition-all ${inputBg}`}>
                       <option className={optionClass} value="" disabled>{t.bizPlaceholder}</option>
-                      {t.activities.map((act, i) => <option className={optionClass} key={i} value={act}>{act}</option>)}
+                      {t.activities.map((act: any, i: any) => <option className={optionClass} key={i} value={act}>{act}</option>)}
                     </select>
                     <div className={`absolute inset-y-0 ${t.dir === 'rtl' ? 'left-5' : 'right-5'} flex items-center pointer-events-none text-slate-400`}>▼</div>
                   </div>
@@ -1584,7 +1584,7 @@ export default function App() {
                     <p className={`font-medium text-lg ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t.emptyLib}</p>
                   </div>
                 ) : (
-                  results.map((item, index) => <ContentCard key={index} item={item} handleDelete={handleDelete} isDark={isDark} t={t} />)
+                  results.map((item: any, index: any) => <ContentCard key={index} item={item} handleDelete={handleDelete} isDark={isDark} t={t} />)
                 )}
               </div>
             </div>
