@@ -890,6 +890,9 @@ const ReviewsDashboard = ({ isDark, t }) => {
           </div>
         </div>
       )}
+    </div>
+  );
+};
 
 // ==========================================
 // 4. التطبيق الرئيسي (App)
@@ -1086,7 +1089,6 @@ export default function App() {
       }
     }
 
-    // 🛑 تم تغيير الرابط هنا إلى رابط الإنتاج (Production URL) 🛑
     const webhookUrl = "https://n8n-p10bgpahkliy9hghak21zv3e.178.105.219.96.sslip.io/webhook/generate-content-v2";
 
     const payload = {
