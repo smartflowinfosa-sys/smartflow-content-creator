@@ -3,12 +3,18 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "./supabase";
 import Auth from "./Auth"; 
-import { User, Settings, LogOut, Crown, Trash2, X, Lock, Globe, Palette, Copy, CheckCircle2, Instagram, Info, Loader2, Wallet, CreditCard, Shield, Sliders, ImagePlus, Mic, Activity, Target, AlignLeft, AlignJustify, Star, MessageCircle, Clapperboard, Bot, Bell, LineChart, Phone, Wand2, Hourglass } from 'lucide-react';
+import { 
+  User, Settings, LogOut, Crown, Trash2, X, Lock, Globe, Palette, 
+  Copy, CheckCircle2, Instagram, Info, Loader2, Wallet, CreditCard, 
+  Shield, Sliders, ImagePlus, Mic, Activity, Target, AlignLeft, 
+  AlignJustify, Star, MessageCircle, Clapperboard, CalendarRange, 
+  Bot, Bell, LineChart, Phone, Wand2, Hourglass 
+} from 'lucide-react';
 
 // ==========================================
 // 1. قاموس الترجمة المحدث الشامل
 // ==========================================
-const translations: any = {
+const translations = {
   ar: {
     dir: "rtl",
     appTitle: "SmartFlow",
@@ -33,7 +39,7 @@ const translations: any = {
     connectIg: "ربط إنستقرام",
     connectTk: "ربط تيك توك",
     disconnectIg: "فصل الحساب",
-    disconnectConfirm: "هل أنت متأكد أن تريد فصل الحساب عن المنصة؟ سيتم إيقاف النشر التلقائي.",
+    disconnectConfirm: "هل أنت متأكد أنك تريد فصل الحساب عن المنصة؟ سيتم إيقاف النشر التلقائي.",
     disconnected: "تم فصل الحساب بنجاح.",
     igTrustMsg: "يتم الربط رسمياً ومباشرة عبر خوادم المنصات (OAuth 2.0). نحن لا نطلب أو نحفظ كلمات المرور الخاصة بك، ونطلب فقط صلاحية النشر الآلي لتسهيل عملك.",
     bizCategory: "نوع النشاط التجاري:",
@@ -332,7 +338,7 @@ const translations: any = {
 // ==========================================
 // شاشة الحسابات قيد الانتظار (Pending Screen)
 // ==========================================
-const PendingScreen = ({ isDark, t, checkStatus, isChecking }: any) => {
+const PendingScreen = ({ isDark, t, checkStatus, isChecking }) => {
   return (
     <div className={`min-h-screen flex items-center justify-center p-4 transition-colors duration-500 ${isDark ? 'bg-[#0b1121] text-white' : 'bg-slate-50 text-slate-900'}`} dir={t.dir}>
       <div className={`max-w-md w-full p-8 rounded-3xl border text-center shadow-2xl animate-in zoom-in duration-500 ${isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-white border-slate-200'}`}>
@@ -362,8 +368,8 @@ const PendingScreen = ({ isDark, t, checkStatus, isChecking }: any) => {
 // ==========================================
 // مكون كارت المحتوى المستقل (الاستوديو) - محدث لعرض الصور والفيديو 📸
 // ==========================================
-const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
-  let aiData: any = null;
+const ContentCard = ({ item, handleDelete, isDark, t }) => {
+  let aiData = null;
   try {
     if (item.ai_generated_json) {
       aiData = typeof item.ai_generated_json === 'string' ? JSON.parse(item.ai_generated_json) : item.ai_generated_json;
@@ -375,6 +381,7 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
   const hook = aiData?.social_media_copy?.hook || '';
   const caption = aiData?.social_media_copy?.caption || item.user_prompt || '...';
   
+  // 👉 استخراج رابط الصورة أو الفيديو من قاعدة البيانات
   const mediaUrl = aiData?.media_url || item.media_url || '';
 
   const [tkPost, setTkPost] = useState(false);
@@ -415,6 +422,7 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
   const textSecondary = isDark ? 'text-slate-300' : 'text-slate-600';
   const inputBg = isDark ? 'bg-slate-900 border-slate-700 text-slate-300 focus:border-purple-500' : 'bg-white border-slate-300 text-slate-900 focus:border-purple-500';
 
+  // 👉 تحديد نوع الشارة (Badge) بناءً على نوع المحتوى
   let badgeText = t.textBadge;
   if (item.content_type === 'promo_video') badgeText = t.videoBadge;
   else if (item.content_type === 'product_shot') badgeText = "📸 تصميم (بوستر)";
@@ -438,10 +446,11 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
       <div className="p-6 flex-1 flex flex-col">
         {hook && <h3 className={`font-black text-lg mb-4 pb-4 border-b leading-snug ${textPrimary}`}>{hook}</h3>}
         
+        {/* 👉 هذا هو الكود السحري الذي يعرض الصورة بدلاً من إخفائها 📸 */}
         {mediaUrl && (
           <div className="mb-4 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 relative group/media h-48 sm:h-56">
             {item.content_type === 'promo_video' ? (
-              <video src={mediaUrl} controls className="w-full h-full object-cover" />
+              <video src={mediaUrl} controls className="w-full h-full object-cover"></video>
             ) : (
               <img src={mediaUrl} alt="Generated Content" className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
             )}
@@ -479,10 +488,10 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
 
         <div className="flex gap-3 mb-4" dir="ltr">
           <div className="flex-1">
-            <input type="date" required value={scheduleDate} onChange={(e: any)=>setScheduleDate(e.target.value)} style={{ fontFamily: 'Arial, Helvetica, sans-serif', direction: 'ltr', colorScheme: isDark ? 'dark' : 'light' }} className={`w-full border rounded-xl px-4 py-3 text-sm outline-none transition-colors ${inputBg}`} />
+            <input type="date" required value={scheduleDate} onChange={(e)=>setScheduleDate(e.target.value)} style={{ fontFamily: 'Arial, Helvetica, sans-serif', direction: 'ltr', colorScheme: isDark ? 'dark' : 'light' }} className={`w-full border rounded-xl px-4 py-3 text-sm outline-none transition-colors ${inputBg}`} />
           </div>
           <div className="flex-1">
-            <input type="time" required value={scheduleTime} onChange={(e: any)=>setScheduleTime(e.target.value)} style={{ fontFamily: 'Arial, Helvetica, sans-serif', direction: 'ltr', colorScheme: isDark ? 'dark' : 'light' }} className={`w-full border rounded-xl px-4 py-3 text-sm outline-none transition-colors ${inputBg}`} />
+            <input type="time" required value={scheduleTime} onChange={(e)=>setScheduleTime(e.target.value)} style={{ fontFamily: 'Arial, Helvetica, sans-serif', direction: 'ltr', colorScheme: isDark ? 'dark' : 'light' }} className={`w-full border rounded-xl px-4 py-3 text-sm outline-none transition-colors ${inputBg}`} />
           </div>
         </div>
 
@@ -498,7 +507,7 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
 // ==========================================
 // مكون لوحة تحكم التقييمات الجديد
 // ==========================================
-const ReviewsDashboard = ({ isDark, t }: any) => {
+const ReviewsDashboard = ({ isDark, t }) => {
   const [isGoogleConnected, setIsGoogleConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   
@@ -631,7 +640,7 @@ const ReviewsDashboard = ({ isDark, t }: any) => {
   const textMuted = isDark ? 'text-slate-400' : 'text-slate-500';
   const inputBg = isDark ? 'bg-slate-950/50 border-slate-700/80 text-white focus:border-blue-500/50' : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-blue-500/50';
 
-  const ToggleSwitch = ({ isOn, onToggle }: any) => (
+  const ToggleSwitch = ({ isOn, onToggle }) => (
     <div onClick={onToggle} className={`w-12 h-6 rounded-full flex items-center p-1 cursor-pointer transition-colors ${isOn ? 'bg-green-500' : (isDark ? 'bg-slate-700' : 'bg-slate-300')}`}>
       <div className={`w-4 h-4 bg-white rounded-full shadow-sm transform transition-transform duration-300 ${isOn ? (t.dir === 'rtl' ? '-translate-x-6' : 'translate-x-6') : 'translate-x-0'}`}></div>
     </div>
@@ -723,7 +732,7 @@ const ReviewsDashboard = ({ isDark, t }: any) => {
                    <p className={`text-xs mb-3 ${textMuted}`}>{t.customPromptDesc}</p>
                    {featCustomPrompt && (
                      <div className="mt-3 animate-in fade-in slide-in-from-top-2 duration-300">
-                       <textarea value={customPromptText} onChange={(e: any)=>setCustomPromptText(e.target.value)} placeholder={t.customPromptPlaceholder} className={`w-full p-3 rounded-xl text-sm outline-none border transition-all resize-none ${inputBg}`} rows={2}></textarea>
+                       <textarea value={customPromptText} onChange={(e)=>setCustomPromptText(e.target.value)} placeholder={t.customPromptPlaceholder} className={`w-full p-3 rounded-xl text-sm outline-none border transition-all resize-none ${inputBg}`} rows={2}></textarea>
                        <div className="flex justify-end mt-2">
                          <button onClick={handleSavePrompt} disabled={isSavingPrompt} className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${isDark ? 'bg-blue-600 hover:bg-blue-500 text-white' : 'bg-blue-100 hover:bg-blue-200 text-blue-700'}`}>
                            {isSavingPrompt ? <Loader2 size={14} className="animate-spin" /> : <CheckCircle2 size={14} />}
@@ -743,7 +752,7 @@ const ReviewsDashboard = ({ isDark, t }: any) => {
                    {featCompetitor && (
                      <div className="mt-3 animate-in fade-in slide-in-from-top-2 duration-300">
                        <div className="flex flex-col sm:flex-row gap-2">
-                         <input type="url" value={competitorUrl} onChange={(e: any)=>setCompetitorUrl(e.target.value)} placeholder={t.trackPlaceholder} className={`flex-1 p-3 rounded-xl text-sm outline-none border transition-all ${inputBg}`} />
+                         <input type="url" value={competitorUrl} onChange={(e)=>setCompetitorUrl(e.target.value)} placeholder={t.trackPlaceholder} className={`flex-1 p-3 rounded-xl text-sm outline-none border transition-all ${inputBg}`} />
                          <button onClick={handleStartTracking} disabled={isTracking} className={`px-4 py-2 rounded-xl text-sm font-bold transition-all whitespace-nowrap flex items-center justify-center gap-2 ${isDark ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30 hover:bg-orange-500/30' : 'bg-orange-50 text-orange-600 border border-orange-200 hover:bg-orange-100'}`}>
                            {isTracking ? <Loader2 size={16} className="animate-spin" /> : <Activity size={16} />}
                            {isTracking ? t.tracking : t.startTracking}
@@ -761,7 +770,7 @@ const ReviewsDashboard = ({ isDark, t }: any) => {
                    <p className={`text-xs mb-3 ${textMuted}`}>{t.negAlertsDesc}</p>
                    {featAlerts && (
                      <div className="flex flex-col sm:flex-row gap-2 mt-3 animate-in fade-in slide-in-from-top-2 duration-300">
-                       <input type="tel" value={alertPhone} onChange={(e: any)=>setAlertPhone(e.target.value)} placeholder={t.phonePlaceholder} className={`flex-1 p-3 rounded-xl text-sm outline-none border transition-all ${inputBg}`} dir="ltr" />
+                       <input type="tel" value={alertPhone} onChange={(e)=>setAlertPhone(e.target.value)} placeholder={t.phonePlaceholder} className={`flex-1 p-3 rounded-xl text-sm outline-none border transition-all ${inputBg}`} dir="ltr" />
                        <button onClick={handleSaveAlert} disabled={isSavingAlert} className={`px-6 py-2 rounded-xl font-bold transition-all text-sm flex items-center justify-center gap-2 whitespace-nowrap ${isDark ? 'bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500/20' : 'bg-red-50 text-red-600 border border-red-200 hover:bg-red-100'}`}>
                          {isSavingAlert ? <Loader2 size={16} className="animate-spin" /> : null}
                          {isSavingAlert ? t.activating : t.activateAlert}
@@ -786,7 +795,7 @@ const ReviewsDashboard = ({ isDark, t }: any) => {
               <div className="flex flex-wrap items-center gap-2 w-full xl:w-auto justify-end">
                 <span className={`text-sm font-bold whitespace-nowrap px-1 ${textMuted}`}>{t.showLabel}</span>
                 
-                <select value={timeFilter} onChange={(e: any) => setTimeFilter(e.target.value)} className={`px-4 py-2 rounded-xl text-xs font-bold outline-none border transition-all cursor-pointer ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-slate-200 text-slate-900'}`}>
+                <select value={timeFilter} onChange={(e) => setTimeFilter(e.target.value)} className={`px-4 py-2 rounded-xl text-xs font-bold outline-none border transition-all cursor-pointer ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-slate-200 text-slate-900'}`}>
                    <option value="all">{t.filterTimeAll}</option>
                    <option value="today">{t.filterTimeToday}</option>
                    <option value="week">{t.filterTimeWeek}</option>
@@ -796,9 +805,9 @@ const ReviewsDashboard = ({ isDark, t }: any) => {
 
                 {timeFilter === 'custom' && (
                    <div className="flex items-center gap-2 animate-in fade-in zoom-in duration-300">
-                      <input type="date" lang="en-US" dir="ltr" value={customDateFrom} onChange={(e: any)=>setCustomDateFrom(e.target.value)} className={`h-8 px-2 rounded-lg text-xs outline-none border transition-all ${inputBg}`} style={{ colorScheme: isDark ? 'dark' : 'light', fontFamily: 'Arial, sans-serif' }} />
+                      <input type="date" lang="en-US" dir="ltr" value={customDateFrom} onChange={(e)=>setCustomDateFrom(e.target.value)} className={`h-8 px-2 rounded-lg text-xs outline-none border transition-all ${inputBg}`} style={{ colorScheme: isDark ? 'dark' : 'light', fontFamily: 'Arial, sans-serif' }} />
                       <span className={`text-xs font-bold ${textMuted}`}>-</span>
-                      <input type="date" lang="en-US" dir="ltr" value={customDateTo} onChange={(e: any)=>setCustomDateTo(e.target.value)} className={`h-8 px-2 rounded-lg text-xs outline-none border transition-all ${inputBg}`} style={{ colorScheme: isDark ? 'dark' : 'light', fontFamily: 'Arial, sans-serif' }} />
+                      <input type="date" lang="en-US" dir="ltr" value={customDateTo} onChange={(e)=>setCustomDateTo(e.target.value)} className={`h-8 px-2 rounded-lg text-xs outline-none border transition-all ${inputBg}`} style={{ colorScheme: isDark ? 'dark' : 'light', fontFamily: 'Arial, sans-serif' }} />
                    </div>
                 )}
 
@@ -815,7 +824,7 @@ const ReviewsDashboard = ({ isDark, t }: any) => {
               {displayedReviews.length === 0 ? (
                 <div className="p-10 text-center text-sm font-bold text-slate-500">{t.noFilterMatch}</div>
               ) : (
-                displayedReviews.map((review: any) => (
+                displayedReviews.map((review) => (
                 <div key={review.id} className={`p-6 transition-colors ${isDark ? 'hover:bg-slate-800/30' : 'hover:bg-slate-50'}`}>
                   <div className="flex flex-col lg:flex-row gap-6">
                     
@@ -831,7 +840,7 @@ const ReviewsDashboard = ({ isDark, t }: any) => {
                           </div>
                         </div>
                         <div className="flex gap-1">
-                          {[...Array(5)].map((_: any, i: number) => (
+                          {[...Array(5)].map((_, i) => (
                             <Star key={i} size={16} className={i < review.rating ? "fill-yellow-400 text-yellow-400" : "fill-slate-700 text-slate-700"} />
                           ))}
                         </div>
@@ -949,8 +958,8 @@ export default function App() {
   const [isTkConnected, setIsTkConnected] = useState(false); 
   const [isConnecting, setIsConnecting] = useState(false);
 
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<any>(null);
+  const [imagePreview, setImagePreview] = useState<any>(null);
 
   const [voiceGender, setVoiceGender] = useState("male_sa");
   const [adTone, setAdTone] = useState("enthusiastic");
@@ -978,11 +987,16 @@ export default function App() {
   const checkUserStatus = async (user: any) => {
     if (!user) return;
     try {
-      const { data, error } = await supabase.from('profiles').select('status').eq('id', user.id).single();
+      const { data, error } = await supabase.from('profiles').select('status').eq('id', user.id).maybeSingle();
+      if (error) {
+        console.error("Supabase Error:", error);
+        setUserStatus('pending');
+        return;
+      }
       if (data) {
         setUserStatus(data.status);
       } else {
-        setUserStatus('pending'); // احتياط في حال تأخر التريجر
+        setUserStatus('pending'); 
       }
     } catch (e) {
       console.error(e);
@@ -1057,7 +1071,7 @@ export default function App() {
     }, 1500);
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = (e: any) => {
     const file = e.target.files?.[0];
     if (file) {
       setImageFile(file);
@@ -1085,7 +1099,7 @@ export default function App() {
     setGeneratedPrompt("");
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
     if (!session?.user?.id) return;
     if (!activityType) return alert(t.platformValidation);
