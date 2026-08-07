@@ -381,8 +381,18 @@ const ContentCard = ({ item, handleDelete, isDark, t }) => {
   const hook = aiData?.social_media_copy?.hook || '';
   const caption = aiData?.social_media_copy?.caption || item.user_prompt || '...';
   
-  // 👉 استخراج رابط الصورة أو الفيديو من قاعدة البيانات
-  const mediaUrl = aiData?.media_url || item.media_url || '';
+  // 👉 استخراج رابط الصورة أو الفيديو من قاعدة البيانات (بأكثر من مسمى محتمل للحقل)
+  const mediaUrl =
+    aiData?.media_url || item.media_url ||
+    aiData?.image_url || item.image_url ||
+    aiData?.video_url || item.video_url ||
+    aiData?.output_url || item.output_url ||
+    aiData?.result_url || item.result_url || '';
+
+  // 👉 تحديد ما إذا كان المخرج فيديو، سواء عبر content_type أو امتداد الرابط نفسه
+  const isVideoMedia =
+    item.content_type === 'promo_video' ||
+    /\.(mp4|webm|mov|m4v)(\?|$)/i.test(mediaUrl);
 
   const [tkPost, setTkPost] = useState(false);
   const [tkStory, setTkStory] = useState(false);
@@ -449,7 +459,7 @@ const ContentCard = ({ item, handleDelete, isDark, t }) => {
         {/* 👉 هذا هو الكود السحري الذي يعرض الصورة بدلاً من إخفائها 📸 */}
         {mediaUrl && (
           <div className="mb-4 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 relative group/media h-48 sm:h-56">
-            {item.content_type === 'promo_video' ? (
+            {isVideoMedia ? (
               <video src={mediaUrl} controls className="w-full h-full object-cover"></video>
             ) : (
               <img src={mediaUrl} alt="Generated Content" className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
@@ -488,10 +498,10 @@ const ContentCard = ({ item, handleDelete, isDark, t }) => {
 
         <div className="flex gap-3 mb-4" dir="ltr">
           <div className="flex-1">
-            <input type="date" required value={scheduleDate} onChange={(e)=>setScheduleDate(e.target.value)} style={{ fontFamily: 'Arial, Helvetica, sans-serif', direction: 'ltr', colorScheme: isDark ? 'dark' : 'light' }} className={`w-full border rounded-xl px-4 py-3 text-sm outline-none transition-colors ${inputBg}`} />
+            <input type="date" lang="en-US" required value={scheduleDate} onChange={(e)=>setScheduleDate(e.target.value)} style={{ fontFamily: 'Arial, Helvetica, sans-serif', direction: 'ltr', colorScheme: isDark ? 'dark' : 'light' }} className={`w-full border rounded-xl px-4 py-3 text-sm outline-none transition-colors ${inputBg}`} />
           </div>
           <div className="flex-1">
-            <input type="time" required value={scheduleTime} onChange={(e)=>setScheduleTime(e.target.value)} style={{ fontFamily: 'Arial, Helvetica, sans-serif', direction: 'ltr', colorScheme: isDark ? 'dark' : 'light' }} className={`w-full border rounded-xl px-4 py-3 text-sm outline-none transition-colors ${inputBg}`} />
+            <input type="time" lang="en-US" required value={scheduleTime} onChange={(e)=>setScheduleTime(e.target.value)} style={{ fontFamily: 'Arial, Helvetica, sans-serif', direction: 'ltr', colorScheme: isDark ? 'dark' : 'light' }} className={`w-full border rounded-xl px-4 py-3 text-sm outline-none transition-colors ${inputBg}`} />
           </div>
         </div>
 
@@ -923,6 +933,9 @@ const ReviewsDashboard = ({ isDark, t }) => {
           </div>
         </div>
       )}
+    </div>
+  );
+};
 
 // ==========================================
 // 4. التطبيق الرئيسي (App)
