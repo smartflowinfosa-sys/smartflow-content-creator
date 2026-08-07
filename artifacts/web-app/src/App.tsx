@@ -107,7 +107,7 @@ const translations: any = {
       "مراكز التجميل والصالونات", "العيادات والمراكز الطبية", "تنظيم الفعاليات والمؤتمرات",
       "تجهيز المناسبات والضيافة", "السياحة والسفر", "النوادي الرياضية واللياقة البدنية"
     ],
-    credits: "الرصيد المتاح",
+    credits: "Available Credits",
     points: "نقطة",
     buyCredits: "شراء رصيد إضافي",
     tabGeneral: "إعدادات عامة",
@@ -381,7 +381,7 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
   const hook = aiData?.social_media_copy?.hook || '';
   const caption = aiData?.social_media_copy?.caption || item.user_prompt || '...';
   
-  // 👉 استخراج رابط الصورة أو الفيديو من قاعدة البيانات (بأكثر من مسمى محتمل للحقل)
+  // 👉 استخراج رابط الصورة أو الفيديو من قاعدة البيانات
   const mediaUrl =
     aiData?.media_url || item.media_url ||
     aiData?.image_url || item.image_url ||
@@ -389,7 +389,7 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
     aiData?.output_url || item.output_url ||
     aiData?.result_url || item.result_url || '';
 
-  // 👉 تحديد ما إذا كان المخرج فيديو، سواء عبر content_type أو امتداد الرابط نفسه
+  // 👉 تحديد ما إذا كان المخرج فيديو
   const isVideoMedia =
     item.content_type === 'promo_video' ||
     /\.(mp4|webm|mov|m4v)(\?|$)/i.test(mediaUrl);
@@ -403,6 +403,19 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
   const [scheduleTime, setScheduleTime] = useState("");
   const [isPublishing, setIsPublishing] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  // إعداد مراجع الحقول لتمكين النقر في أي مكان
+  const dateRef = React.useRef<HTMLInputElement>(null);
+  const timeRef = React.useRef<HTMLInputElement>(null);
+
+  // دالة تحويل التاريخ إلى الشكل الاحترافي 2026 Aug 8
+  const formatScheduleDate = (dateStr: string) => {
+    if (!dateStr) return 'تاريخ النشر';
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr;
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return `${d.getFullYear()} ${months[d.getMonth()]} ${d.getDate()}`;
+  };
 
   const handleSchedule = async () => {
     if (!tkPost && !tkStory && !igPost && !igStory) return alert(t.platformValidation);
@@ -432,7 +445,7 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
   const textSecondary = isDark ? 'text-slate-300' : 'text-slate-600';
   const inputBg = isDark ? 'bg-slate-900 border-slate-700 text-slate-300 focus:border-purple-500' : 'bg-white border-slate-300 text-slate-900 focus:border-purple-500';
 
-  // 👉 تحديد نوع الشارة (Badge) بناءً على نوع المحتوى
+  // 👉 تحديد نوع الشارة (Badge)
   let badgeText = t.textBadge;
   if (item.content_type === 'promo_video') badgeText = t.videoBadge;
   else if (item.content_type === 'product_shot' || item.content_type === 'poster') badgeText = "📸 تصميم (بوستر)";
@@ -456,7 +469,7 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
       <div className="p-6 flex-1 flex flex-col">
         {hook && <h3 className={`font-black text-lg mb-4 pb-4 border-b leading-snug ${textPrimary}`}>{hook}</h3>}
         
-        {/* 👉 هذا هو الكود السحري الذي يعرض الصورة بدلاً من إخفائها 📸 */}
+        {/* 👉 كود عرض الصورة أو الفيديو */}
         {mediaUrl && (
           <div className="mb-4 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 relative group/media h-48 sm:h-56">
             {isVideoMedia ? (
@@ -500,38 +513,42 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
         <div className="flex gap-3 mb-4">
           
           {/* حقل التاريخ */}
-          <div className="relative flex-1 group cursor-pointer">
-            <div className={`w-full border rounded-xl px-4 py-3 text-sm transition-all flex items-center justify-between group-hover:border-purple-500 shadow-sm ${inputBg}`}>
-              <span className={`${scheduleDate ? 'font-black text-purple-500' : 'opacity-60 font-bold'} font-sans tracking-wide`} dir="ltr">
-                {scheduleDate || 'تاريخ النشر'}
+          <div className="relative flex-1 group cursor-pointer" onClick={() => { try { dateRef.current?.showPicker(); } catch(e){} }}>
+            <div className={`w-full border rounded-xl px-4 py-3 text-sm transition-all flex items-center justify-between group-hover:border-purple-500 shadow-sm overflow-hidden ${inputBg}`}>
+              <span className={`${scheduleDate ? 'font-black text-purple-500' : 'opacity-60 font-bold'} font-sans tracking-wide whitespace-nowrap`} dir="ltr">
+                {formatScheduleDate(scheduleDate)}
               </span>
-              <CalendarRange size={18} className={`${scheduleDate ? 'text-purple-500' : 'text-slate-400'}`} />
+              <CalendarRange size={18} className={`shrink-0 ${scheduleDate ? 'text-purple-500' : 'text-slate-400'}`} />
             </div>
             <input 
+              ref={dateRef}
               type="date" 
               lang="en-US" 
               required 
               value={scheduleDate} 
               onChange={(e: any) => setScheduleDate(e.target.value)} 
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" 
+              className="absolute inset-0 w-full h-full opacity-0 pointer-events-none" 
+              style={{ colorScheme: isDark ? 'dark' : 'light' }}
             />
           </div>
 
           {/* حقل الوقت */}
-          <div className="relative flex-1 group cursor-pointer">
-            <div className={`w-full border rounded-xl px-4 py-3 text-sm transition-all flex items-center justify-between group-hover:border-purple-500 shadow-sm ${inputBg}`}>
-              <span className={`${scheduleTime ? 'font-black text-purple-500' : 'opacity-60 font-bold'} font-sans tracking-wide`} dir="ltr">
+          <div className="relative flex-1 group cursor-pointer" onClick={() => { try { timeRef.current?.showPicker(); } catch(e){} }}>
+            <div className={`w-full border rounded-xl px-4 py-3 text-sm transition-all flex items-center justify-between group-hover:border-purple-500 shadow-sm overflow-hidden ${inputBg}`}>
+              <span className={`${scheduleTime ? 'font-black text-purple-500' : 'opacity-60 font-bold'} font-sans tracking-wide whitespace-nowrap`} dir="ltr">
                 {scheduleTime || 'وقت النشر'}
               </span>
-              <Clock size={18} className={`${scheduleTime ? 'text-purple-500' : 'text-slate-400'}`} />
+              <Clock size={18} className={`shrink-0 ${scheduleTime ? 'text-purple-500' : 'text-slate-400'}`} />
             </div>
             <input 
+              ref={timeRef}
               type="time" 
               lang="en-US" 
               required 
               value={scheduleTime} 
               onChange={(e: any) => setScheduleTime(e.target.value)} 
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" 
+              className="absolute inset-0 w-full h-full opacity-0 pointer-events-none"
+              style={{ colorScheme: isDark ? 'dark' : 'light' }}
             />
           </div>
 
@@ -1004,8 +1021,8 @@ export default function App() {
   const [isTkConnected, setIsTkConnected] = useState(false); 
   const [isConnecting, setIsConnecting] = useState(false);
 
-  const [imageFile, setImageFile] = useState<any>(null);
-  const [imagePreview, setImagePreview] = useState<any>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const [voiceGender, setVoiceGender] = useState("male_sa");
   const [adTone, setAdTone] = useState("enthusiastic");
