@@ -28,6 +28,10 @@ export default function Auth() {
       switchLogin: 'تسجيل الدخول',
       successMsg: 'تم إنشاء الحساب بنجاح! يمكنك تسجيل الدخول الآن.',
       langToggle: 'English 🌐',
+      agreementText: 'بالتسجيل، أنت توافق على ',
+      termsText: 'شروط الخدمة',
+      andText: ' و ',
+      privacyText: 'سياسة الخصوصية',
     },
     en: {
       title: 'SmartFlow',
@@ -46,6 +50,10 @@ export default function Auth() {
       switchLogin: 'Sign In',
       successMsg: 'Account created successfully! You can now log in.',
       langToggle: 'العربية 🌐',
+      agreementText: 'By signing up, you agree to our ',
+      termsText: 'Terms of Service',
+      andText: ' and ',
+      privacyText: 'Privacy Policy',
     }
   };
 
@@ -162,6 +170,19 @@ export default function Auth() {
             {isLogin ? t.switchSignup : t.switchLogin}
           </button>
         </p>
+
+        {/* الروابط القانونية - تظهر في أسفل الكارت */}
+        <div className="pt-2 text-center text-xs text-slate-500 font-medium">
+          {t.agreementText}
+          <a href="https://www.freeprivacypolicy.com/live/669af52d-d619-4744-a7b8-ad653974cc5f" target="_blank" rel="noreferrer" className="underline hover:text-purple-400 transition-colors">
+            {t.termsText}
+          </a>
+          {t.andText}
+          <a href="https://www.freeprivacypolicy.com/live/fbe2253d-b5fd-4952-acff-a817ff86bf21" target="_blank" rel="noreferrer" className="underline hover:text-purple-400 transition-colors">
+            {t.privacyText}
+          </a>
+        </div>
+
       </div>
     </div>
   );
