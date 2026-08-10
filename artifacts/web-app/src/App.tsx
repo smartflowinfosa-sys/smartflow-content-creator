@@ -8,7 +8,8 @@ import {
   Copy, CheckCircle2, Instagram, Info, Loader2, Wallet, CreditCard, 
   Shield, Sliders, ImagePlus, Mic, Activity, Target, AlignLeft, 
   AlignJustify, Star, MessageCircle, Clapperboard, CalendarRange, 
-  Bot, Bell, LineChart, Phone, Wand2, Hourglass, Clock, ShieldCheck, Users
+  Bot, Bell, LineChart, Phone, Wand2, Hourglass, Clock, ShieldCheck, Users,
+  Megaphone, Edit, Zap
 } from 'lucide-react';
 
 // ==========================================
@@ -25,7 +26,7 @@ const translations: any = {
     reviewsTab: "تقييمات قوقل ماب",
     adminTab: "لوحة الإدارة",
     currentPlan: "الباقة الحالية",
-    freePlan: "الباقة المجانية (Free)",
+    freePlan: "الباقة الأساسية (Basic)",
     settings: "إعدادات الحساب",
     logout: "تسجيل الخروج",
     langUi: "لغة الواجهة",
@@ -216,17 +217,31 @@ const translations: any = {
       salaryDec: "يوم الراتب (ديسمبر)"
     },
     adminTitle: "إدارة العملاء والمنصة 🛡️",
-    adminSubtitle: "تحكم في الحسابات، الصلاحيات، وتفعيل المشتركين الجدد.",
+    adminSubtitle: "تحكم في الحسابات، الأرصدة، الصلاحيات، وتفعيل المشتركين الجدد.",
     colEmail: "البريد الإلكتروني",
     colStatus: "الحالة",
-    colRole: "الصلاحية",
+    colRole: "الباقة والرصيد",
     colActions: "الإجراءات",
     btnActivate: "تفعيل",
     btnSuspend: "إيقاف",
     statusActive: "نشط",
     statusPending: "في الانتظار",
     roleAdmin: "مدير",
-    roleUser: "عميل"
+    roleUser: "عميل",
+    statsUsers: "إجمالي العملاء",
+    statsActive: "العملاء النشطين",
+    statsPending: "في الانتظار",
+    statsContent: "المحتوى المُولد",
+    announceTitle: "إرسال إشعار للعملاء 📢",
+    announcePlaceholder: "اكتب رسالة أو إعلان يظهر لجميع المستخدمين في التطبيق...",
+    announceSend: "إرسال للجميع",
+    editUserTitle: "تخصيص الباقة والصلاحيات",
+    editPlan: "اسم الباقة (Plan):",
+    editCredits: "تعديل رصيد النقاط:",
+    editFeatures: "الخدمات المتاحة للعميل:",
+    featCal: "التقويم التسويقي",
+    featRev: "الرد الآلي لتقييمات ماب",
+    saveChanges: "حفظ التعديلات"
   },
   en: {
     dir: "ltr",
@@ -238,7 +253,7 @@ const translations: any = {
     reviewsTab: "Google Reviews",
     adminTab: "Admin Panel",
     currentPlan: "Current Plan",
-    freePlan: "Free Plan",
+    freePlan: "Basic Plan",
     settings: "Account Settings",
     logout: "Logout",
     langUi: "Interface Language",
@@ -429,17 +444,31 @@ const translations: any = {
       salaryDec: "Salary Day (December)"
     },
     adminTitle: "Platform & Users Management 🛡️",
-    adminSubtitle: "Control accounts, roles, and activate new subscribers.",
+    adminSubtitle: "Control accounts, credits, features, and activate new subscribers.",
     colEmail: "Email Address",
     colStatus: "Status",
-    colRole: "Role",
+    colRole: "Plan & Credits",
     colActions: "Actions",
     btnActivate: "Activate",
     btnSuspend: "Suspend",
     statusActive: "Active",
     statusPending: "Pending",
     roleAdmin: "Admin",
-    roleUser: "User"
+    roleUser: "User",
+    statsUsers: "Total Users",
+    statsActive: "Active Users",
+    statsPending: "Pending Approvals",
+    statsContent: "AI Generations",
+    announceTitle: "Broadcast Announcement 📢",
+    announcePlaceholder: "Type a message to display to all users in the app...",
+    announceSend: "Send to All",
+    editUserTitle: "Customize Plan & Features",
+    editPlan: "Plan Name:",
+    editCredits: "Edit Credits Balance:",
+    editFeatures: "Enabled Features:",
+    featCal: "Marketing Calendar",
+    featRev: "Google Maps Auto-Reply",
+    saveChanges: "Save Changes"
   }
 };
 
@@ -479,10 +508,17 @@ const PendingScreen = ({ isDark, t, checkStatus, isChecking }: any) => {
 const AdminDashboard = ({ isDark, t }: any) => {
   const [users, setUsers] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [editingUser, setEditingUser] = useState<any>(null);
+  
+  // حالة نافذة التعديل
+  const [editPlan, setEditPlan] = useState("");
+  const [editCredits, setEditCredits] = useState(0);
+  const [editFeatCal, setEditFeatCal] = useState(true);
+  const [editFeatRev, setEditFeatRev] = useState(false);
+  const [isSavingUser, setIsSavingUser] = useState(false);
 
   const fetchUsers = async () => {
     setIsLoading(true);
-    // جلب جميع المستخدمين من جدول profiles
     const { data, error } = await supabase.from('profiles').select('*').order('created_at', { ascending: false });
     if (data) setUsers(data);
     if (error) console.error("Error fetching users:", error);
@@ -499,31 +535,112 @@ const AdminDashboard = ({ isDark, t }: any) => {
     if (!error) {
       setUsers(users.map(u => u.id === id ? { ...u, status: newStatus } : u));
     } else {
-      alert("حدث خطأ! تأكد من إعدادات RLS في قاعدة البيانات للسماح للمدير بالتعديل.");
-      console.error(error);
+      alert("حدث خطأ! تأكد من إعدادات RLS في قاعدة البيانات.");
     }
   };
 
+  const openEditModal = (user: any) => {
+    setEditingUser(user);
+    setEditPlan(user.plan_name || 'Basic');
+    setEditCredits(user.credits !== undefined ? user.credits : 150);
+    setEditFeatCal(user.feat_calendar !== undefined ? user.feat_calendar : true);
+    setEditFeatRev(user.feat_reviews !== undefined ? user.feat_reviews : false);
+  };
+
+  const saveUserConfig = async () => {
+    setIsSavingUser(true);
+    try {
+      const { error } = await supabase.from('profiles').update({
+        plan_name: editPlan,
+        credits: editCredits,
+        feat_calendar: editFeatCal,
+        feat_reviews: editFeatRev
+      }).eq('id', editingUser.id);
+      
+      if (error) throw error;
+      
+      // تحديث الواجهة محلياً
+      setUsers(users.map(u => u.id === editingUser.id ? { ...u, plan_name: editPlan, credits: editCredits, feat_calendar: editFeatCal, feat_reviews: editFeatRev } : u));
+      setEditingUser(null);
+    } catch (e: any) {
+      alert("Error: " + e.message + "\nتأكد من إضافة الأعمدة في Supabase أولاً!");
+    } finally {
+      setIsSavingUser(false);
+    }
+  };
+
+  const activeCount = users.filter(u => u.status === 'active').length;
+  const pendingCount = users.filter(u => u.status === 'pending').length;
+
+  const cardClass = isDark ? 'bg-slate-900/50 border-slate-700/50 text-white' : 'bg-white border-slate-200 text-slate-900';
+  const textMuted = isDark ? 'text-slate-400' : 'text-slate-500';
+  const inputBg = isDark ? 'bg-slate-950/50 border-slate-700/80 text-white focus:border-blue-500/50' : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-blue-500/50';
+
+  const ToggleSwitch = ({ isOn, onToggle }: any) => (
+    <div onClick={onToggle} className={`w-12 h-6 rounded-full flex items-center p-1 cursor-pointer transition-colors ${isOn ? 'bg-green-500' : (isDark ? 'bg-slate-700' : 'bg-slate-300')}`}>
+      <div className={`w-4 h-4 bg-white rounded-full shadow-sm transform transition-transform duration-300 ${isOn ? (t.dir === 'rtl' ? '-translate-x-6' : 'translate-x-6') : 'translate-x-0'}`}></div>
+    </div>
+  );
+
   return (
     <div className={`w-full max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 animate-in fade-in zoom-in duration-500 ${t.dir === 'ltr' ? 'text-left' : 'text-right'}`}>
+      
+      {/* رأس صفحة الإدارة */}
       <div className="flex justify-between items-center mb-8">
         <div>
           <h2 className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-red-400 to-orange-500 mb-2">{t.adminTitle}</h2>
-          <p className={`font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t.adminSubtitle}</p>
+          <p className={`font-medium ${textMuted}`}>{t.adminSubtitle}</p>
         </div>
         <button onClick={fetchUsers} disabled={isLoading} className={`p-3 rounded-xl border transition-all ${isDark ? 'bg-slate-800 text-slate-300 border-slate-700 hover:text-white' : 'bg-white text-slate-600 border-slate-200 hover:text-slate-900 shadow-sm'}`}>
           <Loader2 className={isLoading ? "animate-spin" : ""} size={20} />
         </button>
       </div>
 
+      {/* شريط الإحصائيات KPI */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className={`p-5 rounded-2xl border ${cardClass} flex flex-col justify-center items-center shadow-sm`}>
+           <Users className="text-blue-500 mb-2" size={24} />
+           <p className={`text-xs font-bold ${textMuted}`}>{t.statsUsers}</p>
+           <p className="text-2xl font-black mt-1">{users.length}</p>
+        </div>
+        <div className={`p-5 rounded-2xl border ${cardClass} flex flex-col justify-center items-center shadow-sm`}>
+           <CheckCircle2 className="text-green-500 mb-2" size={24} />
+           <p className={`text-xs font-bold ${textMuted}`}>{t.statsActive}</p>
+           <p className="text-2xl font-black mt-1">{activeCount}</p>
+        </div>
+        <div className={`p-5 rounded-2xl border ${cardClass} flex flex-col justify-center items-center shadow-sm`}>
+           <Hourglass className="text-orange-500 mb-2" size={24} />
+           <p className={`text-xs font-bold ${textMuted}`}>{t.statsPending}</p>
+           <p className="text-2xl font-black mt-1">{pendingCount}</p>
+        </div>
+        <div className={`p-5 rounded-2xl border ${cardClass} flex flex-col justify-center items-center shadow-sm`}>
+           <Wand2 className="text-purple-500 mb-2" size={24} />
+           <p className={`text-xs font-bold ${textMuted}`}>{t.statsContent}</p>
+           <p className="text-2xl font-black mt-1">~1.2k</p>
+        </div>
+      </div>
+
+      {/* نظام الإشعارات */}
+      <div className={`p-5 rounded-2xl border mb-8 flex flex-col md:flex-row gap-4 items-center shadow-sm ${isDark ? 'bg-slate-900/50 border-slate-700/50' : 'bg-white border-slate-200'}`}>
+        <div className="flex items-center gap-3 shrink-0">
+          <div className="w-10 h-10 bg-blue-500/10 rounded-full flex items-center justify-center text-blue-500"><Megaphone size={20}/></div>
+          <p className="font-bold text-sm">{t.announceTitle}</p>
+        </div>
+        <input type="text" placeholder={t.announcePlaceholder} className={`flex-1 w-full px-4 py-3 text-sm rounded-xl outline-none border transition-all ${inputBg}`} />
+        <button onClick={()=>alert('سيتم ربط الإشعارات قريباً!')} className="w-full md:w-auto px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm transition-all whitespace-nowrap">
+          {t.announceSend}
+        </button>
+      </div>
+
+      {/* جدول العملاء */}
       <div className={`rounded-3xl border overflow-hidden shadow-xl ${isDark ? 'bg-slate-900/50 border-slate-700/50' : 'bg-white border-slate-200'}`}>
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left" dir={t.dir}>
             <thead className={`text-xs uppercase font-black ${isDark ? 'bg-slate-800/80 text-slate-300' : 'bg-slate-50 text-slate-600'}`}>
               <tr>
-                <th className="px-6 py-4">{t.colEmail}</th>
-                <th className="px-6 py-4">{t.colRole}</th>
-                <th className="px-6 py-4">{t.colStatus}</th>
+                <th className={`px-6 py-4 ${t.dir === 'rtl' ? 'text-right' : 'text-left'}`}>{t.colEmail}</th>
+                <th className={`px-6 py-4 ${t.dir === 'rtl' ? 'text-right' : 'text-left'}`}>{t.colRole}</th>
+                <th className={`px-6 py-4 ${t.dir === 'rtl' ? 'text-right' : 'text-left'}`}>{t.colStatus}</th>
                 <th className="px-6 py-4 text-center">{t.colActions}</th>
               </tr>
             </thead>
@@ -535,24 +652,32 @@ const AdminDashboard = ({ isDark, t }: any) => {
               ) : (
                 users.map((user) => (
                   <tr key={user.id} className={`transition-colors ${isDark ? 'hover:bg-slate-800/30' : 'hover:bg-slate-50'}`}>
-                    <td className="px-6 py-4 font-bold">{user.email}</td>
-                    <td className="px-6 py-4">
-                      <span className={`px-2.5 py-1 rounded-lg text-xs font-bold border ${user.role === 'admin' ? 'bg-purple-500/10 text-purple-500 border-purple-500/20' : 'bg-slate-500/10 text-slate-500 border-slate-500/20'}`}>
-                        {user.role === 'admin' ? t.roleAdmin : t.roleUser}
-                      </span>
+                    <td className={`px-6 py-4 font-bold ${t.dir === 'rtl' ? 'text-right' : 'text-left'}`}>{user.email}</td>
+                    <td className={`px-6 py-4 ${t.dir === 'rtl' ? 'text-right' : 'text-left'}`}>
+                      <div className="flex items-center gap-2">
+                        <span className={`px-2 py-1 rounded border text-xs font-bold ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-slate-100 border-slate-200'}`}>
+                          {user.plan_name || 'Basic'}
+                        </span>
+                        <span className="text-xs font-bold text-yellow-500 bg-yellow-500/10 px-2 py-1 rounded border border-yellow-500/20">
+                          {user.credits !== undefined ? user.credits : 150} pts
+                        </span>
+                      </div>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className={`px-6 py-4 ${t.dir === 'rtl' ? 'text-right' : 'text-left'}`}>
                       <span className={`px-2.5 py-1 rounded-lg text-xs font-bold border flex items-center gap-1.5 w-max ${user.status === 'active' ? 'bg-green-500/10 text-green-500 border-green-500/20' : 'bg-orange-500/10 text-orange-500 border-orange-500/20'}`}>
                         {user.status === 'active' ? <CheckCircle2 size={12}/> : <Hourglass size={12}/>}
                         {user.status === 'active' ? t.statusActive : t.statusPending}
                       </span>
                     </td>
-                    <td className="px-6 py-4 flex justify-center">
+                    <td className="px-6 py-4 flex justify-center gap-2">
                       {user.role !== 'admin' && (
                         <button onClick={() => toggleStatus(user.id, user.status)} className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-colors border ${user.status === 'pending' ? 'bg-green-600 hover:bg-green-500 text-white border-green-500' : 'bg-red-500/10 hover:bg-red-500/20 text-red-500 border-red-500/30'}`}>
                           {user.status === 'pending' ? t.btnActivate : t.btnSuspend}
                         </button>
                       )}
+                      <button onClick={() => openEditModal(user)} className={`p-1.5 rounded-lg border transition-colors ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300 hover:text-blue-400 hover:border-blue-500/50' : 'bg-slate-100 border-slate-200 text-slate-600 hover:text-blue-500 hover:border-blue-300'}`}>
+                         <Edit size={16} />
+                      </button>
                     </td>
                   </tr>
                 ))
@@ -561,12 +686,55 @@ const AdminDashboard = ({ isDark, t }: any) => {
           </table>
         </div>
       </div>
+
+      {/* نافذة تعديل المستخدم (Modal) */}
+      {editingUser && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+          <div className={`${isDark ? 'bg-[#0f172a] border-slate-800' : 'bg-white border-slate-200'} border rounded-3xl w-full max-w-md p-6 shadow-2xl relative animate-in zoom-in duration-200`}>
+             <button onClick={() => setEditingUser(null)} className={`absolute top-4 ${t.dir === 'rtl' ? 'left-4' : 'right-4'} p-2 rounded-full transition ${isDark ? 'text-slate-400 hover:bg-slate-800' : 'text-slate-500 hover:bg-slate-100'}`}><X size={20}/></button>
+             
+             <h3 className="text-lg font-black mb-1 flex items-center gap-2"><Zap className="text-yellow-500" size={20}/> {t.editUserTitle}</h3>
+             <p className={`text-xs mb-6 font-bold truncate ${textMuted}`}>{editingUser.email}</p>
+
+             <div className="space-y-4">
+               <div>
+                 <label className={`block text-xs font-bold mb-1.5 ${textMuted}`}>{t.editPlan}</label>
+                 <input type="text" value={editPlan} onChange={(e: any)=>setEditPlan(e.target.value)} className={`w-full px-4 py-2 text-sm rounded-xl outline-none border transition-all ${inputBg}`} />
+               </div>
+
+               <div>
+                 <label className={`block text-xs font-bold mb-1.5 ${textMuted}`}>{t.editCredits}</label>
+                 <input type="number" value={editCredits} onChange={(e: any)=>setEditCredits(parseInt(e.target.value))} className={`w-full px-4 py-2 text-sm rounded-xl outline-none border transition-all ${inputBg}`} dir="ltr" />
+               </div>
+
+               <div className={`p-4 rounded-xl border ${isDark ? 'bg-slate-900/50 border-slate-700/80' : 'bg-slate-50 border-slate-200'}`}>
+                  <label className={`block text-xs font-bold mb-3 ${textMuted}`}>{t.editFeatures}</label>
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-bold flex items-center gap-2"><CalendarRange size={16} className="text-purple-500"/> {t.featCal}</span>
+                      <ToggleSwitch isOn={editFeatCal} onToggle={() => setEditFeatCal(!editFeatCal)} />
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-bold flex items-center gap-2"><MessageCircle size={16} className="text-pink-500"/> {t.featRev}</span>
+                      <ToggleSwitch isOn={editFeatRev} onToggle={() => setEditFeatRev(!editFeatRev)} />
+                    </div>
+                  </div>
+               </div>
+             </div>
+
+             <button onClick={saveUserConfig} disabled={isSavingUser} className="w-full mt-6 bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition-all flex items-center justify-center gap-2">
+               {isSavingUser ? <Loader2 className="animate-spin" size={18} /> : <CheckCircle2 size={18} />} {t.saveChanges}
+             </button>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
 
 // ==========================================
-// مكون كارت المحتوى المستقل (الاستوديو)
+// مكون كارت المحتوى المستقل (الاستوديو) - محدث لعرض الصور والفيديو 📸
 // ==========================================
 const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
   let aiData: any = null;
@@ -581,6 +749,7 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
   const hook = aiData?.social_media_copy?.hook || '';
   const caption = aiData?.social_media_copy?.caption || item.user_prompt || '...';
   
+  // 👉 استخراج رابط الصورة أو الفيديو من قاعدة البيانات
   const mediaUrl =
     aiData?.media_url || item.media_url ||
     aiData?.image_url || item.image_url ||
@@ -588,6 +757,7 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
     aiData?.output_url || item.output_url ||
     aiData?.result_url || item.result_url || '';
 
+  // 👉 تحديد ما إذا كان المخرج فيديو
   const isVideoMedia =
     item.content_type === 'promo_video' || item.content_type === 'social_story' ||
     /\.(mp4|webm|mov|m4v)(\?|$)/i.test(mediaUrl);
@@ -602,9 +772,11 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
   const [isPublishing, setIsPublishing] = useState(false);
   const [copied, setCopied] = useState(false);
 
+  // إعداد مراجع الحقول لتمكين النقر في أي مكان
   const dateRef = React.useRef<HTMLInputElement>(null);
   const timeRef = React.useRef<HTMLInputElement>(null);
 
+  // دالة تحويل التاريخ إلى الشكل الاحترافي 2026 Aug 8
   const formatScheduleDate = (dateStr: string) => {
     if (!dateStr) return t.publishDate;
     const d = new Date(dateStr);
@@ -641,6 +813,7 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
   const textSecondary = isDark ? 'text-slate-300' : 'text-slate-600';
   const inputBg = isDark ? 'bg-slate-900 border-slate-700 text-slate-300 focus:border-purple-500' : 'bg-white border-slate-300 text-slate-900 focus:border-purple-500';
 
+  // 👉 تحديد نوع الشارة (Badge)
   let badgeText = t.textBadge;
   if (item.content_type === 'promo_video' || item.content_type === 'social_story') badgeText = t.videoBadge;
   else if (item.content_type === 'product_shot' || item.content_type === 'poster') badgeText = "📸";
@@ -664,6 +837,7 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
       <div className="p-6 flex-1 flex flex-col">
         {hook && <h3 className={`font-black text-lg mb-4 pb-4 border-b leading-snug ${textPrimary}`}>{hook}</h3>}
         
+        {/* 👉 كود عرض الصورة أو الفيديو */}
         {mediaUrl && (
           <div className="mb-4 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 relative group/media h-48 sm:h-56">
             {isVideoMedia ? (
@@ -703,7 +877,10 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
           </div>
         </div>
 
+        {/* ================= بداية شكل التاريخ والوقت الاحترافي ================= */}
         <div className="flex gap-3 mb-4">
+          
+          {/* حقل التاريخ */}
           <div className="relative flex-1 group cursor-pointer" onClick={() => { try { dateRef.current?.showPicker(); } catch(e){} }}>
             <div className={`w-full border rounded-xl px-4 py-3 text-sm transition-all flex items-center justify-between group-hover:border-purple-500 shadow-sm overflow-hidden ${inputBg}`}>
               <span className={`${scheduleDate ? 'font-black text-purple-500' : 'opacity-60 font-bold'} font-sans tracking-wide whitespace-nowrap`} dir="ltr">
@@ -723,6 +900,7 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
             />
           </div>
 
+          {/* حقل الوقت */}
           <div className="relative flex-1 group cursor-pointer" onClick={() => { try { timeRef.current?.showPicker(); } catch(e){} }}>
             <div className={`w-full border rounded-xl px-4 py-3 text-sm transition-all flex items-center justify-between group-hover:border-purple-500 shadow-sm overflow-hidden ${inputBg}`}>
               <span className={`${scheduleTime ? 'font-black text-purple-500' : 'opacity-60 font-bold'} font-sans tracking-wide whitespace-nowrap`} dir="ltr">
@@ -741,7 +919,9 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
               style={{ colorScheme: isDark ? 'dark' : 'light' }}
             />
           </div>
+
         </div>
+        {/* ================= نهاية شكل التاريخ والوقت الاحترافي ================= */}
 
         <button onClick={handleSchedule} disabled={isPublishing} className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition-colors text-sm flex justify-center items-center gap-2 disabled:opacity-50">
           {isPublishing ? <Loader2 className="animate-spin" size={16} /> : null}
@@ -764,6 +944,7 @@ const MarketingCalendar = ({ isDark, setActiveView, setRawIdea, setIsAiAssistOpe
     );
   };
 
+  // علم السعودية كصورة مضمنة لضمان الظهور الدائم
   const SaudiFlag = () => (
     <img src="https://flagcdn.com/w40/sa.png" alt="Saudi Arabia" className="w-6 h-6 object-cover rounded-sm drop-shadow-sm" />
   );
@@ -1250,7 +1431,14 @@ export default function App() {
   
   // دالة فحص حالة المستخدم وصلاحيته
   const [userStatus, setUserStatus] = useState<'loading' | 'pending' | 'active'>('loading');
-  const [userRole, setUserRole] = useState<'user' | 'admin'>('user'); // <-- إضافة حالة الصلاحية
+  const [userRole, setUserRole] = useState<'user' | 'admin'>('user');
+  
+  // حالات الصلاحيات والباقات
+  const [userPlan, setUserPlan] = useState("Basic");
+  const [hasCalendar, setHasCalendar] = useState(true);
+  const [hasReviews, setHasReviews] = useState(false);
+  const [credits, setCredits] = useState(150);
+
   const [isCheckingStatus, setIsCheckingStatus] = useState(false);
 
   const [activeView, setActiveView] = useState('calendar');
@@ -1269,7 +1457,6 @@ export default function App() {
   const [results, setResults] = useState<any[]>([]);
   const [isLoadingResults, setIsLoadingResults] = useState(false);
   
-  const [credits, setCredits] = useState(150);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('general');
@@ -1308,15 +1495,21 @@ export default function App() {
   const checkUserStatus = async (user: any) => {
     if (!user) return;
     try {
-      // قراءة الحالة والصلاحية معاً
-      const { data, error } = await supabase.from('profiles').select('status, role').eq('id', user.id).maybeSingle();
+      const { data, error } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle();
       if (error) {
         setUserStatus('pending');
         return;
       }
       if (data) {
         setUserStatus(data.status);
-        setUserRole(data.role || 'user'); // تعيين الصلاحية
+        setUserRole(data.role || 'user');
+        
+        // جلب الإعدادات المخصصة للعميل
+        setUserPlan(data.plan_name || 'Basic');
+        if (data.credits !== undefined && data.credits !== null) setCredits(data.credits);
+        if (data.feat_calendar !== undefined && data.feat_calendar !== null) setHasCalendar(data.feat_calendar);
+        if (data.feat_reviews !== undefined && data.feat_reviews !== null) setHasReviews(data.feat_reviews);
+
       } else {
         setUserStatus('pending'); 
       }
@@ -1476,7 +1669,13 @@ export default function App() {
         throw new Error("Server Error");
       }
 
-      setCredits(prev => prev - 10);
+      // خصم الرصيد محلياً
+      const newCredits = credits - 10;
+      setCredits(newCredits);
+      
+      // تحديث الرصيد في Supabase
+      supabase.from('profiles').update({ credits: newCredits }).eq('id', session.user.id).then();
+
       setPrompt("");
       setImageFile(null);
       setImagePreview(null);
@@ -1534,7 +1733,6 @@ export default function App() {
 
         <nav className="p-4 space-y-3">
           
-          {/* زر مدير النظام السري يظهر فقط إذا كان الـ Role هو admin */}
           {userRole === 'admin' && (
             <button onClick={() => { setActiveView('admin'); if(window.innerWidth < 768) setIsSidebarVisible(false); }} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all border ${activeView === 'admin' ? (isDark ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-red-50 text-red-600 border-red-200') : (isDark ? 'text-slate-400 hover:bg-slate-800 border-transparent' : 'text-slate-600 hover:bg-slate-100 border-transparent')}`}>
               <ShieldCheck size={20} className={activeView === 'admin' ? 'text-red-500' : ''} /> 
@@ -1542,22 +1740,27 @@ export default function App() {
             </button>
           )}
 
-          <button onClick={() => { setActiveView('calendar'); if(window.innerWidth < 768) setIsSidebarVisible(false); }} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${activeView === 'calendar' ? (isDark ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' : 'bg-purple-50 text-purple-600 border border-purple-200') : (isDark ? 'text-slate-400 hover:bg-slate-800 border border-transparent' : 'text-slate-600 hover:bg-slate-100 border border-transparent')}`}>
-            <CalendarRange size={20} className={activeView === 'calendar' ? 'text-purple-500' : ''} /> 
-            {t.calendarTab}
-          </button>
+          {/* ظهور القوائم بناءً على صلاحيات الباقة */}
+          {(hasCalendar || userRole === 'admin') && (
+            <button onClick={() => { setActiveView('calendar'); if(window.innerWidth < 768) setIsSidebarVisible(false); }} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${activeView === 'calendar' ? (isDark ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' : 'bg-purple-50 text-purple-600 border border-purple-200') : (isDark ? 'text-slate-400 hover:bg-slate-800 border border-transparent' : 'text-slate-600 hover:bg-slate-100 border border-transparent')}`}>
+              <CalendarRange size={20} className={activeView === 'calendar' ? 'text-purple-500' : ''} /> 
+              {t.calendarTab}
+            </button>
+          )}
 
           <button onClick={() => { setActiveView('studio'); if(window.innerWidth < 768) setIsSidebarVisible(false); }} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${activeView === 'studio' ? (isDark ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : 'bg-blue-50 text-blue-600 border border-blue-200') : (isDark ? 'text-slate-400 hover:bg-slate-800 border border-transparent' : 'text-slate-600 hover:bg-slate-100 border border-transparent')}`}>
             <Star size={20} className={activeView === 'studio' ? 'text-blue-500' : ''} /> 
             {t.studioTab}
           </button>
 
-          <button onClick={() => { setActiveView('reviews'); if(window.innerWidth < 768) setIsSidebarVisible(false); }} className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl font-bold transition-all relative group overflow-hidden border ${activeView === 'reviews' ? (isDark ? 'bg-pink-500/10 text-pink-400 border-pink-500/20' : 'bg-pink-50 text-pink-600 border-pink-200') : (isDark ? 'text-slate-400 hover:bg-slate-800 hover:border-slate-700 border-transparent' : 'text-slate-600 hover:bg-slate-100 hover:border-slate-200 border-transparent')}`}>
-            <div className="flex items-center gap-3 w-full">
-              <MessageCircle size={20} className={activeView === 'reviews' ? 'text-pink-500 shrink-0' : 'group-hover:text-pink-500 transition-colors shrink-0'} /> 
-              <span className="truncate flex-1 text-right">{t.reviewsTab}</span>
-            </div>
-          </button>
+          {(hasReviews || userRole === 'admin') && (
+            <button onClick={() => { setActiveView('reviews'); if(window.innerWidth < 768) setIsSidebarVisible(false); }} className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl font-bold transition-all relative group overflow-hidden border ${activeView === 'reviews' ? (isDark ? 'bg-pink-500/10 text-pink-400 border-pink-500/20' : 'bg-pink-50 text-pink-600 border-pink-200') : (isDark ? 'text-slate-400 hover:bg-slate-800 hover:border-slate-700 border-transparent' : 'text-slate-600 hover:bg-slate-100 hover:border-slate-200 border-transparent')}`}>
+              <div className="flex items-center gap-3 w-full">
+                <MessageCircle size={20} className={activeView === 'reviews' ? 'text-pink-500 shrink-0' : 'group-hover:text-pink-500 transition-colors shrink-0'} /> 
+                <span className="truncate flex-1 text-right">{t.reviewsTab}</span>
+              </div>
+            </button>
+          )}
         </nav>
       </aside>
 
@@ -1728,8 +1931,8 @@ export default function App() {
                   <div className={`px-5 py-4 border-b flex items-center gap-3 ${isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-slate-50 border-slate-100'}`}>
                     <div className="bg-yellow-500/20 p-2 rounded-lg"><Crown size={20} className="text-yellow-500" /></div>
                     <div>
-                      <p className={`text-sm font-bold ${textMain}`}>{t.currentPlan}</p>
-                      <p className={`text-xs font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t.freePlan}</p>
+                      <p className={`text-sm font-bold ${textMain}`}>{userPlan}</p>
+                      <p className={`text-xs font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{userRole === 'admin' ? 'Admin Profile' : 'Subscribed'}</p>
                     </div>
                   </div>
                   <button onClick={() => { setIsSettingsOpen(true); setActiveTab('general'); setIsProfileOpen(false); }} className={`w-full ${t.dir === 'rtl' ? 'text-right' : 'text-left'} px-5 py-3.5 text-sm flex items-center gap-3 font-medium transition-colors ${isDark ? 'text-slate-300 hover:bg-slate-800' : 'text-slate-600 hover:bg-slate-50'}`}>
@@ -1749,7 +1952,7 @@ export default function App() {
           <AdminDashboard isDark={isDark} t={t} />
         )}
 
-        {activeView === 'calendar' && (
+        {activeView === 'calendar' && (hasCalendar || userRole === 'admin') && (
           <MarketingCalendar 
             isDark={isDark} 
             setActiveView={setActiveView} 
@@ -1965,7 +2168,7 @@ export default function App() {
         )}
 
         {/* عرض لوحة تحكم التقييمات */}
-        {activeView === 'reviews' && (
+        {activeView === 'reviews' && (hasReviews || userRole === 'admin') && (
           <ReviewsDashboard isDark={isDark} t={t} />
         )}
 
