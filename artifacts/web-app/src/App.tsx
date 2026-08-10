@@ -9,7 +9,7 @@ import {
   Shield, Sliders, ImagePlus, Mic, Activity, Target, AlignLeft, 
   AlignJustify, Star, MessageCircle, Clapperboard, CalendarRange, 
   Bot, Bell, LineChart, Phone, Wand2, Hourglass, Clock, ShieldCheck, Users,
-  Megaphone, Edit, Zap, CircleDollarSign
+  Megaphone, Edit, Zap, CircleDollarSign, ChevronRight, FileText
 } from 'lucide-react';
 
 // ==========================================
@@ -216,7 +216,7 @@ const translations: any = {
       endYear: "تصفية نهاية العام",
       salaryDec: "يوم الراتب (ديسمبر)"
     },
-    adminTitle: "إدارة العملاء والمنصة 🛡️",
+    adminTitle: "إدارة العملاء",
     adminSubtitle: "تحكم في الحسابات، الأرصدة، الصلاحيات، وتفعيل المشتركين الجدد.",
     colEmail: "البريد الإلكتروني",
     colStatus: "الحالة",
@@ -234,7 +234,7 @@ const translations: any = {
     statsContent: "المحتوى المُولد",
     statsCost: "تكلفة الـ API",
     statsCostDesc: "تقديرية",
-    announceTitle: "إرسال إشعار للعملاء 📢",
+    announceTitle: "إرسال إشعار للجميع 📢",
     announcePlaceholder: "اكتب رسالة أو إعلان يظهر لجميع المستخدمين في التطبيق...",
     announceSend: "إرسال للجميع",
     editUserTitle: "تخصيص الباقة والصلاحيات",
@@ -243,7 +243,13 @@ const translations: any = {
     editFeatures: "الخدمات المتاحة للعميل:",
     featCal: "التقويم التسويقي",
     featRev: "الرد الآلي لتقييمات ماب",
-    saveChanges: "حفظ التعديلات"
+    saveChanges: "حفظ التعديلات",
+    userDetailsTitle: "سجل نشاط العميل",
+    backToAdmin: "العودة للقائمة",
+    totalVideos: "فيديوهات وستوري",
+    totalImages: "صور وتصاميم",
+    totalTexts: "نصوص وردود",
+    contentHistory: "سجل التوليد والإنتاج"
   },
   en: {
     dir: "ltr",
@@ -445,7 +451,7 @@ const translations: any = {
       endYear: "End of Year Sale",
       salaryDec: "Salary Day (December)"
     },
-    adminTitle: "Platform & Users Management 🛡️",
+    adminTitle: "Customer Management",
     adminSubtitle: "Control accounts, credits, features, and activate new subscribers.",
     colEmail: "Email Address",
     colStatus: "Status",
@@ -472,7 +478,13 @@ const translations: any = {
     editFeatures: "Enabled Features:",
     featCal: "Marketing Calendar",
     featRev: "Google Maps Auto-Reply",
-    saveChanges: "Save Changes"
+    saveChanges: "Save Changes",
+    userDetailsTitle: "Customer Activity Log",
+    backToAdmin: "Back to List",
+    totalVideos: "Videos & Stories",
+    totalImages: "Designs & Images",
+    totalTexts: "Texts & Replies",
+    contentHistory: "Generation History"
   }
 };
 
@@ -514,6 +526,10 @@ const AdminDashboard = ({ isDark, t }: any) => {
   const [isLoading, setIsLoading] = useState(true);
   const [editingUser, setEditingUser] = useState<any>(null);
   
+  // حالات صفحة سجل العميل المستقلة
+  const [viewUser, setViewUser] = useState<any>(null);
+  const [userLogs, setUserLogs] = useState<any[]>([]);
+
   // حالات الإحصائيات الحقيقية
   const [totalContent, setTotalContent] = useState(0);
   const [estimatedCost, setEstimatedCost] = useState(0);
@@ -538,7 +554,6 @@ const AdminDashboard = ({ isDark, t }: any) => {
     if (contentData) {
       const count = contentData.length;
       setTotalContent(count);
-      // معادلة التكلفة التقديرية الحالية (كمثال: كل إعلان يكلف 0.015 دولار)
       setEstimatedCost(count * 0.015);
     }
     if (contentError) console.error("Error fetching content stats:", contentError);
@@ -579,8 +594,6 @@ const AdminDashboard = ({ isDark, t }: any) => {
       }).eq('id', editingUser.id);
       
       if (error) throw error;
-      
-      // تحديث الواجهة محلياً
       setUsers(users.map(u => u.id === editingUser.id ? { ...u, plan_name: editPlan, credits: editCredits, feat_calendar: editFeatCal, feat_reviews: editFeatRev } : u));
       setEditingUser(null);
     } catch (e: any) {
@@ -588,6 +601,21 @@ const AdminDashboard = ({ isDark, t }: any) => {
     } finally {
       setIsSavingUser(false);
     }
+  };
+
+  const handleViewUser = async (user: any) => {
+    setViewUser(user);
+    setIsLoading(true);
+    const { data, error } = await supabase.from('content_pipeline').select('*').eq('store_id', user.id).order('created_at', { ascending: false });
+    if (data) setUserLogs(data);
+    if (error) console.error(error);
+    setIsLoading(false);
+  };
+
+  const formatDate = (dateStr: string) => {
+    if(!dateStr) return '';
+    const d = new Date(dateStr);
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
   };
 
   const activeCount = users.filter(u => u.status === 'active').length;
@@ -603,13 +631,88 @@ const AdminDashboard = ({ isDark, t }: any) => {
     </div>
   );
 
+  // عرض صفحة السجل التفصيلي للعميل إذا تم الضغط على اسمه
+  if (viewUser) {
+    const videoCount = userLogs.filter(l => l.content_type === 'promo_video' || l.content_type === 'social_story').length;
+    const imageCount = userLogs.filter(l => l.content_type === 'product_shot').length;
+    const textCount = userLogs.filter(l => l.content_type === 'social_caption' || l.content_type === 'ad_script' || l.content_type === 'customer_response').length;
+
+    return (
+      <div className={`w-full max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 animate-in slide-in-from-bottom-4 duration-500 ${t.dir === 'ltr' ? 'text-left' : 'text-right'}`}>
+        <div className="flex items-center gap-4 mb-8">
+          <button onClick={() => setViewUser(null)} className={`p-2 rounded-xl border transition-all ${isDark ? 'bg-slate-800 border-slate-700 text-white hover:bg-slate-700' : 'bg-white border-slate-200 text-slate-900 hover:bg-slate-50'}`}>
+            <X size={20} />
+          </button>
+          <div>
+            <h2 className="text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500">{t.userDetailsTitle}</h2>
+            <p className={`font-medium ${textMuted}`}>{viewUser.email}</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <div className={`p-5 rounded-2xl border ${cardClass} flex flex-col justify-center items-center shadow-sm`}>
+             <Wallet className="text-yellow-500 mb-2" size={24} />
+             <p className={`text-xs font-bold ${textMuted}`}>{t.credits}</p>
+             <p className="text-2xl font-black mt-1 text-yellow-500">{viewUser.credits !== undefined ? viewUser.credits : 150}</p>
+          </div>
+          <div className={`p-5 rounded-2xl border ${cardClass} flex flex-col justify-center items-center shadow-sm`}>
+             <Clapperboard className="text-blue-500 mb-2" size={24} />
+             <p className={`text-xs font-bold ${textMuted}`}>{t.totalVideos}</p>
+             <p className="text-2xl font-black mt-1">{videoCount}</p>
+          </div>
+          <div className={`p-5 rounded-2xl border ${cardClass} flex flex-col justify-center items-center shadow-sm`}>
+             <ImagePlus className="text-pink-500 mb-2" size={24} />
+             <p className={`text-xs font-bold ${textMuted}`}>{t.totalImages}</p>
+             <p className="text-2xl font-black mt-1">{imageCount}</p>
+          </div>
+          <div className={`p-5 rounded-2xl border ${cardClass} flex flex-col justify-center items-center shadow-sm`}>
+             <AlignLeft className="text-purple-500 mb-2" size={24} />
+             <p className={`text-xs font-bold ${textMuted}`}>{t.totalTexts}</p>
+             <p className="text-2xl font-black mt-1">{textCount}</p>
+          </div>
+        </div>
+
+        <h3 className={`text-lg font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{t.contentHistory}</h3>
+        <div className={`rounded-3xl border overflow-hidden shadow-xl ${isDark ? 'bg-slate-900/50 border-slate-700/50' : 'bg-white border-slate-200'}`}>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm text-left" dir={t.dir}>
+              <thead className={`text-xs uppercase font-black ${isDark ? 'bg-slate-800/80 text-slate-300' : 'bg-slate-50 text-slate-600'}`}>
+                <tr>
+                  <th className={`px-6 py-4 ${t.dir === 'rtl' ? 'text-right' : 'text-left'}`}>التاريخ والوقت</th>
+                  <th className={`px-6 py-4 ${t.dir === 'rtl' ? 'text-right' : 'text-left'}`}>نوع الإنتاج</th>
+                  <th className={`px-6 py-4 ${t.dir === 'rtl' ? 'text-right' : 'text-left'}`}>الفكرة / النص</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-200 dark:divide-slate-700/50">
+                {userLogs.length === 0 ? (
+                  <tr><td colSpan={3} className="p-10 text-center text-slate-500">لا يوجد سجل متاح</td></tr>
+                ) : (
+                  userLogs.map((log) => (
+                    <tr key={log.id} className={`transition-colors ${isDark ? 'hover:bg-slate-800/30' : 'hover:bg-slate-50'}`}>
+                      <td className={`px-6 py-4 font-bold text-xs ${t.dir === 'rtl' ? 'text-right' : 'text-left'}`} dir="ltr">{formatDate(log.created_at)}</td>
+                      <td className={`px-6 py-4 ${t.dir === 'rtl' ? 'text-right' : 'text-left'}`}>
+                        <span className={`px-2.5 py-1 rounded-lg text-xs font-bold border ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-slate-100 border-slate-200'}`}>{log.content_type}</span>
+                      </td>
+                      <td className={`px-6 py-4 max-w-xs truncate ${t.dir === 'rtl' ? 'text-right' : 'text-left'}`}>{log.user_prompt || '...'}</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // عرض صفحة الإدارة الرئيسية
   return (
     <div className={`w-full max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 animate-in fade-in zoom-in duration-500 ${t.dir === 'ltr' ? 'text-left' : 'text-right'}`}>
       
       {/* رأس صفحة الإدارة */}
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h2 className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-red-400 to-orange-500 mb-2">{t.adminTitle}</h2>
+          <h2 className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 mb-2">{t.adminTitle}</h2>
           <p className={`font-medium ${textMuted}`}>{t.adminSubtitle}</p>
         </div>
         <button onClick={fetchAdminData} disabled={isLoading} className={`p-3 rounded-xl border transition-all ${isDark ? 'bg-slate-800 text-slate-300 border-slate-700 hover:text-white' : 'bg-white text-slate-600 border-slate-200 hover:text-slate-900 shadow-sm'}`}>
@@ -647,14 +750,14 @@ const AdminDashboard = ({ isDark, t }: any) => {
         </div>
       </div>
 
-      {/* نظام الإشعارات */}
-      <div className={`p-5 rounded-2xl border mb-8 flex flex-col md:flex-row gap-4 items-center shadow-sm ${isDark ? 'bg-slate-900/50 border-slate-700/50' : 'bg-white border-slate-200'}`}>
+      {/* نظام الإشعارات الجديد (لون أزرق ونص أبيض) */}
+      <div className="p-5 rounded-2xl border mb-8 flex flex-col md:flex-row gap-4 items-center shadow-lg bg-gradient-to-r from-blue-700 to-blue-500 border-blue-600">
         <div className="flex items-center gap-3 shrink-0">
-          <div className="w-10 h-10 bg-blue-500/10 rounded-full flex items-center justify-center text-blue-500"><Megaphone size={20}/></div>
-          <p className="font-bold text-sm">{t.announceTitle}</p>
+          <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-white"><Megaphone size={20}/></div>
+          <p className="font-bold text-sm text-white">{t.announceTitle}</p>
         </div>
-        <input type="text" placeholder={t.announcePlaceholder} className={`flex-1 w-full px-4 py-3 text-sm rounded-xl outline-none border transition-all ${inputBg}`} />
-        <button onClick={()=>alert('سيتم ربط الإشعارات قريباً!')} className="w-full md:w-auto px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm transition-all whitespace-nowrap">
+        <input type="text" placeholder={t.announcePlaceholder} className="flex-1 w-full px-4 py-3 text-sm rounded-xl outline-none border-none bg-black/20 text-white placeholder-white/50 focus:bg-black/30 transition-all" />
+        <button onClick={()=>alert('سيتم ربط الإشعارات قريباً!')} className="w-full md:w-auto px-6 py-3 rounded-xl bg-white text-blue-600 hover:bg-slate-100 font-black text-sm transition-all whitespace-nowrap shadow-md">
           {t.announceSend}
         </button>
       </div>
@@ -679,7 +782,11 @@ const AdminDashboard = ({ isDark, t }: any) => {
               ) : (
                 users.map((user) => (
                   <tr key={user.id} className={`transition-colors ${isDark ? 'hover:bg-slate-800/30' : 'hover:bg-slate-50'}`}>
-                    <td className={`px-6 py-4 font-bold ${t.dir === 'rtl' ? 'text-right' : 'text-left'}`}>{user.email}</td>
+                    <td className={`px-6 py-4 font-bold ${t.dir === 'rtl' ? 'text-right' : 'text-left'}`}>
+                      <button onClick={() => handleViewUser(user)} className={`hover:text-blue-500 transition-colors flex items-center gap-2 ${t.dir === 'rtl' ? 'text-right' : 'text-left'}`}>
+                        {user.email} <ChevronRight size={14} className="opacity-50" />
+                      </button>
+                    </td>
                     <td className={`px-6 py-4 ${t.dir === 'rtl' ? 'text-right' : 'text-left'}`}>
                       <div className="flex items-center gap-2">
                         <span className={`px-2 py-1 rounded border text-xs font-bold ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-slate-100 border-slate-200'}`}>
@@ -761,7 +868,7 @@ const AdminDashboard = ({ isDark, t }: any) => {
 };
 
 // ==========================================
-// مكون كارت المحتوى المستقل (الاستوديو) - محدث لعرض الصور والفيديو 📸
+// مكون كارت المحتوى المستقل (الاستوديو)
 // ==========================================
 const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
   let aiData: any = null;
@@ -776,7 +883,6 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
   const hook = aiData?.social_media_copy?.hook || '';
   const caption = aiData?.social_media_copy?.caption || item.user_prompt || '...';
   
-  // 👉 استخراج رابط الصورة أو الفيديو من قاعدة البيانات
   const mediaUrl =
     aiData?.media_url || item.media_url ||
     aiData?.image_url || item.image_url ||
@@ -784,7 +890,6 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
     aiData?.output_url || item.output_url ||
     aiData?.result_url || item.result_url || '';
 
-  // 👉 تحديد ما إذا كان المخرج فيديو
   const isVideoMedia =
     item.content_type === 'promo_video' || item.content_type === 'social_story' ||
     /\.(mp4|webm|mov|m4v)(\?|$)/i.test(mediaUrl);
@@ -799,11 +904,9 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
   const [isPublishing, setIsPublishing] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  // إعداد مراجع الحقول لتمكين النقر في أي مكان
   const dateRef = React.useRef<HTMLInputElement>(null);
   const timeRef = React.useRef<HTMLInputElement>(null);
 
-  // دالة تحويل التاريخ إلى الشكل الاحترافي 2026 Aug 8
   const formatScheduleDate = (dateStr: string) => {
     if (!dateStr) return t.publishDate;
     const d = new Date(dateStr);
@@ -840,7 +943,6 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
   const textSecondary = isDark ? 'text-slate-300' : 'text-slate-600';
   const inputBg = isDark ? 'bg-slate-900 border-slate-700 text-slate-300 focus:border-purple-500' : 'bg-white border-slate-300 text-slate-900 focus:border-purple-500';
 
-  // 👉 تحديد نوع الشارة (Badge)
   let badgeText = t.textBadge;
   if (item.content_type === 'promo_video' || item.content_type === 'social_story') badgeText = t.videoBadge;
   else if (item.content_type === 'product_shot' || item.content_type === 'poster') badgeText = "📸";
@@ -864,7 +966,6 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
       <div className="p-6 flex-1 flex flex-col">
         {hook && <h3 className={`font-black text-lg mb-4 pb-4 border-b leading-snug ${textPrimary}`}>{hook}</h3>}
         
-        {/* 👉 كود عرض الصورة أو الفيديو */}
         {mediaUrl && (
           <div className="mb-4 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 relative group/media h-48 sm:h-56">
             {isVideoMedia ? (
@@ -904,10 +1005,7 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
           </div>
         </div>
 
-        {/* ================= بداية شكل التاريخ والوقت الاحترافي ================= */}
         <div className="flex gap-3 mb-4">
-          
-          {/* حقل التاريخ */}
           <div className="relative flex-1 group cursor-pointer" onClick={() => { try { dateRef.current?.showPicker(); } catch(e){} }}>
             <div className={`w-full border rounded-xl px-4 py-3 text-sm transition-all flex items-center justify-between group-hover:border-purple-500 shadow-sm overflow-hidden ${inputBg}`}>
               <span className={`${scheduleDate ? 'font-black text-purple-500' : 'opacity-60 font-bold'} font-sans tracking-wide whitespace-nowrap`} dir="ltr">
@@ -927,7 +1025,6 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
             />
           </div>
 
-          {/* حقل الوقت */}
           <div className="relative flex-1 group cursor-pointer" onClick={() => { try { timeRef.current?.showPicker(); } catch(e){} }}>
             <div className={`w-full border rounded-xl px-4 py-3 text-sm transition-all flex items-center justify-between group-hover:border-purple-500 shadow-sm overflow-hidden ${inputBg}`}>
               <span className={`${scheduleTime ? 'font-black text-purple-500' : 'opacity-60 font-bold'} font-sans tracking-wide whitespace-nowrap`} dir="ltr">
@@ -946,9 +1043,7 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
               style={{ colorScheme: isDark ? 'dark' : 'light' }}
             />
           </div>
-
         </div>
-        {/* ================= نهاية شكل التاريخ والوقت الاحترافي ================= */}
 
         <button onClick={handleSchedule} disabled={isPublishing} className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition-colors text-sm flex justify-center items-center gap-2 disabled:opacity-50">
           {isPublishing ? <Loader2 className="animate-spin" size={16} /> : null}
@@ -971,7 +1066,6 @@ const MarketingCalendar = ({ isDark, setActiveView, setRawIdea, setIsAiAssistOpe
     );
   };
 
-  // علم السعودية كصورة مضمنة لضمان الظهور الدائم
   const SaudiFlag = () => (
     <img src="https://flagcdn.com/w40/sa.png" alt="Saudi Arabia" className="w-6 h-6 object-cover rounded-sm drop-shadow-sm" />
   );
