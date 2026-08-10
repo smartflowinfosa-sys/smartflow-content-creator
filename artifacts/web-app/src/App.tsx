@@ -638,7 +638,7 @@ const AdminDashboard = ({ isDark, t }: any) => {
     const textCount = userLogs.filter(l => l.content_type === 'social_caption' || l.content_type === 'ad_script' || l.content_type === 'customer_response').length;
 
     return (
-      <div className={`w-full max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 animate-in slide-in-from-bottom-4 duration-500 ${t.dir === 'ltr' ? 'text-left' : 'text-right'}`}>
+      <div className={`w-full max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 animate-in slide-in-from-bottom-4 duration-500 ${t.dir === 'ltr' ? 'text-left' : 'text-right'} ${isDark ? 'text-white' : 'text-slate-900'}`}>
         <div className="flex items-center gap-4 mb-8">
           <button onClick={() => setViewUser(null)} className={`p-2 rounded-xl border transition-all ${isDark ? 'bg-slate-800 border-slate-700 text-white hover:bg-slate-700' : 'bg-white border-slate-200 text-slate-900 hover:bg-slate-50'}`}>
             <X size={20} />
@@ -672,7 +672,7 @@ const AdminDashboard = ({ isDark, t }: any) => {
           </div>
         </div>
 
-        <h3 className={`text-lg font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>{t.contentHistory}</h3>
+        <h3 className="text-lg font-bold mb-4">{t.contentHistory}</h3>
         <div className={`rounded-3xl border overflow-hidden shadow-xl ${isDark ? 'bg-slate-900/50 border-slate-700/50' : 'bg-white border-slate-200'}`}>
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left" dir={t.dir}>
@@ -685,13 +685,13 @@ const AdminDashboard = ({ isDark, t }: any) => {
               </thead>
               <tbody className="divide-y divide-slate-200 dark:divide-slate-700/50">
                 {userLogs.length === 0 ? (
-                  <tr><td colSpan={3} className="p-10 text-center text-slate-500">لا يوجد سجل متاح</td></tr>
+                  <tr><td colSpan={3} className={`p-10 text-center ${textMuted}`}>لا يوجد سجل متاح</td></tr>
                 ) : (
                   userLogs.map((log) => (
                     <tr key={log.id} className={`transition-colors ${isDark ? 'hover:bg-slate-800/30' : 'hover:bg-slate-50'}`}>
                       <td className={`px-6 py-4 font-bold text-xs ${t.dir === 'rtl' ? 'text-right' : 'text-left'}`} dir="ltr">{formatDate(log.created_at)}</td>
                       <td className={`px-6 py-4 ${t.dir === 'rtl' ? 'text-right' : 'text-left'}`}>
-                        <span className={`px-2.5 py-1 rounded-lg text-xs font-bold border ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-slate-100 border-slate-200'}`}>{log.content_type}</span>
+                        <span className={`px-2.5 py-1 rounded-lg text-xs font-bold border ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-100 border-slate-200 text-slate-900'}`}>{log.content_type}</span>
                       </td>
                       <td className={`px-6 py-4 max-w-xs truncate ${t.dir === 'rtl' ? 'text-right' : 'text-left'}`}>{log.user_prompt || '...'}</td>
                     </tr>
@@ -707,7 +707,7 @@ const AdminDashboard = ({ isDark, t }: any) => {
 
   // عرض صفحة الإدارة الرئيسية
   return (
-    <div className={`w-full max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 animate-in fade-in zoom-in duration-500 ${t.dir === 'ltr' ? 'text-left' : 'text-right'}`}>
+    <div className={`w-full max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 animate-in fade-in zoom-in duration-500 ${t.dir === 'ltr' ? 'text-left' : 'text-right'} ${isDark ? 'text-white' : 'text-slate-900'}`}>
       
       {/* رأس صفحة الإدارة */}
       <div className="flex justify-between items-center mb-8">
@@ -776,20 +776,20 @@ const AdminDashboard = ({ isDark, t }: any) => {
             </thead>
             <tbody className="divide-y divide-slate-200 dark:divide-slate-700/50">
               {isLoading ? (
-                <tr><td colSpan={4} className="p-10 text-center text-slate-500">جاري التحميل...</td></tr>
+                <tr><td colSpan={4} className={`p-10 text-center ${textMuted}`}>جاري التحميل...</td></tr>
               ) : users.length === 0 ? (
-                <tr><td colSpan={4} className="p-10 text-center text-slate-500">لا يوجد مستخدمين</td></tr>
+                <tr><td colSpan={4} className={`p-10 text-center ${textMuted}`}>لا يوجد مستخدمين</td></tr>
               ) : (
                 users.map((user) => (
                   <tr key={user.id} className={`transition-colors ${isDark ? 'hover:bg-slate-800/30' : 'hover:bg-slate-50'}`}>
                     <td className={`px-6 py-4 font-bold ${t.dir === 'rtl' ? 'text-right' : 'text-left'}`}>
-                      <button onClick={() => handleViewUser(user)} className={`hover:text-blue-500 transition-colors flex items-center gap-2 ${t.dir === 'rtl' ? 'text-right' : 'text-left'}`}>
+                      <button onClick={() => handleViewUser(user)} className={`hover:text-blue-500 transition-colors flex items-center gap-2 ${t.dir === 'rtl' ? 'text-right' : 'text-left'} ${isDark ? 'text-white' : 'text-slate-900'}`}>
                         {user.email} <ChevronRight size={14} className="opacity-50" />
                       </button>
                     </td>
                     <td className={`px-6 py-4 ${t.dir === 'rtl' ? 'text-right' : 'text-left'}`}>
                       <div className="flex items-center gap-2">
-                        <span className={`px-2 py-1 rounded border text-xs font-bold ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-slate-100 border-slate-200'}`}>
+                        <span className={`px-2 py-1 rounded border text-xs font-bold ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-100 border-slate-200 text-slate-900'}`}>
                           {user.plan_name || 'Basic'}
                         </span>
                         <span className="text-xs font-bold text-yellow-500 bg-yellow-500/10 px-2 py-1 rounded border border-yellow-500/20">
@@ -824,7 +824,7 @@ const AdminDashboard = ({ isDark, t }: any) => {
       {/* نافذة تعديل المستخدم (Modal) */}
       {editingUser && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-          <div className={`${isDark ? 'bg-[#0f172a] border-slate-800' : 'bg-white border-slate-200'} border rounded-3xl w-full max-w-md p-6 shadow-2xl relative animate-in zoom-in duration-200`}>
+          <div className={`${isDark ? 'bg-[#0f172a] border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'} border rounded-3xl w-full max-w-md p-6 shadow-2xl relative animate-in zoom-in duration-200`}>
              <button onClick={() => setEditingUser(null)} className={`absolute top-4 ${t.dir === 'rtl' ? 'left-4' : 'right-4'} p-2 rounded-full transition ${isDark ? 'text-slate-400 hover:bg-slate-800' : 'text-slate-500 hover:bg-slate-100'}`}><X size={20}/></button>
              
              <h3 className="text-lg font-black mb-1 flex items-center gap-2"><Zap className="text-yellow-500" size={20}/> {t.editUserTitle}</h3>
@@ -868,7 +868,7 @@ const AdminDashboard = ({ isDark, t }: any) => {
 };
 
 // ==========================================
-// مكون كارت المحتوى المستقل (الاستوديو)
+// مكون كارت المحتوى المستقل (الاستوديو) - محدث لعرض الصور والفيديو 📸
 // ==========================================
 const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
   let aiData: any = null;
@@ -883,6 +883,7 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
   const hook = aiData?.social_media_copy?.hook || '';
   const caption = aiData?.social_media_copy?.caption || item.user_prompt || '...';
   
+  // 👉 استخراج رابط الصورة أو الفيديو من قاعدة البيانات
   const mediaUrl =
     aiData?.media_url || item.media_url ||
     aiData?.image_url || item.image_url ||
@@ -890,6 +891,7 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
     aiData?.output_url || item.output_url ||
     aiData?.result_url || item.result_url || '';
 
+  // 👉 تحديد ما إذا كان المخرج فيديو
   const isVideoMedia =
     item.content_type === 'promo_video' || item.content_type === 'social_story' ||
     /\.(mp4|webm|mov|m4v)(\?|$)/i.test(mediaUrl);
@@ -904,9 +906,11 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
   const [isPublishing, setIsPublishing] = useState(false);
   const [copied, setCopied] = useState(false);
 
+  // إعداد مراجع الحقول لتمكين النقر في أي مكان
   const dateRef = React.useRef<HTMLInputElement>(null);
   const timeRef = React.useRef<HTMLInputElement>(null);
 
+  // دالة تحويل التاريخ إلى الشكل الاحترافي 2026 Aug 8
   const formatScheduleDate = (dateStr: string) => {
     if (!dateStr) return t.publishDate;
     const d = new Date(dateStr);
@@ -943,6 +947,7 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
   const textSecondary = isDark ? 'text-slate-300' : 'text-slate-600';
   const inputBg = isDark ? 'bg-slate-900 border-slate-700 text-slate-300 focus:border-purple-500' : 'bg-white border-slate-300 text-slate-900 focus:border-purple-500';
 
+  // 👉 تحديد نوع الشارة (Badge)
   let badgeText = t.textBadge;
   if (item.content_type === 'promo_video' || item.content_type === 'social_story') badgeText = t.videoBadge;
   else if (item.content_type === 'product_shot' || item.content_type === 'poster') badgeText = "📸";
@@ -966,6 +971,7 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
       <div className="p-6 flex-1 flex flex-col">
         {hook && <h3 className={`font-black text-lg mb-4 pb-4 border-b leading-snug ${textPrimary}`}>{hook}</h3>}
         
+        {/* 👉 كود عرض الصورة أو الفيديو */}
         {mediaUrl && (
           <div className="mb-4 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 relative group/media h-48 sm:h-56">
             {isVideoMedia ? (
@@ -1005,7 +1011,10 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
           </div>
         </div>
 
+        {/* ================= بداية شكل التاريخ والوقت الاحترافي ================= */}
         <div className="flex gap-3 mb-4">
+          
+          {/* حقل التاريخ */}
           <div className="relative flex-1 group cursor-pointer" onClick={() => { try { dateRef.current?.showPicker(); } catch(e){} }}>
             <div className={`w-full border rounded-xl px-4 py-3 text-sm transition-all flex items-center justify-between group-hover:border-purple-500 shadow-sm overflow-hidden ${inputBg}`}>
               <span className={`${scheduleDate ? 'font-black text-purple-500' : 'opacity-60 font-bold'} font-sans tracking-wide whitespace-nowrap`} dir="ltr">
@@ -1025,6 +1034,7 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
             />
           </div>
 
+          {/* حقل الوقت */}
           <div className="relative flex-1 group cursor-pointer" onClick={() => { try { timeRef.current?.showPicker(); } catch(e){} }}>
             <div className={`w-full border rounded-xl px-4 py-3 text-sm transition-all flex items-center justify-between group-hover:border-purple-500 shadow-sm overflow-hidden ${inputBg}`}>
               <span className={`${scheduleTime ? 'font-black text-purple-500' : 'opacity-60 font-bold'} font-sans tracking-wide whitespace-nowrap`} dir="ltr">
@@ -1043,7 +1053,9 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
               style={{ colorScheme: isDark ? 'dark' : 'light' }}
             />
           </div>
+
         </div>
+        {/* ================= نهاية شكل التاريخ والوقت الاحترافي ================= */}
 
         <button onClick={handleSchedule} disabled={isPublishing} className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition-colors text-sm flex justify-center items-center gap-2 disabled:opacity-50">
           {isPublishing ? <Loader2 className="animate-spin" size={16} /> : null}
@@ -1066,6 +1078,7 @@ const MarketingCalendar = ({ isDark, setActiveView, setRawIdea, setIsAiAssistOpe
     );
   };
 
+  // علم السعودية كصورة مضمنة لضمان الظهور الدائم
   const SaudiFlag = () => (
     <img src="https://flagcdn.com/w40/sa.png" alt="Saudi Arabia" className="w-6 h-6 object-cover rounded-sm drop-shadow-sm" />
   );
@@ -1889,10 +1902,10 @@ export default function App() {
         
         {isSettingsOpen && (
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-            <div className={`${isDark ? 'bg-[#0f172a] border-slate-800' : 'bg-white border-slate-200'} border rounded-3xl w-full max-w-4xl max-h-[85vh] flex flex-col overflow-hidden shadow-2xl relative animate-in fade-in zoom-in duration-200`}>
+            <div className={`${isDark ? 'bg-[#0f172a] border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'} border rounded-3xl w-full max-w-4xl max-h-[85vh] flex flex-col overflow-hidden shadow-2xl relative animate-in fade-in zoom-in duration-200`}>
               
               <div className={`px-6 py-4 border-b flex justify-between items-center shrink-0 ${isDark ? 'border-slate-800 bg-[#0f172a]' : 'border-slate-100 bg-slate-50'}`}>
-                <h3 className={`text-lg font-black flex items-center gap-2 ${textMain}`}>
+                <h3 className="text-lg font-black flex items-center gap-2">
                   <Settings className="text-blue-500" size={20} /> {t.settings}
                 </h3>
                 <button onClick={() => setIsSettingsOpen(false)} className={`p-2 rounded-full transition ${isDark ? 'text-slate-400 hover:bg-slate-800 hover:text-white' : 'text-slate-500 hover:bg-slate-200 hover:text-slate-900'}`}>
@@ -1902,10 +1915,10 @@ export default function App() {
               
               <div className="flex flex-col md:flex-row flex-1 overflow-hidden">
                 <div className={`w-full md:w-1/3 p-4 flex flex-col gap-2 overflow-y-auto border-b md:border-b-0 ${t.dir === 'rtl' ? 'md:border-l' : 'md:border-r'} ${isDark ? 'border-slate-800 bg-slate-900/30' : 'border-slate-100 bg-slate-50/50'}`}>
-                  <button onClick={() => setActiveTab('general')} className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeTab === 'general' ? (isDark ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-50 text-blue-600') : (isDark ? 'text-slate-400 hover:bg-slate-800/50' : 'text-slate-600 hover:bg-slate-100')}`}><Sliders size={18} /> {t.tabGeneral}</button>
-                  <button onClick={() => setActiveTab('billing')} className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeTab === 'billing' ? (isDark ? 'bg-yellow-500/20 text-yellow-400' : 'bg-yellow-50 text-yellow-600') : (isDark ? 'text-slate-400 hover:bg-slate-800/50' : 'text-slate-600 hover:bg-slate-100')}`}><CreditCard size={18} /> {t.tabBilling}</button>
-                  <button onClick={() => setActiveTab('connections')} className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeTab === 'connections' ? (isDark ? 'bg-pink-500/20 text-pink-400' : 'bg-pink-50 text-pink-600') : (isDark ? 'text-slate-400 hover:bg-slate-800/50' : 'text-slate-600 hover:bg-slate-100')}`}><Globe size={18} /> {t.tabConnections}</button>
-                  <button onClick={() => setActiveTab('security')} className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeTab === 'security' ? (isDark ? 'bg-green-500/20 text-green-400' : 'bg-green-50 text-green-600') : (isDark ? 'text-slate-400 hover:bg-slate-800/50' : 'text-slate-600 hover:bg-slate-100')}`}><Shield size={18} /> {t.tabSecurity}</button>
+                  <button onClick={() => setActiveTab('general')} className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeTab === 'general' ? (isDark ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-50 text-blue-600') : (isDark ? 'text-slate-400 hover:bg-slate-800/50 hover:text-white' : 'text-slate-600 hover:bg-slate-100')}`}><Sliders size={18} /> {t.tabGeneral}</button>
+                  <button onClick={() => setActiveTab('billing')} className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeTab === 'billing' ? (isDark ? 'bg-yellow-500/20 text-yellow-400' : 'bg-yellow-50 text-yellow-600') : (isDark ? 'text-slate-400 hover:bg-slate-800/50 hover:text-white' : 'text-slate-600 hover:bg-slate-100')}`}><CreditCard size={18} /> {t.tabBilling}</button>
+                  <button onClick={() => setActiveTab('connections')} className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeTab === 'connections' ? (isDark ? 'bg-pink-500/20 text-pink-400' : 'bg-pink-50 text-pink-600') : (isDark ? 'text-slate-400 hover:bg-slate-800/50 hover:text-white' : 'text-slate-600 hover:bg-slate-100')}`}><Globe size={18} /> {t.tabConnections}</button>
+                  <button onClick={() => setActiveTab('security')} className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeTab === 'security' ? (isDark ? 'bg-green-500/20 text-green-400' : 'bg-green-50 text-green-600') : (isDark ? 'text-slate-400 hover:bg-slate-800/50 hover:text-white' : 'text-slate-600 hover:bg-slate-100')}`}><Shield size={18} /> {t.tabSecurity}</button>
                 </div>
 
                 <div className="w-full md:w-2/3 p-6 overflow-y-auto flex-1 space-y-6">
@@ -1963,7 +1976,7 @@ export default function App() {
                               <Instagram size={24} />
                             </div>
                             <div>
-                              <h4 className={`font-bold ${textMain}`}>إنستقرام (Instagram)</h4>
+                              <h4 className="font-bold">إنستقرام (Instagram)</h4>
                               {isIgConnected ? (
                                 <p className="text-xs font-bold text-green-500 flex items-center gap-1"><CheckCircle2 size={12}/> متصل بـ @myagency_sa</p>
                               ) : (
@@ -1986,7 +1999,7 @@ export default function App() {
                               <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z"/></svg>
                             </div>
                             <div>
-                              <h4 className={`font-bold ${textMain}`}>تيك توك (TikTok)</h4>
+                              <h4 className="font-bold">تيك توك (TikTok)</h4>
                               {isTkConnected ? (
                                 <p className="text-xs font-bold text-green-500 flex items-center gap-1"><CheckCircle2 size={12}/> متصل بـ @myagency_sa</p>
                               ) : (
