@@ -988,6 +988,107 @@ const ReviewsDashboard = ({ isDark, t }: any) => {
 };
 
 // ==========================================
+// مكوّن التقويم التسويقي (الجديد) 📅
+// ==========================================
+const MarketingCalendar = ({ isDark, setActiveView, setRawIdea, setIsAiAssistOpen }: any) => {
+  const [completedEvents, setCompletedEvents] = useState<string[]>([]);
+
+  const toggleComplete = (id: string) => {
+    setCompletedEvents(prev => 
+      prev.includes(id) ? prev.filter(e => e !== id) : [...prev, id]
+    );
+  };
+
+  const events = [
+    { id: 'back-to-school', title: 'حملة العودة للمدارس', date: '2026-08-20', type: 'تجاري', icon: '🎒', color: 'text-blue-500', bg: 'bg-blue-500/10', border: 'border-blue-500/20' },
+    { id: 'salary-aug', title: 'يوم الراتب (أغسطس)', date: '2026-08-27', type: 'تجاري', icon: '💰', color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
+    { id: 'pizza-day', title: 'يوم البيتزا العالمي', date: '2026-09-09', type: 'ترفيهي', icon: '🍕', color: 'text-orange-500', bg: 'bg-orange-500/10', border: 'border-orange-500/20' },
+    { id: 'national-day', title: 'اليوم الوطني السعودي 94', date: '2026-09-23', type: 'وطني', icon: '🇸🇦', color: 'text-green-500', bg: 'bg-green-500/10', border: 'border-green-500/20' },
+    { id: 'salary-sep', title: 'يوم الراتب (سبتمبر)', date: '2026-09-27', type: 'تجاري', icon: '💰', color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
+    { id: 'coffee-day', title: 'اليوم العالمي للقهوة', date: '2026-10-01', type: 'ترفيهي', icon: '☕', color: 'text-amber-600', bg: 'bg-amber-500/10', border: 'border-amber-500/20' },
+    { id: 'teachers-day', title: 'يوم المعلم العالمي', date: '2026-10-05', type: 'عالمي', icon: '👨‍🏫', color: 'text-cyan-500', bg: 'bg-cyan-500/10', border: 'border-cyan-500/20' },
+    { id: 'food-day', title: 'يوم الغذاء العالمي', date: '2026-10-16', type: 'عالمي', icon: '🍔', color: 'text-orange-500', bg: 'bg-orange-500/10', border: 'border-orange-500/20' },
+    { id: 'salary-oct', title: 'يوم الراتب (أكتوبر)', date: '2026-10-27', type: 'تجاري', icon: '💰', color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
+    { id: 'singles-day', title: 'يوم العزاب 11:11', date: '2026-11-11', type: 'تجاري', icon: '🛍️', color: 'text-purple-500', bg: 'bg-purple-500/10', border: 'border-purple-500/20' },
+    { id: 'white-friday', title: 'الجمعة البيضاء', date: '2026-11-27', type: 'تجاري', icon: '🛒', color: 'text-slate-900 dark:text-white', bg: 'bg-slate-200 dark:bg-slate-800', border: 'border-slate-300 dark:border-slate-700' },
+    { id: 'salary-nov', title: 'يوم الراتب (نوفمبر)', date: '2026-11-27', type: 'تجاري', icon: '💰', color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
+    { id: 'cyber-monday', title: 'السايبر ماندي', date: '2026-11-30', type: 'تجاري', icon: '💻', color: 'text-indigo-500', bg: 'bg-indigo-500/10', border: 'border-indigo-500/20' },
+    { id: 'volunteer-day', title: 'يوم التطوع العالمي', date: '2026-12-05', type: 'عالمي', icon: '🤝', color: 'text-teal-500', bg: 'bg-teal-500/10', border: 'border-teal-500/20' },
+    { id: 'arabic-day', title: 'يوم اللغة العربية', date: '2026-12-18', type: 'عالمي', icon: '📖', color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
+    { id: 'end-year', title: 'تصفية نهاية العام', date: '2026-12-25', type: 'تجاري', icon: '❄️', color: 'text-sky-500', bg: 'bg-sky-500/10', border: 'border-sky-500/20' },
+    { id: 'salary-dec', title: 'يوم الراتب (ديسمبر)', date: '2026-12-27', type: 'تجاري', icon: '💰', color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
+  ];
+
+  const getDaysLeft = (dateStr: string) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const eventDate = new Date(dateStr);
+    eventDate.setHours(0, 0, 0, 0);
+    const diffTime = eventDate.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    if (diffDays < 0) return 'انتهت';
+    if (diffDays === 0) return 'اليوم!';
+    return `باقي ${diffDays} يوم`;
+  };
+
+  const handleLaunch = (title: string) => {
+    setRawIdea(`حملة إعلانية بمناسبة ${title} بخصومات مميزة`);
+    setIsAiAssistOpen(true);
+    setActiveView('studio');
+  };
+
+  return (
+    <div className="w-full max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 animate-in fade-in zoom-in duration-500">
+      <div className="mb-8">
+        <h2 className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500 mb-2">التقويم التسويقي الذكي 🗓️</h2>
+        <p className={`font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>خطط لحملاتك مسبقاً. اضغط على علامة الصح (✅) لتحديد المناسبات المنجزة.</p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {events.map((ev) => {
+          const isDone = completedEvents.includes(ev.id);
+          const daysLeft = getDaysLeft(ev.date);
+          
+          return (
+            <div key={ev.id} className={`p-6 rounded-3xl border transition-all duration-300 relative overflow-hidden ${isDone ? (isDark ? 'bg-slate-900/40 border-slate-800 opacity-60' : 'bg-slate-100 border-slate-200 opacity-60 grayscale-[50%]') : (isDark ? 'bg-slate-900/80 border-slate-700/80 shadow-lg hover:border-purple-500/50' : 'bg-white border-slate-200 shadow-xl hover:border-purple-400')}`}>
+              
+              <div className="flex justify-between items-start mb-4">
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-2xl border ${ev.bg} ${ev.color} ${ev.border}`}>
+                  {ev.icon}
+                </div>
+                
+                {/* زر علامة الصح (الإنجاز) */}
+                <button onClick={() => toggleComplete(ev.id)} title={isDone ? "التراجع عن الإنجاز" : "تحديد كمنجز"} className={`w-8 h-8 rounded-full flex items-center justify-center border transition-all ${isDone ? 'bg-green-500 border-green-500 text-white shadow-[0_0_15px_rgba(34,197,94,0.5)]' : (isDark ? 'bg-slate-800 border-slate-600 text-slate-500 hover:text-green-400 hover:border-green-400' : 'bg-slate-50 border-slate-300 text-slate-400 hover:text-green-500 hover:border-green-500')}`}>
+                  <CheckCircle2 size={18} />
+                </button>
+              </div>
+
+              <h3 className={`text-lg font-black mb-1 ${isDone ? 'line-through decoration-2' : ''} ${isDark ? 'text-white' : 'text-slate-900'}`}>{ev.title}</h3>
+              
+              <div className="flex gap-2 mb-6 mt-3">
+                <span className={`text-xs font-bold px-2.5 py-1 rounded-lg border ${ev.bg} ${ev.color} ${ev.border}`}>{ev.type}</span>
+                <span className={`text-xs font-bold px-2.5 py-1 rounded-lg border flex items-center gap-1 ${daysLeft === 'انتهت' ? 'bg-red-500/10 text-red-500 border-red-500/20' : (isDark ? 'bg-slate-800 text-slate-300 border-slate-700' : 'bg-slate-100 text-slate-600 border-slate-200')}`}>
+                   <Clock size={12} /> {daysLeft}
+                </span>
+                <span className={`text-xs font-bold px-2.5 py-1 rounded-lg border ${isDark ? 'bg-slate-800 text-slate-400 border-slate-700' : 'bg-slate-100 text-slate-500 border-slate-200'}`} dir="ltr">{ev.date}</span>
+              </div>
+
+              <button 
+                onClick={() => handleLaunch(ev.title)} 
+                disabled={isDone || daysLeft === 'انتهت'}
+                className={`w-full py-3 rounded-xl text-sm font-bold flex justify-center items-center gap-2 transition-all ${isDone || daysLeft === 'انتهت' ? (isDark ? 'bg-slate-800 text-slate-600 cursor-not-allowed' : 'bg-slate-200 text-slate-400 cursor-not-allowed') : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:shadow-lg hover:scale-[1.02]'}`}
+              >
+                <Wand2 size={16} /> {isDone ? 'تم تجهيز المحتوى' : 'تجهيز حملة للمناسبة'}
+              </button>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+// ==========================================
 // 4. التطبيق الرئيسي (App)
 // ==========================================
 export default function App() {
@@ -997,7 +1098,8 @@ export default function App() {
   const [userStatus, setUserStatus] = useState<'loading' | 'pending' | 'active'>('loading');
   const [isCheckingStatus, setIsCheckingStatus] = useState(false);
 
-  const [activeView, setActiveView] = useState('studio');
+  // جعل التقويم هو الشاشة الافتراضية
+  const [activeView, setActiveView] = useState('calendar');
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
 
   const [isAiAssistOpen, setIsAiAssistOpen] = useState(false);
@@ -1276,6 +1378,13 @@ export default function App() {
         </div>
 
         <nav className="p-4 space-y-3">
+          
+          {/* زر التقويم التسويقي (الجديد) */}
+          <button onClick={() => { setActiveView('calendar'); if(window.innerWidth < 768) setIsSidebarVisible(false); }} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${activeView === 'calendar' ? (isDark ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' : 'bg-purple-50 text-purple-600 border border-purple-200') : (isDark ? 'text-slate-400 hover:bg-slate-800 border border-transparent' : 'text-slate-600 hover:bg-slate-100 border border-transparent')}`}>
+            <CalendarRange size={20} className={activeView === 'calendar' ? 'text-purple-500' : ''} /> 
+            التقويم التسويقي
+          </button>
+
           <button onClick={() => { setActiveView('studio'); if(window.innerWidth < 768) setIsSidebarVisible(false); }} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${activeView === 'studio' ? (isDark ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : 'bg-blue-50 text-blue-600 border border-blue-200') : (isDark ? 'text-slate-400 hover:bg-slate-800 border border-transparent' : 'text-slate-600 hover:bg-slate-100 border border-transparent')}`}>
             <Star size={20} className={activeView === 'studio' ? 'text-blue-500' : ''} /> 
             {t.studioTab}
@@ -1472,6 +1581,16 @@ export default function App() {
             </div>
           </div>
         </div>
+
+        {/* عرض التقويم التسويقي */}
+        {activeView === 'calendar' && (
+          <MarketingCalendar 
+            isDark={isDark} 
+            setActiveView={setActiveView} 
+            setRawIdea={setRawIdea} 
+            setIsAiAssistOpen={setIsAiAssistOpen} 
+          />
+        )}
 
         {activeView === 'studio' && (
           <>
