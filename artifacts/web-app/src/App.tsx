@@ -1,6 +1,6 @@
 // @ts-nocheck
 /* eslint-disable */
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "./supabase";
 import Auth from "./Auth"; 
 import { 
@@ -8,7 +8,7 @@ import {
   Copy, CheckCircle2, Instagram, Info, Loader2, Wallet, CreditCard, 
   Shield, Sliders, ImagePlus, Mic, Activity, Target, AlignLeft, 
   AlignJustify, Star, MessageCircle, Clapperboard, CalendarRange, 
-  Bot, Bell, LineChart, Phone, Wand2, Hourglass, Clock 
+  Bot, Bell, LineChart, Phone, Wand2, Hourglass, Clock, ShieldCheck, Users
 } from 'lucide-react';
 
 // ==========================================
@@ -23,6 +23,7 @@ const translations: any = {
     calendarTab: "التقويم التسويقي",
     studioTab: "الاستوديو الذكي",
     reviewsTab: "تقييمات قوقل ماب",
+    adminTab: "لوحة الإدارة",
     currentPlan: "الباقة الحالية",
     freePlan: "الباقة المجانية (Free)",
     settings: "إعدادات الحساب",
@@ -213,7 +214,19 @@ const translations: any = {
       arabicDay: "يوم اللغة العربية",
       endYear: "تصفية نهاية العام",
       salaryDec: "يوم الراتب (ديسمبر)"
-    }
+    },
+    adminTitle: "إدارة العملاء والمنصة 🛡️",
+    adminSubtitle: "تحكم في الحسابات، الصلاحيات، وتفعيل المشتركين الجدد.",
+    colEmail: "البريد الإلكتروني",
+    colStatus: "الحالة",
+    colRole: "الصلاحية",
+    colActions: "الإجراءات",
+    btnActivate: "تفعيل",
+    btnSuspend: "إيقاف",
+    statusActive: "نشط",
+    statusPending: "في الانتظار",
+    roleAdmin: "مدير",
+    roleUser: "عميل"
   },
   en: {
     dir: "ltr",
@@ -223,6 +236,7 @@ const translations: any = {
     calendarTab: "Marketing Calendar",
     studioTab: "Smart Studio",
     reviewsTab: "Google Reviews",
+    adminTab: "Admin Panel",
     currentPlan: "Current Plan",
     freePlan: "Free Plan",
     settings: "Account Settings",
@@ -413,7 +427,19 @@ const translations: any = {
       arabicDay: "World Arabic Language Day",
       endYear: "End of Year Sale",
       salaryDec: "Salary Day (December)"
-    }
+    },
+    adminTitle: "Platform & Users Management 🛡️",
+    adminSubtitle: "Control accounts, roles, and activate new subscribers.",
+    colEmail: "Email Address",
+    colStatus: "Status",
+    colRole: "Role",
+    colActions: "Actions",
+    btnActivate: "Activate",
+    btnSuspend: "Suspend",
+    statusActive: "Active",
+    statusPending: "Pending",
+    roleAdmin: "Admin",
+    roleUser: "User"
   }
 };
 
@@ -448,7 +474,99 @@ const PendingScreen = ({ isDark, t, checkStatus, isChecking }: any) => {
 };
 
 // ==========================================
-// مكون كارت المحتوى المستقل (الاستوديو) - محدث لعرض الصور والفيديو 📸
+// لوحة الإدارة السرية (Admin Dashboard) 🛡️
+// ==========================================
+const AdminDashboard = ({ isDark, t }: any) => {
+  const [users, setUsers] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const fetchUsers = async () => {
+    setIsLoading(true);
+    // جلب جميع المستخدمين من جدول profiles
+    const { data, error } = await supabase.from('profiles').select('*').order('created_at', { ascending: false });
+    if (data) setUsers(data);
+    if (error) console.error("Error fetching users:", error);
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const toggleStatus = async (id: string, currentStatus: string) => {
+    const newStatus = currentStatus === 'active' ? 'pending' : 'active';
+    const { error } = await supabase.from('profiles').update({ status: newStatus }).eq('id', id);
+    if (!error) {
+      setUsers(users.map(u => u.id === id ? { ...u, status: newStatus } : u));
+    } else {
+      alert("حدث خطأ! تأكد من إعدادات RLS في قاعدة البيانات للسماح للمدير بالتعديل.");
+      console.error(error);
+    }
+  };
+
+  return (
+    <div className={`w-full max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 animate-in fade-in zoom-in duration-500 ${t.dir === 'ltr' ? 'text-left' : 'text-right'}`}>
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <h2 className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-red-400 to-orange-500 mb-2">{t.adminTitle}</h2>
+          <p className={`font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t.adminSubtitle}</p>
+        </div>
+        <button onClick={fetchUsers} disabled={isLoading} className={`p-3 rounded-xl border transition-all ${isDark ? 'bg-slate-800 text-slate-300 border-slate-700 hover:text-white' : 'bg-white text-slate-600 border-slate-200 hover:text-slate-900 shadow-sm'}`}>
+          <Loader2 className={isLoading ? "animate-spin" : ""} size={20} />
+        </button>
+      </div>
+
+      <div className={`rounded-3xl border overflow-hidden shadow-xl ${isDark ? 'bg-slate-900/50 border-slate-700/50' : 'bg-white border-slate-200'}`}>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm text-left" dir={t.dir}>
+            <thead className={`text-xs uppercase font-black ${isDark ? 'bg-slate-800/80 text-slate-300' : 'bg-slate-50 text-slate-600'}`}>
+              <tr>
+                <th className="px-6 py-4">{t.colEmail}</th>
+                <th className="px-6 py-4">{t.colRole}</th>
+                <th className="px-6 py-4">{t.colStatus}</th>
+                <th className="px-6 py-4 text-center">{t.colActions}</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-200 dark:divide-slate-700/50">
+              {isLoading ? (
+                <tr><td colSpan={4} className="p-10 text-center text-slate-500">جاري التحميل...</td></tr>
+              ) : users.length === 0 ? (
+                <tr><td colSpan={4} className="p-10 text-center text-slate-500">لا يوجد مستخدمين</td></tr>
+              ) : (
+                users.map((user) => (
+                  <tr key={user.id} className={`transition-colors ${isDark ? 'hover:bg-slate-800/30' : 'hover:bg-slate-50'}`}>
+                    <td className="px-6 py-4 font-bold">{user.email}</td>
+                    <td className="px-6 py-4">
+                      <span className={`px-2.5 py-1 rounded-lg text-xs font-bold border ${user.role === 'admin' ? 'bg-purple-500/10 text-purple-500 border-purple-500/20' : 'bg-slate-500/10 text-slate-500 border-slate-500/20'}`}>
+                        {user.role === 'admin' ? t.roleAdmin : t.roleUser}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={`px-2.5 py-1 rounded-lg text-xs font-bold border flex items-center gap-1.5 w-max ${user.status === 'active' ? 'bg-green-500/10 text-green-500 border-green-500/20' : 'bg-orange-500/10 text-orange-500 border-orange-500/20'}`}>
+                        {user.status === 'active' ? <CheckCircle2 size={12}/> : <Hourglass size={12}/>}
+                        {user.status === 'active' ? t.statusActive : t.statusPending}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 flex justify-center">
+                      {user.role !== 'admin' && (
+                        <button onClick={() => toggleStatus(user.id, user.status)} className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-colors border ${user.status === 'pending' ? 'bg-green-600 hover:bg-green-500 text-white border-green-500' : 'bg-red-500/10 hover:bg-red-500/20 text-red-500 border-red-500/30'}`}>
+                          {user.status === 'pending' ? t.btnActivate : t.btnSuspend}
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ==========================================
+// مكون كارت المحتوى المستقل (الاستوديو)
 // ==========================================
 const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
   let aiData: any = null;
@@ -463,7 +581,6 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
   const hook = aiData?.social_media_copy?.hook || '';
   const caption = aiData?.social_media_copy?.caption || item.user_prompt || '...';
   
-  // 👉 استخراج رابط الصورة أو الفيديو من قاعدة البيانات
   const mediaUrl =
     aiData?.media_url || item.media_url ||
     aiData?.image_url || item.image_url ||
@@ -471,7 +588,6 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
     aiData?.output_url || item.output_url ||
     aiData?.result_url || item.result_url || '';
 
-  // 👉 تحديد ما إذا كان المخرج فيديو
   const isVideoMedia =
     item.content_type === 'promo_video' || item.content_type === 'social_story' ||
     /\.(mp4|webm|mov|m4v)(\?|$)/i.test(mediaUrl);
@@ -486,11 +602,9 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
   const [isPublishing, setIsPublishing] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  // إعداد مراجع الحقول لتمكين النقر في أي مكان
   const dateRef = React.useRef<HTMLInputElement>(null);
   const timeRef = React.useRef<HTMLInputElement>(null);
 
-  // دالة تحويل التاريخ إلى الشكل الاحترافي 2026 Aug 8
   const formatScheduleDate = (dateStr: string) => {
     if (!dateStr) return t.publishDate;
     const d = new Date(dateStr);
@@ -527,7 +641,6 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
   const textSecondary = isDark ? 'text-slate-300' : 'text-slate-600';
   const inputBg = isDark ? 'bg-slate-900 border-slate-700 text-slate-300 focus:border-purple-500' : 'bg-white border-slate-300 text-slate-900 focus:border-purple-500';
 
-  // 👉 تحديد نوع الشارة (Badge)
   let badgeText = t.textBadge;
   if (item.content_type === 'promo_video' || item.content_type === 'social_story') badgeText = t.videoBadge;
   else if (item.content_type === 'product_shot' || item.content_type === 'poster') badgeText = "📸";
@@ -551,7 +664,6 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
       <div className="p-6 flex-1 flex flex-col">
         {hook && <h3 className={`font-black text-lg mb-4 pb-4 border-b leading-snug ${textPrimary}`}>{hook}</h3>}
         
-        {/* 👉 كود عرض الصورة أو الفيديو */}
         {mediaUrl && (
           <div className="mb-4 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 relative group/media h-48 sm:h-56">
             {isVideoMedia ? (
@@ -591,10 +703,7 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
           </div>
         </div>
 
-        {/* ================= بداية شكل التاريخ والوقت الاحترافي ================= */}
         <div className="flex gap-3 mb-4">
-          
-          {/* حقل التاريخ */}
           <div className="relative flex-1 group cursor-pointer" onClick={() => { try { dateRef.current?.showPicker(); } catch(e){} }}>
             <div className={`w-full border rounded-xl px-4 py-3 text-sm transition-all flex items-center justify-between group-hover:border-purple-500 shadow-sm overflow-hidden ${inputBg}`}>
               <span className={`${scheduleDate ? 'font-black text-purple-500' : 'opacity-60 font-bold'} font-sans tracking-wide whitespace-nowrap`} dir="ltr">
@@ -614,7 +723,6 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
             />
           </div>
 
-          {/* حقل الوقت */}
           <div className="relative flex-1 group cursor-pointer" onClick={() => { try { timeRef.current?.showPicker(); } catch(e){} }}>
             <div className={`w-full border rounded-xl px-4 py-3 text-sm transition-all flex items-center justify-between group-hover:border-purple-500 shadow-sm overflow-hidden ${inputBg}`}>
               <span className={`${scheduleTime ? 'font-black text-purple-500' : 'opacity-60 font-bold'} font-sans tracking-wide whitespace-nowrap`} dir="ltr">
@@ -633,9 +741,7 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
               style={{ colorScheme: isDark ? 'dark' : 'light' }}
             />
           </div>
-
         </div>
-        {/* ================= نهاية شكل التاريخ والوقت الاحترافي ================= */}
 
         <button onClick={handleSchedule} disabled={isPublishing} className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition-colors text-sm flex justify-center items-center gap-2 disabled:opacity-50">
           {isPublishing ? <Loader2 className="animate-spin" size={16} /> : null}
@@ -658,7 +764,6 @@ const MarketingCalendar = ({ isDark, setActiveView, setRawIdea, setIsAiAssistOpe
     );
   };
 
-  // علم السعودية كصورة مضمنة لضمان الظهور الدائم
   const SaudiFlag = () => (
     <img src="https://flagcdn.com/w40/sa.png" alt="Saudi Arabia" className="w-6 h-6 object-cover rounded-sm drop-shadow-sm" />
   );
@@ -722,7 +827,6 @@ const MarketingCalendar = ({ isDark, setActiveView, setRawIdea, setIsAiAssistOpe
                   {ev.icon}
                 </div>
                 
-                {/* زر علامة الصح (الإنجاز) */}
                 <button onClick={() => toggleComplete(ev.id)} title={isDone ? t.calUndo : t.calMarkDone} className={`w-8 h-8 rounded-full flex items-center justify-center border transition-all ${isDone ? 'bg-green-500 border-green-500 text-white shadow-[0_0_15px_rgba(34,197,94,0.5)]' : (isDark ? 'bg-slate-800 border-slate-600 text-slate-500 hover:text-green-400 hover:border-green-400' : 'bg-slate-50 border-slate-300 text-slate-400 hover:text-green-500 hover:border-green-500')}`}>
                   <CheckCircle2 size={18} />
                 </button>
@@ -754,7 +858,7 @@ const MarketingCalendar = ({ isDark, setActiveView, setRawIdea, setIsAiAssistOpe
 };
 
 // ==========================================
-// مكون لوحة تحكم التقييمات الجديد
+// مكون لوحة تحكم التقييمات 
 // ==========================================
 const ReviewsDashboard = ({ isDark, t }: any) => {
   const [isGoogleConnected, setIsGoogleConnected] = useState(false);
@@ -864,7 +968,6 @@ const ReviewsDashboard = ({ isDark, t }: any) => {
   return (
     <div className={`w-full max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 animate-in fade-in zoom-in duration-500 ${t.dir === 'ltr' ? 'text-left' : 'text-right'}`}>
       
-      {/* رأس الصفحة */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
           <h2 className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-pink-500 mb-2">{t.reviewsTitle}</h2>
@@ -885,7 +988,6 @@ const ReviewsDashboard = ({ isDark, t }: any) => {
         </div>
       </div>
 
-      {/* مؤشرات الأداء */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className={`p-6 rounded-2xl border ${cardClass} flex items-center gap-4 shadow-sm hover:border-blue-500/30 transition-colors`}>
           <div className="w-14 h-14 rounded-full bg-blue-500/20 flex items-center justify-center shrink-0">
@@ -1146,8 +1248,9 @@ const ReviewsDashboard = ({ isDark, t }: any) => {
 export default function App() {
   const [session, setSession] = useState<any>(null);
   
-  // دالة فحص حالة المستخدم للحسابات المعلقة
+  // دالة فحص حالة المستخدم وصلاحيته
   const [userStatus, setUserStatus] = useState<'loading' | 'pending' | 'active'>('loading');
+  const [userRole, setUserRole] = useState<'user' | 'admin'>('user'); // <-- إضافة حالة الصلاحية
   const [isCheckingStatus, setIsCheckingStatus] = useState(false);
 
   const [activeView, setActiveView] = useState('calendar');
@@ -1161,7 +1264,7 @@ export default function App() {
   const [prompt, setPrompt] = useState("");
   const [contentType, setContentType] = useState("promo_video");
   const [activityType, setActivityType] = useState("");
-  const [customActivityType, setCustomActivityType] = useState(""); // <-- החقل المخصص
+  const [customActivityType, setCustomActivityType] = useState(""); 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [results, setResults] = useState<any[]>([]);
   const [isLoadingResults, setIsLoadingResults] = useState(false);
@@ -1205,13 +1308,15 @@ export default function App() {
   const checkUserStatus = async (user: any) => {
     if (!user) return;
     try {
-      const { data, error } = await supabase.from('profiles').select('status').eq('id', user.id).maybeSingle();
+      // قراءة الحالة والصلاحية معاً
+      const { data, error } = await supabase.from('profiles').select('status, role').eq('id', user.id).maybeSingle();
       if (error) {
         setUserStatus('pending');
         return;
       }
       if (data) {
         setUserStatus(data.status);
+        setUserRole(data.role || 'user'); // تعيين الصلاحية
       } else {
         setUserStatus('pending'); 
       }
@@ -1385,20 +1490,16 @@ export default function App() {
     }
   };
 
-  // 1. إذا لم يسجل الدخول
   if (!session) return <Auth />;
   
-  // 2. إذا كان الحساب يتم فحصه الآن
   if (userStatus === 'loading') {
     return <div className={`min-h-screen flex items-center justify-center ${isDark ? 'bg-[#0b1121]' : 'bg-slate-50'}`}><Loader2 className="animate-spin text-blue-500" size={40} /></div>;
   }
 
-  // 3. إذا كان الحساب في قائمة الانتظار (Pending)
   if (userStatus === 'pending') {
     return <PendingScreen isDark={isDark} t={t} checkStatus={handleRefreshStatus} isChecking={isCheckingStatus} />;
   }
 
-  // 4. إذا كان الحساب (Active) يظهر التطبيق كامل
   const mainBg = isDark ? 'bg-[#0b1121]' : 'bg-slate-50';
   const textMain = isDark ? 'text-white' : 'text-slate-900';
   const panelBg = isDark ? 'bg-slate-900/40 border-slate-800' : 'bg-white/80 border-slate-200 shadow-2xl';
@@ -1433,7 +1534,14 @@ export default function App() {
 
         <nav className="p-4 space-y-3">
           
-          {/* زر التقويم التسويقي (الجديد) */}
+          {/* زر مدير النظام السري يظهر فقط إذا كان الـ Role هو admin */}
+          {userRole === 'admin' && (
+            <button onClick={() => { setActiveView('admin'); if(window.innerWidth < 768) setIsSidebarVisible(false); }} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all border ${activeView === 'admin' ? (isDark ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-red-50 text-red-600 border-red-200') : (isDark ? 'text-slate-400 hover:bg-slate-800 border-transparent' : 'text-slate-600 hover:bg-slate-100 border-transparent')}`}>
+              <ShieldCheck size={20} className={activeView === 'admin' ? 'text-red-500' : ''} /> 
+              {t.adminTab}
+            </button>
+          )}
+
           <button onClick={() => { setActiveView('calendar'); if(window.innerWidth < 768) setIsSidebarVisible(false); }} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${activeView === 'calendar' ? (isDark ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' : 'bg-purple-50 text-purple-600 border border-purple-200') : (isDark ? 'text-slate-400 hover:bg-slate-800 border border-transparent' : 'text-slate-600 hover:bg-slate-100 border border-transparent')}`}>
             <CalendarRange size={20} className={activeView === 'calendar' ? 'text-purple-500' : ''} /> 
             {t.calendarTab}
@@ -1636,7 +1744,11 @@ export default function App() {
           </div>
         </div>
 
-        {/* عرض التقويم التسويقي */}
+        {/* عرض شاشات التطبيق بناءً على القائمة الجانبية */}
+        {activeView === 'admin' && userRole === 'admin' && (
+          <AdminDashboard isDark={isDark} t={t} />
+        )}
+
         {activeView === 'calendar' && (
           <MarketingCalendar 
             isDark={isDark} 
@@ -1782,7 +1894,6 @@ export default function App() {
                   </div>
                 )}
 
-                {/* حقل الفكرة التسويقية مع زر المساعد الذكي */}
                 <div className="space-y-2">
                   <div className="flex justify-between items-center px-1 mb-2">
                     <label className={`block text-sm font-bold ${labelColor}`}>{t.idea}</label>
