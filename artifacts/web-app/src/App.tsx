@@ -9,7 +9,7 @@ import {
   Shield, Sliders, ImagePlus, Mic, Activity, Target, AlignLeft, 
   AlignJustify, Star, MessageCircle, Clapperboard, CalendarRange, 
   Bot, Bell, LineChart, Phone, Wand2, Hourglass, Clock, ShieldCheck, Users,
-  Megaphone, Edit, Zap
+  Megaphone, Edit, Zap, CircleDollarSign
 } from 'lucide-react';
 
 // ==========================================
@@ -232,6 +232,8 @@ const translations: any = {
     statsActive: "العملاء النشطين",
     statsPending: "في الانتظار",
     statsContent: "المحتوى المُولد",
+    statsCost: "تكلفة الـ API",
+    statsCostDesc: "تقديرية",
     announceTitle: "إرسال إشعار للعملاء 📢",
     announcePlaceholder: "اكتب رسالة أو إعلان يظهر لجميع المستخدمين في التطبيق...",
     announceSend: "إرسال للجميع",
@@ -459,6 +461,8 @@ const translations: any = {
     statsActive: "Active Users",
     statsPending: "Pending Approvals",
     statsContent: "AI Generations",
+    statsCost: "API Cost",
+    statsCostDesc: "Estimated",
     announceTitle: "Broadcast Announcement 📢",
     announcePlaceholder: "Type a message to display to all users in the app...",
     announceSend: "Send to All",
@@ -510,6 +514,10 @@ const AdminDashboard = ({ isDark, t }: any) => {
   const [isLoading, setIsLoading] = useState(true);
   const [editingUser, setEditingUser] = useState<any>(null);
   
+  // حالات الإحصائيات الحقيقية
+  const [totalContent, setTotalContent] = useState(0);
+  const [estimatedCost, setEstimatedCost] = useState(0);
+
   // حالة نافذة التعديل
   const [editPlan, setEditPlan] = useState("");
   const [editCredits, setEditCredits] = useState(0);
@@ -517,16 +525,29 @@ const AdminDashboard = ({ isDark, t }: any) => {
   const [editFeatRev, setEditFeatRev] = useState(false);
   const [isSavingUser, setIsSavingUser] = useState(false);
 
-  const fetchUsers = async () => {
+  const fetchAdminData = async () => {
     setIsLoading(true);
-    const { data, error } = await supabase.from('profiles').select('*').order('created_at', { ascending: false });
-    if (data) setUsers(data);
-    if (error) console.error("Error fetching users:", error);
+    
+    // 1. جلب بيانات المستخدمين
+    const { data: usersData, error: usersError } = await supabase.from('profiles').select('*').order('created_at', { ascending: false });
+    if (usersData) setUsers(usersData);
+    if (usersError) console.error("Error fetching users:", usersError);
+
+    // 2. جلب إجمالي المحتوى المولد لحساب التكلفة التقديرية
+    const { data: contentData, error: contentError } = await supabase.from('content_pipeline').select('id');
+    if (contentData) {
+      const count = contentData.length;
+      setTotalContent(count);
+      // معادلة التكلفة التقديرية الحالية (كمثال: كل إعلان يكلف 0.015 دولار)
+      setEstimatedCost(count * 0.015);
+    }
+    if (contentError) console.error("Error fetching content stats:", contentError);
+
     setIsLoading(false);
   };
 
   useEffect(() => {
-    fetchUsers();
+    fetchAdminData();
   }, []);
 
   const toggleStatus = async (id: string, currentStatus: string) => {
@@ -591,13 +612,13 @@ const AdminDashboard = ({ isDark, t }: any) => {
           <h2 className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-red-400 to-orange-500 mb-2">{t.adminTitle}</h2>
           <p className={`font-medium ${textMuted}`}>{t.adminSubtitle}</p>
         </div>
-        <button onClick={fetchUsers} disabled={isLoading} className={`p-3 rounded-xl border transition-all ${isDark ? 'bg-slate-800 text-slate-300 border-slate-700 hover:text-white' : 'bg-white text-slate-600 border-slate-200 hover:text-slate-900 shadow-sm'}`}>
+        <button onClick={fetchAdminData} disabled={isLoading} className={`p-3 rounded-xl border transition-all ${isDark ? 'bg-slate-800 text-slate-300 border-slate-700 hover:text-white' : 'bg-white text-slate-600 border-slate-200 hover:text-slate-900 shadow-sm'}`}>
           <Loader2 className={isLoading ? "animate-spin" : ""} size={20} />
         </button>
       </div>
 
       {/* شريط الإحصائيات KPI */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
         <div className={`p-5 rounded-2xl border ${cardClass} flex flex-col justify-center items-center shadow-sm`}>
            <Users className="text-blue-500 mb-2" size={24} />
            <p className={`text-xs font-bold ${textMuted}`}>{t.statsUsers}</p>
@@ -616,7 +637,13 @@ const AdminDashboard = ({ isDark, t }: any) => {
         <div className={`p-5 rounded-2xl border ${cardClass} flex flex-col justify-center items-center shadow-sm`}>
            <Wand2 className="text-purple-500 mb-2" size={24} />
            <p className={`text-xs font-bold ${textMuted}`}>{t.statsContent}</p>
-           <p className="text-2xl font-black mt-1">~1.2k</p>
+           <p className="text-2xl font-black mt-1">{totalContent}</p>
+        </div>
+        <div className={`p-5 rounded-2xl border ${cardClass} flex flex-col justify-center items-center shadow-sm`}>
+           <CircleDollarSign className="text-emerald-500 mb-2" size={24} />
+           <p className={`text-xs font-bold ${textMuted}`}>{t.statsCost}</p>
+           <p className="text-2xl font-black mt-1 text-emerald-500">${estimatedCost.toFixed(2)}</p>
+           <p className={`text-[10px] font-bold mt-1 ${textMuted}`}>{t.statsCostDesc}</p>
         </div>
       </div>
 
