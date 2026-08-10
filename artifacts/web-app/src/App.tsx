@@ -20,6 +20,7 @@ const translations: any = {
     appTitle: "SmartFlow",
     appDesc: "وكالتك التسويقية في مكان واحد. ألف، صمم، وانشر بضغطة زر.",
     badge: "الاستوديو الذكي المتكامل",
+    calendarTab: "التقويم التسويقي",
     studioTab: "الاستوديو الذكي",
     reviewsTab: "تقييمات قوقل ماب",
     currentPlan: "الباقة الحالية",
@@ -44,9 +45,11 @@ const translations: any = {
     igTrustMsg: "يتم الربط رسمياً ومباشرة عبر خوادم المنصات (OAuth 2.0). نحن لا نطلب أو نحفظ كلمات المرور الخاصة بك، ونطلب فقط صلاحية النشر الآلي لتسهيل عملك.",
     bizCategory: "نوع النشاط التجاري:",
     bizPlaceholder: "اختر النشاط التجاري...",
+    customBizLabel: "اكتب مجال نشاطك بدقة:",
+    customBizPlaceholder: "مثال: ورشة سيارات، مكتب محاماة، مغسلة...",
     contentType: "نوع الإنتاج المطلوب:",
     videoPromo: "🎥 فيديو إعلاني قصير (تيك توك / ريلز)",
-    deliveryApp: "🛵 تصميم حملة لتطبيقات التوصيل",
+    socialStory: "📱 إنشاء ستوري لمنصات التواصل",
     poster: "📸 تصميم بوستر عرض خاص",
     contentPlan: "📝 خطة محتوى أسبوعية متكاملة",
     adScript: "🎙️ كتابة سكريبت إعلاني جذاب",
@@ -55,26 +58,29 @@ const translations: any = {
     voiceLabel: "المعلق الصوتي",
     voiceMaleSA: "رجل (لهجة سعودية)",
     voiceFemaleSA: "امرأة (لهجة سعودية)",
-    voiceNone: "بدون تعليق صوتي (موسيقى فقط)",
+    voiceAI: "معلق ذكاء اصطناعي آلي",
+    voiceNone: "بدون تعليق (موسيقى تريند فقط)",
     toneLabel: "نبرة الإعلان",
-    toneEnthusiastic: "حماسي وسريع 🔥",
-    toneCalm: "هادئ وفخم 🛋️",
-    toneFormal: "رسمي وموثوق 🤝",
-    styleLabel: "أسلوب الإخراج",
-    styleCinematic: "تصوير سينمائي احترافي 🎬",
+    toneViral: "تريند وخطاف (Viral Hook) 🔥",
+    toneStory: "قصة وعاطفة (Storytelling) ❤️",
+    toneSales: "بيع مباشر وعاجل (Direct Sales) ⏳",
+    toneFormal: "رسمي ومؤسسي (Corporate) 💼",
+    styleLabel: "أسلوب الإخراج المرئي",
     styleUGC: "تصوير جوال واقعي (UGC) 📱",
-    style3D: "أنيميشن ورسومات 🎨",
+    styleMotion: "موشن جرافيك ترويجي 🎬",
+    styleAvatar: "أفاتار ومتحدث ذكاء اصطناعي 🤖",
+    styleCinematic: "تصوير سينمائي احترافي 🎥",
     textOptionsTitle: "✨ خيارات المحتوى النصي:",
     goalLabel: "الهدف التسويقي",
-    goalSales: "زيادة المبيعات والحجوزات 💰",
-    goalEngagement: "تفاعل ومشاركة 👥",
-    goalAwareness: "الوعي بالعلامة التجارية 📢",
+    goalConversion: "تحويل ومبيعات (Conversion) 💰",
+    goalEngagement: "تفاعل وحفظ (Engagement) 👥",
+    goalAwareness: "وعي وانتشار (Awareness) 📢",
     lengthLabel: "طول النص",
-    lengthShort: "قصير ومباشر",
-    lengthMedium: "متوسط (مثالي للسوشيال ميديا)",
-    lengthLong: "طويل وتفصيلي",
+    lengthShort: "قصير ومباشر (Twitter/Snap)",
+    lengthMedium: "متوسط (Instagram/TikTok)",
+    lengthLong: "طويل وتفصيلي (LinkedIn/Blog)",
     idea: "الفكرة التسويقية:",
-    ideaPlaceholder: "اكتب فكرتك هنا (مثال: إعلان لقهوة مختصة)...",
+    ideaPlaceholder: "اكتب فكرتك هنا (مثال: إعلان لقهوة مختصة للصيف)...",
     uploadImageTitle: "صورة المنتج (اختياري، لتحويلها إلى فيديو أو تصميم):",
     uploadImageBtn: "ارفع صورة منتجك من هنا",
     changeImage: "تغيير الصورة",
@@ -96,7 +102,10 @@ const translations: any = {
     reelsPost: "ريلز/بوست",
     scheduleBtn: "جدولة النشر 🚀",
     scheduling: "جاري الجدولة...",
-    deleteConfirm: "هل أنت متأكد من حذف هذه المكتبة بشكل نهائي؟",
+    publishDate: "تاريخ النشر",
+    publishTime: "وقت النشر",
+    fullScreen: "عرض بحجم كامل",
+    deleteConfirm: "هل أنت متأكد من حذف هذه الحملة بشكل نهائي؟",
     platformValidation: "الرجاء اختيار منصة واحدة ونوع نشر على الأقل",
     dateValidation: "الرجاء تحديد تاريخ ووقت النشر",
     scheduleSuccess: "تمت جدولة النشر بنجاح! 📅\nسيتم النشر يوم {date} الساعة {time}",
@@ -105,17 +114,18 @@ const translations: any = {
     activities: [
       "المطاعم والمقاهي (F&B)", "العقارات وإدارة الأملاك", "المتاجر الإلكترونية (قطاع التجزئة)",
       "مراكز التجميل والصالونات", "العيادات والمراكز الطبية", "تنظيم الفعاليات والمؤتمرات",
-      "تجهيز المناسبات والضيافة", "السياحة والسفر", "النوادي الرياضية واللياقة البدنية"
+      "تجهيز المناسبات والضيافة", "السياحة والسفر", "النوادي الرياضية واللياقة البدنية",
+      "مجال آخر (كتابة يدوية) ✍️"
     ],
-    credits: "Available Credits",
+    credits: "الرصيد المتاح",
     points: "نقطة",
     buyCredits: "شراء رصيد إضافي",
     tabGeneral: "إعدادات عامة",
     tabBilling: "الباقة والأرصدة",
     tabSecurity: "الأمان والمرور",
     tabConnections: "ربط الحسابات",
-    insufficientCredits: "عفواً، رصيد النقاط الخاص بك لا يكفي لإنتاج هذا المحتوى. يرجى شحن محفظتك وإعادة المحاولة لتستمر في إطلاق إبداعاتك! 🚀",
-    serverError: "الاستوديو الذكي يشهد إقبالاً عالياً في هذه اللحظة! 🎬 يرجى المحاولة مرة أخرى بعد قليل.\n\n(اطمئن، لم يتم خصم أي نقاط من رصيدك)",
+    insufficientCredits: "عفواً، رصيد النقاط الخاص بك لا يكفي لإنتاج هذا المحتوى. يرجى شحن محفظتك وإعادة المحاولة!",
+    serverError: "الاستوديو الذكي يشهد إقبالاً عالياً في هذه اللحظة! 🎬 يرجى المحاولة مرة أخرى بعد قليل.",
     reviewsTitle: "إدارة تقييمات قوقل ماب",
     reviewsSubtitle: "الرد الآلي المدعوم بالذكاء الاصطناعي لجميع فروعك.",
     connectGoogleBtn: "ربط حساب قوقل بزنس",
@@ -150,7 +160,7 @@ const translations: any = {
     tracking: "جاري التحليل...",
     negAlerts: "تنبيهات التقييمات السلبية (طوارئ)",
     negAlertsDesc: "إرسال رسالة واتساب فورية لمدير الفرع عند وصول تقييم بـ 1 نجمة للتدخل السريع.",
-    phonePlaceholder: "رقم الجوال لتلقي التنبيهات (مثال: 966500000000+)",
+    phonePlaceholder: "رقم الجوال (مثال: 966500000000+)",
     activateAlert: "تفعيل التنبيه",
     activating: "جاري التفعيل...",
     autoReplyMode: "وضع الرد التلقائي:",
@@ -166,19 +176,51 @@ const translations: any = {
     approvePublish: "اعتماد ونشر",
     editReply: "تعديل الرد",
     aiAssistBtn: "مساعد الصياغة الذكي",
-    aiAssistDesc: "اكتب فكرتك باختصار، وسيقوم الذكاء الاصطناعي بتحويلها إلى أمر (Prompt) احترافي ودقيق.",
+    aiAssistDesc: "اكتب فكرتك باختصار، وسيقوم الذكاء الاصطناعي بتحويلها إلى أمر دقيق.",
     aiAssistPlaceholder: "مثال: أبي إعلان قوي لقهوة باردة للصيف...",
     aiAssistGenerate: "توليد الصياغة",
     aiAssistApply: "اعتماد واستخدام",
     pendingTitle: "حسابك قيد المراجعة ⏳",
     pendingDesc: "شكراً لاهتمامك بـ SmartFlow! لقد تم إدراج حسابك بنجاح وسنقوم بإشعارك فور تفعيله لتنطلق معنا.",
-    pendingRefresh: "تحديث الحالة"
+    pendingRefresh: "تحديث الحالة",
+    calTitle: "التقويم التسويقي الذكي 🗓️",
+    calDesc: "خطط لحملاتك مسبقاً. اضغط على علامة الصح (✅) لتحديد المناسبات المنجزة.",
+    calDaysLeft: "باقي {days} يوم",
+    calEnded: "انتهت",
+    calToday: "اليوم!",
+    calLaunch: "تجهيز حملة للمناسبة",
+    calPrepared: "تم تجهيز المحتوى",
+    calUndo: "التراجع عن الإنجاز",
+    calMarkDone: "تحديد كمنجز",
+    calTypes: {
+      commercial: "تجاري", national: "وطني", entertainment: "ترفيهي", global: "عالمي"
+    },
+    calEvents: {
+      backToSchool: "حملة العودة للمدارس",
+      salaryAug: "يوم الراتب (أغسطس)",
+      pizzaDay: "يوم البيتزا العالمي",
+      nationalDay: "اليوم الوطني السعودي 94",
+      salarySep: "يوم الراتب (سبتمبر)",
+      coffeeDay: "اليوم العالمي للقهوة",
+      teachersDay: "يوم المعلم العالمي",
+      foodDay: "يوم الغذاء العالمي",
+      salaryOct: "يوم الراتب (أكتوبر)",
+      singlesDay: "يوم العزاب 11:11",
+      whiteFriday: "الجمعة البيضاء",
+      salaryNov: "يوم الراتب (نوفمبر)",
+      cyberMonday: "السايبر ماندي",
+      volunteerDay: "يوم التطوع العالمي",
+      arabicDay: "يوم اللغة العربية",
+      endYear: "تصفية نهاية العام",
+      salaryDec: "يوم الراتب (ديسمبر)"
+    }
   },
   en: {
     dir: "ltr",
     appTitle: "SmartFlow",
     appDesc: "Your marketing agency in one place. Prompt, design, and publish.",
     badge: "Integrated Smart Studio",
+    calendarTab: "Marketing Calendar",
     studioTab: "Smart Studio",
     reviewsTab: "Google Reviews",
     currentPlan: "Current Plan",
@@ -203,9 +245,11 @@ const translations: any = {
     igTrustMsg: "Connection is made securely via official OAuth 2.0. We never store your passwords.",
     bizCategory: "Business Category:",
     bizPlaceholder: "Select business category...",
+    customBizLabel: "Type your exact industry:",
+    customBizPlaceholder: "e.g., Car repair, Law firm, Laundry...",
     contentType: "Content Type:",
     videoPromo: "🎥 Short Promo Video (TikTok/Reels)",
-    deliveryApp: "🛵 Delivery App Campaign",
+    socialStory: "📱 Create Social Media Story",
     poster: "📸 Special Offer Poster",
     contentPlan: "📝 Full Weekly Content Plan",
     adScript: "🎙️ Engaging Ad Script",
@@ -214,26 +258,29 @@ const translations: any = {
     voiceLabel: "Voiceover",
     voiceMaleSA: "Male (Saudi Accent)",
     voiceFemaleSA: "Female (Saudi Accent)",
-    voiceNone: "No Voiceover (Music Only)",
+    voiceAI: "Automated AI Voice",
+    voiceNone: "No Voiceover (Trending Music Only)",
     toneLabel: "Ad Tone",
-    toneEnthusiastic: "Enthusiastic & Fast 🔥",
-    toneCalm: "Calm & Premium 🛋️",
-    toneFormal: "Formal & Trusted 🤝",
+    toneViral: "Viral & Hooky 🔥",
+    toneStory: "Emotional Storytelling ❤️",
+    toneSales: "Direct Sales & Urgent ⏳",
+    toneFormal: "Corporate & Professional 💼",
     styleLabel: "Visual Style",
-    styleCinematic: "Professional Cinematic 🎬",
-    styleUGC: "Realistic Mobile (UGC) 📱",
-    style3D: "3D Animation 🎨",
+    styleUGC: "Realistic UGC (Mobile) 📱",
+    styleMotion: "Motion Graphics Promo 🎬",
+    styleAvatar: "AI Avatar Spokesperson 🤖",
+    styleCinematic: "Professional Cinematic 🎥",
     textOptionsTitle: "✨ Text Content Options:",
     goalLabel: "Marketing Goal",
-    goalSales: "Drive Sales & Bookings 💰",
-    goalEngagement: "Engagement & Shares 👥",
+    goalConversion: "Drive Conversions & Sales 💰",
+    goalEngagement: "Engagement & Saves 👥",
     goalAwareness: "Brand Awareness 📢",
     lengthLabel: "Text Length",
-    lengthShort: "Short & Direct",
-    lengthMedium: "Medium (Ideal for Social)",
-    lengthLong: "Long & Detailed",
+    lengthShort: "Short & Direct (Twitter/Snap)",
+    lengthMedium: "Medium (Instagram/TikTok)",
+    lengthLong: "Long & Detailed (LinkedIn/Blog)",
     idea: "Marketing Idea:",
-    ideaPlaceholder: "Type your idea here (e.g., Specialty coffee summer promo)...",
+    ideaPlaceholder: "Type your idea here (e.g., Summer iced coffee promo)...",
     uploadImageTitle: "Product Image (Optional, for image-to-video/poster):",
     uploadImageBtn: "Upload your product image here",
     changeImage: "Change Image",
@@ -255,6 +302,9 @@ const translations: any = {
     reelsPost: "Reels/Post",
     scheduleBtn: "Schedule Publish 🚀",
     scheduling: "Scheduling...",
+    publishDate: "Publish Date",
+    publishTime: "Publish Time",
+    fullScreen: "View Full Screen",
     deleteConfirm: "Are you sure you want to delete this permanently?",
     platformValidation: "Please select at least one platform and post type",
     dateValidation: "Please select both date and time",
@@ -264,7 +314,8 @@ const translations: any = {
     activities: [
       "Restaurants & Cafes (F&B)", "Real Estate & Property Mgt", "E-commerce (Retail)",
       "Beauty Salons & Centers", "Clinics & Medical Centers", "Events & Conferences",
-      "Event Planning & Hospitality", "Travel & Tourism", "Sports & Fitness Clubs"
+      "Event Planning & Hospitality", "Travel & Tourism", "Sports & Fitness Clubs",
+      "Other (Custom Input) ✍️"
     ],
     credits: "Available Credits",
     points: "pts",
@@ -273,9 +324,9 @@ const translations: any = {
     tabBilling: "Billing & Credits",
     tabSecurity: "Security",
     tabConnections: "Connections",
-    insufficientCredits: "Sorry, your credit balance is insufficient to produce this content. Please top up your plan and try again! 🚀",
-    serverError: "Our Smart Studio is experiencing high demand right now! 🎬 Please try again in a few moments.\n\n(Rest assured, no credits were deducted)",
-    reviewsTitle: "Google Maps Reviews Management",
+    insufficientCredits: "Sorry, your credit balance is insufficient to produce this content. Please top up your plan!",
+    serverError: "Our Smart Studio is experiencing high demand right now! 🎬 Please try again later.",
+    reviewsTitle: "Google Maps Reviews",
     reviewsSubtitle: "AI-powered automated replies for all your branches.",
     connectGoogleBtn: "Connect Google Business",
     googleConnecting: "Connecting to Google...",
@@ -303,13 +354,13 @@ const translations: any = {
     savePrompt: "Save Instructions",
     saving: "Saving...",
     trackCompetitor: "Competitor Tracking",
-    trackCompetitorDesc: "Compare your store's reviews with a competitor on Google Maps to extract strengths & weaknesses.",
+    trackCompetitorDesc: "Compare your store's reviews with a competitor on Google Maps.",
     trackPlaceholder: "Paste competitor's Google Maps link here...",
     startTracking: "Start Tracking",
     tracking: "Analyzing...",
-    negAlerts: "Negative Review Alerts (Emergency)",
-    negAlertsDesc: "Send an instant WhatsApp message to the branch manager when a 1-star review is received.",
-    phonePlaceholder: "Phone number for alerts (e.g., +966500000000)",
+    negAlerts: "Negative Review Alerts",
+    negAlertsDesc: "Send an instant WhatsApp message to the manager when a 1-star review is received.",
+    phonePlaceholder: "Phone number (e.g., +966500000000)",
     activateAlert: "Activate Alert",
     activating: "Activating...",
     autoReplyMode: "Auto-Reply Mode:",
@@ -331,7 +382,38 @@ const translations: any = {
     aiAssistApply: "Apply & Use",
     pendingTitle: "Account Under Review ⏳",
     pendingDesc: "Thank you for joining SmartFlow! Your account has been successfully registered and we will notify you as soon as it is activated.",
-    pendingRefresh: "Refresh Status"
+    pendingRefresh: "Refresh Status",
+    calTitle: "Smart Marketing Calendar 🗓️",
+    calDesc: "Plan your campaigns ahead. Click the checkmark (✅) to mark events as completed.",
+    calDaysLeft: "{days} Days Left",
+    calEnded: "Ended",
+    calToday: "Today!",
+    calLaunch: "Prepare Campaign",
+    calPrepared: "Content Prepared",
+    calUndo: "Undo Completion",
+    calMarkDone: "Mark as Done",
+    calTypes: {
+      commercial: "Commercial", national: "National", entertainment: "Entertainment", global: "Global"
+    },
+    calEvents: {
+      backToSchool: "Back to School Campaign",
+      salaryAug: "Salary Day (August)",
+      pizzaDay: "World Pizza Day",
+      nationalDay: "Saudi National Day 94",
+      salarySep: "Salary Day (September)",
+      coffeeDay: "International Coffee Day",
+      teachersDay: "World Teachers' Day",
+      foodDay: "World Food Day",
+      salaryOct: "Salary Day (October)",
+      singlesDay: "Singles' Day 11:11",
+      whiteFriday: "White Friday",
+      salaryNov: "Salary Day (November)",
+      cyberMonday: "Cyber Monday",
+      volunteerDay: "International Volunteer Day",
+      arabicDay: "World Arabic Language Day",
+      endYear: "End of Year Sale",
+      salaryDec: "Salary Day (December)"
+    }
   }
 };
 
@@ -391,7 +473,7 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
 
   // 👉 تحديد ما إذا كان المخرج فيديو
   const isVideoMedia =
-    item.content_type === 'promo_video' ||
+    item.content_type === 'promo_video' || item.content_type === 'social_story' ||
     /\.(mp4|webm|mov|m4v)(\?|$)/i.test(mediaUrl);
 
   const [tkPost, setTkPost] = useState(false);
@@ -410,7 +492,7 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
 
   // دالة تحويل التاريخ إلى الشكل الاحترافي 2026 Aug 8
   const formatScheduleDate = (dateStr: string) => {
-    if (!dateStr) return 'تاريخ النشر';
+    if (!dateStr) return t.publishDate;
     const d = new Date(dateStr);
     if (isNaN(d.getTime())) return dateStr;
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -447,8 +529,8 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
 
   // 👉 تحديد نوع الشارة (Badge)
   let badgeText = t.textBadge;
-  if (item.content_type === 'promo_video') badgeText = t.videoBadge;
-  else if (item.content_type === 'product_shot' || item.content_type === 'poster') badgeText = "📸 تصميم (بوستر)";
+  if (item.content_type === 'promo_video' || item.content_type === 'social_story') badgeText = t.videoBadge;
+  else if (item.content_type === 'product_shot' || item.content_type === 'poster') badgeText = "📸";
 
   return (
     <div className={`${cardBg} backdrop-blur-xl rounded-[2rem] border overflow-hidden transition-all duration-300 flex flex-col h-full group hover:border-purple-500/50`}>
@@ -479,7 +561,7 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
             )}
             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/media:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
                <a href={mediaUrl} target="_blank" rel="noopener noreferrer" className="bg-white text-slate-900 px-4 py-2 rounded-lg text-xs font-bold shadow-xl hover:scale-105 transition-transform">
-                 عرض بحجم كامل
+                 {t.fullScreen}
                </a>
             </div>
           </div>
@@ -493,7 +575,7 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
         
         <div className="flex gap-3 mb-4">
           <div className={`flex-1 p-3 rounded-xl border transition-all ${isDark ? 'border-slate-700 bg-slate-900/50' : 'border-slate-200 bg-white'}`}>
-            <div className="flex justify-center items-center gap-1.5 mb-3 text-sm font-bold">تيك توك</div>
+            <div className="flex justify-center items-center gap-1.5 mb-3 text-sm font-bold">{t.tiktok}</div>
             <div className="flex gap-2">
                <button onClick={()=>setTkPost(!tkPost)} className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all border ${tkPost ? 'bg-[#25F4EE]/10 text-[#25F4EE] border-[#25F4EE]/50' : isDark ? 'text-slate-500 border-slate-700 hover:text-slate-300' : 'text-slate-500 border-slate-200 hover:bg-slate-50'}`}>{t.post}</button>
                <button onClick={()=>setTkStory(!tkStory)} className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all border ${tkStory ? 'bg-[#25F4EE]/10 text-[#25F4EE] border-[#25F4EE]/50' : isDark ? 'text-slate-500 border-slate-700 hover:text-slate-300' : 'text-slate-500 border-slate-200 hover:bg-slate-50'}`}>{t.story}</button>
@@ -501,7 +583,7 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
           </div>
 
           <div className={`flex-1 p-3 rounded-xl border transition-all ${isDark ? 'border-slate-700 bg-slate-900/50' : 'border-slate-200 bg-white'}`}>
-            <div className="flex justify-center items-center gap-1.5 mb-3 text-sm font-bold">إنستقرام</div>
+            <div className="flex justify-center items-center gap-1.5 mb-3 text-sm font-bold">{t.instagram}</div>
             <div className="flex gap-2">
                <button onClick={()=>setIgPost(!igPost)} className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all border ${igPost ? 'bg-pink-500/10 text-pink-500 border-pink-500/50' : isDark ? 'text-slate-500 border-slate-700 hover:text-slate-300' : 'text-slate-500 border-slate-200 hover:bg-slate-50'}`}>{t.reelsPost}</button>
                <button onClick={()=>setIgStory(!igStory)} className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all border ${igStory ? 'bg-pink-500/10 text-pink-500 border-pink-500/50' : isDark ? 'text-slate-500 border-slate-700 hover:text-slate-300' : 'text-slate-500 border-slate-200 hover:bg-slate-50'}`}>{t.story}</button>
@@ -536,7 +618,7 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
           <div className="relative flex-1 group cursor-pointer" onClick={() => { try { timeRef.current?.showPicker(); } catch(e){} }}>
             <div className={`w-full border rounded-xl px-4 py-3 text-sm transition-all flex items-center justify-between group-hover:border-purple-500 shadow-sm overflow-hidden ${inputBg}`}>
               <span className={`${scheduleTime ? 'font-black text-purple-500' : 'opacity-60 font-bold'} font-sans tracking-wide whitespace-nowrap`} dir="ltr">
-                {scheduleTime || 'وقت النشر'}
+                {scheduleTime || t.publishTime}
               </span>
               <Clock size={18} className={`shrink-0 ${scheduleTime ? 'text-purple-500' : 'text-slate-400'}`} />
             </div>
@@ -559,6 +641,113 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
           {isPublishing ? <Loader2 className="animate-spin" size={16} /> : null}
           {isPublishing ? t.scheduling : t.scheduleBtn}
         </button>
+      </div>
+    </div>
+  );
+};
+
+// ==========================================
+// مكوّن التقويم التسويقي 📅
+// ==========================================
+const MarketingCalendar = ({ isDark, setActiveView, setRawIdea, setIsAiAssistOpen, t }: any) => {
+  const [completedEvents, setCompletedEvents] = useState<string[]>([]);
+
+  const toggleComplete = (id: string) => {
+    setCompletedEvents(prev => 
+      prev.includes(id) ? prev.filter(e => e !== id) : [...prev, id]
+    );
+  };
+
+  // علم السعودية كصورة مضمنة لضمان الظهور الدائم
+  const SaudiFlag = () => (
+    <img src="https://flagcdn.com/w40/sa.png" alt="Saudi Arabia" className="w-6 h-6 object-cover rounded-sm drop-shadow-sm" />
+  );
+
+  const events = [
+    { id: 'back-to-school', title: t.calEvents.backToSchool, date: '2026-08-20', type: t.calTypes.commercial, icon: '🎒', color: 'text-blue-500', bg: 'bg-blue-500/10', border: 'border-blue-500/20' },
+    { id: 'salary-aug', title: t.calEvents.salaryAug, date: '2026-08-27', type: t.calTypes.commercial, icon: '💰', color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
+    { id: 'pizza-day', title: t.calEvents.pizzaDay, date: '2026-09-09', type: t.calTypes.entertainment, icon: '🍕', color: 'text-orange-500', bg: 'bg-orange-500/10', border: 'border-orange-500/20' },
+    { id: 'national-day', title: t.calEvents.nationalDay, date: '2026-09-23', type: t.calTypes.national, icon: <SaudiFlag />, color: 'text-green-500', bg: 'bg-green-500/10', border: 'border-green-500/20' },
+    { id: 'salary-sep', title: t.calEvents.salarySep, date: '2026-09-27', type: t.calTypes.commercial, icon: '💰', color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
+    { id: 'coffee-day', title: t.calEvents.coffeeDay, date: '2026-10-01', type: t.calTypes.entertainment, icon: '☕', color: 'text-amber-600', bg: 'bg-amber-500/10', border: 'border-amber-500/20' },
+    { id: 'teachers-day', title: t.calEvents.teachersDay, date: '2026-10-05', type: t.calTypes.global, icon: '👨‍🏫', color: 'text-cyan-500', bg: 'bg-cyan-500/10', border: 'border-cyan-500/20' },
+    { id: 'food-day', title: t.calEvents.foodDay, date: '2026-10-16', type: t.calTypes.global, icon: '🍔', color: 'text-orange-500', bg: 'bg-orange-500/10', border: 'border-orange-500/20' },
+    { id: 'salary-oct', title: t.calEvents.salaryOct, date: '2026-10-27', type: t.calTypes.commercial, icon: '💰', color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
+    { id: 'singles-day', title: t.calEvents.singlesDay, date: '2026-11-11', type: t.calTypes.commercial, icon: '🛍️', color: 'text-purple-500', bg: 'bg-purple-500/10', border: 'border-purple-500/20' },
+    { id: 'white-friday', title: t.calEvents.whiteFriday, date: '2026-11-27', type: t.calTypes.commercial, icon: '🛒', color: 'text-slate-900 dark:text-white', bg: 'bg-slate-200 dark:bg-slate-800', border: 'border-slate-300 dark:border-slate-700' },
+    { id: 'salary-nov', title: t.calEvents.salaryNov, date: '2026-11-27', type: t.calTypes.commercial, icon: '💰', color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
+    { id: 'cyber-monday', title: t.calEvents.cyberMonday, date: '2026-11-30', type: t.calTypes.commercial, icon: '💻', color: 'text-indigo-500', bg: 'bg-indigo-500/10', border: 'border-indigo-500/20' },
+    { id: 'volunteer-day', title: t.calEvents.volunteerDay, date: '2026-12-05', type: t.calTypes.global, icon: '🤝', color: 'text-teal-500', bg: 'bg-teal-500/10', border: 'border-teal-500/20' },
+    { id: 'arabic-day', title: t.calEvents.arabicDay, date: '2026-12-18', type: t.calTypes.global, icon: '📖', color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
+    { id: 'end-year', title: t.calEvents.endYear, date: '2026-12-25', type: t.calTypes.commercial, icon: '❄️', color: 'text-sky-500', bg: 'bg-sky-500/10', border: 'border-sky-500/20' },
+    { id: 'salary-dec', title: t.calEvents.salaryDec, date: '2026-12-27', type: t.calTypes.commercial, icon: '💰', color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
+  ];
+
+  const getDaysLeft = (dateStr: string) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const eventDate = new Date(dateStr);
+    eventDate.setHours(0, 0, 0, 0);
+    const diffTime = eventDate.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays < 0) return t.calEnded;
+    if (diffDays === 0) return t.calToday;
+    return t.calDaysLeft.replace('{days}', diffDays.toString());
+  };
+
+  const handleLaunch = (title: string) => {
+    setRawIdea(`${title} promo campaign`);
+    setIsAiAssistOpen(true);
+    setActiveView('studio');
+  };
+
+  return (
+    <div className="w-full max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 animate-in fade-in zoom-in duration-500">
+      <div className={`mb-8 ${t.dir === 'ltr' ? 'text-left' : 'text-right'}`}>
+        <h2 className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500 mb-2">{t.calTitle}</h2>
+        <p className={`font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t.calDesc}</p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {events.map((ev) => {
+          const isDone = completedEvents.includes(ev.id);
+          const daysLeft = getDaysLeft(ev.date);
+          
+          return (
+            <div key={ev.id} className={`p-6 rounded-3xl border transition-all duration-300 relative overflow-hidden ${isDone ? (isDark ? 'bg-slate-900/40 border-slate-800 opacity-60' : 'bg-slate-100 border-slate-200 opacity-60 grayscale-[50%]') : (isDark ? 'bg-slate-900/80 border-slate-700/80 shadow-lg hover:border-purple-500/50' : 'bg-white border-slate-200 shadow-xl hover:border-purple-400')}`}>
+              
+              <div className="flex justify-between items-start mb-4">
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-2xl border ${ev.bg} ${ev.color} ${ev.border}`}>
+                  {ev.icon}
+                </div>
+                
+                {/* زر علامة الصح (الإنجاز) */}
+                <button onClick={() => toggleComplete(ev.id)} title={isDone ? t.calUndo : t.calMarkDone} className={`w-8 h-8 rounded-full flex items-center justify-center border transition-all ${isDone ? 'bg-green-500 border-green-500 text-white shadow-[0_0_15px_rgba(34,197,94,0.5)]' : (isDark ? 'bg-slate-800 border-slate-600 text-slate-500 hover:text-green-400 hover:border-green-400' : 'bg-slate-50 border-slate-300 text-slate-400 hover:text-green-500 hover:border-green-500')}`}>
+                  <CheckCircle2 size={18} />
+                </button>
+              </div>
+
+              <h3 className={`text-lg font-black mb-1 ${isDone ? 'line-through decoration-2' : ''} ${isDark ? 'text-white' : 'text-slate-900'}`}>{ev.title}</h3>
+              
+              <div className="flex gap-2 mb-6 mt-3 flex-wrap">
+                <span className={`text-xs font-bold px-2.5 py-1 rounded-lg border ${ev.bg} ${ev.color} ${ev.border}`}>{ev.type}</span>
+                <span className={`text-xs font-bold px-2.5 py-1 rounded-lg border flex items-center gap-1 ${daysLeft === t.calEnded ? 'bg-red-500/10 text-red-500 border-red-500/20' : (isDark ? 'bg-slate-800 text-slate-300 border-slate-700' : 'bg-slate-100 text-slate-600 border-slate-200')}`}>
+                   <Clock size={12} /> {daysLeft}
+                </span>
+                <span className={`text-xs font-bold px-2.5 py-1 rounded-lg border ${isDark ? 'bg-slate-800 text-slate-400 border-slate-700' : 'bg-slate-100 text-slate-500 border-slate-200'}`} dir="ltr">{ev.date}</span>
+              </div>
+
+              <button 
+                onClick={() => handleLaunch(ev.title)} 
+                disabled={isDone || daysLeft === t.calEnded}
+                className={`w-full py-3 rounded-xl text-sm font-bold flex justify-center items-center gap-2 transition-all ${isDone || daysLeft === t.calEnded ? (isDark ? 'bg-slate-800 text-slate-600 cursor-not-allowed' : 'bg-slate-200 text-slate-400 cursor-not-allowed') : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:shadow-lg hover:scale-[1.02]'}`}
+              >
+                <Wand2 size={16} /> {isDone ? t.calPrepared : t.calLaunch}
+              </button>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -592,10 +781,10 @@ const ReviewsDashboard = ({ isDark, t }: any) => {
   const isDayShift = currentHour >= 6 && currentHour < 18;
   
   const storeSettings = {
-    storeName: "أسماك المحيط",
+    storeName: "أسماك المحيط / Asmak Al Mohit",
     storePhone: "+966 50 000 0000",
-    dayEmployeeName: "نورة",
-    nightEmployeeName: "خالد"
+    dayEmployeeName: "نورة / Noura",
+    nightEmployeeName: "خالد / Khaled"
   };
 
   const aiEmployeeName = isDayShift ? storeSettings.dayEmployeeName : storeSettings.nightEmployeeName;
@@ -629,59 +818,25 @@ const ReviewsDashboard = ({ isDark, t }: any) => {
   const allReviews = [
     {
       id: 3, 
-      author: "أحمد عبدالله",
+      author: t.dir === 'ltr' ? "Ahmed A." : "أحمد عبدالله",
       rating: 5,
-      text: "تجربة ممتازة جداً! المكان نظيف والخدمة سريعة، لكن الجلسات كانت زحمة شوي.",
+      text: t.dir === 'ltr' ? "Great experience! Clean place and fast service." : "تجربة ممتازة جداً! المكان نظيف والخدمة سريعة.",
       sentiment: "positive",
-      tag: "الخدمة والجودة",
-      date: "قبل ساعتين",
-      aiReply: "نسعد بتجربتك أستاذ أحمد! شهادتك بجودة خدمتنا وسام نعتز به. نعمل حالياً على خطة لتوسعة الجلسات لراحتكم. ننتظر زيارتك القادمة قريباً!",
-      status: "published"
-    },
-    {
-      id: 5, 
-      author: "سالم الدوسري",
-      rating: 5,
-      text: "طعم السمك خيالي والطبخ ممتاز جداً. هذه صور لطلبنا اليوم.",
-      reviewImage: "https://images.unsplash.com/photo-1615141982883-c7ad0e69fd62?auto=format&fit=crop&q=80&w=200&h=200", 
-      sentiment: "positive",
-      tag: "جودة الطعام",
-      date: "قبل ٤ ساعات",
-      aiReply: "ألف صحة وعافية أستاذ سالم! صور تفتح النفس 😍، سعداء جداً أن الطبخ نال إعجابك ونتطلع لزيارتك القادمة.",
+      tag: t.dir === 'ltr' ? "Service" : "الخدمة والجودة",
+      date: t.dir === 'ltr' ? "2 hours ago" : "قبل ساعتين",
+      aiReply: t.dir === 'ltr' ? "Glad you liked it Ahmed! We hope to see you again soon." : "نسعد بتجربتك أستاذ أحمد! شهادتك بجودة خدمتنا وسام نعتز به.",
       status: "published"
     },
     {
       id: 2,
-      author: "سارة خالد",
+      author: t.dir === 'ltr' ? "Sara K." : "سارة خالد",
       rating: 1,
-      text: "للأسف الطلب تأخر أكثر من 45 دقيقة، ولما وصل كان الأكل بارد.",
+      text: t.dir === 'ltr' ? "Order delayed for 45 mins, food was cold." : "للأسف الطلب تأخر أكثر من 45 دقيقة، ولما وصل كان الأكل بارد.",
       sentiment: "negative",
-      tag: "خدمة العملاء",
-      date: "أمس",
-      aiReply: "نعتذر جداً عن هذا التأخير غير المقبول أستاذة سارة، وهذا ليس مستوى الخدمة الذي نعد به في فروعنا. يرجى التواصل معنا عبر الرقم الموضح أدناه لتعويضك وتصحيح الخطأ فوراً.",
+      tag: t.dir === 'ltr' ? "Customer Service" : "خدمة العملاء",
+      date: t.dir === 'ltr' ? "Yesterday" : "أمس",
+      aiReply: t.dir === 'ltr' ? "We apologize for the delay Sara. This is not our standard. Please contact us." : "نعتذر جداً عن هذا التأخير غير المقبول، وهذا ليس مستوى الخدمة الذي نعد به.",
       status: "draft"
-    },
-    {
-      id: 1, 
-      author: "محمد فهد",
-      rating: 4,
-      text: "الخدمة ممتازة! الأسعار معقولة جداً مقارنة بالمنافسين في نفس المنطقة.",
-      sentiment: "positive",
-      tag: "الأسعار",
-      date: "قبل 3 أيام",
-      aiReply: "بالعافية عليك أستاذ محمد! شكراً لتقييمك ونسعى دائماً لتقديم أفضل جودة بأنسب سعر لننال رضاكم.",
-      status: "published"
-    },
-    {
-      id: 4, 
-      author: "ضيف الله اليامي",
-      rating: 5,
-      text: "",
-      sentiment: "positive",
-      tag: "تقييم عام",
-      date: "قبل 5 أيام",
-      aiReply: "شكراً لك على التقييم الرائع بـ 5 نجوم! نسعد دائماً بخدمتك ونتمنى رؤيتك قريباً.",
-      status: "published"
     }
   ];
 
@@ -707,14 +862,12 @@ const ReviewsDashboard = ({ isDark, t }: any) => {
   );
 
   return (
-    <div className="w-full max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 animate-in fade-in zoom-in duration-500">
+    <div className={`w-full max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 animate-in fade-in zoom-in duration-500 ${t.dir === 'ltr' ? 'text-left' : 'text-right'}`}>
       
       {/* رأس الصفحة */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
-          <div className="flex items-center gap-3 mb-2">
-            <h2 className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-pink-500">{t.reviewsTitle}</h2>
-          </div>
+          <h2 className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-pink-500 mb-2">{t.reviewsTitle}</h2>
           <p className={`font-medium ${textMuted}`}>{t.reviewsSubtitle}</p>
         </div>
         
@@ -848,7 +1001,7 @@ const ReviewsDashboard = ({ isDark, t }: any) => {
               <div className={`flex items-center gap-3 bg-slate-900/10 dark:bg-slate-900/50 px-4 py-2 rounded-xl shrink-0 ${t.dir === 'rtl' ? 'ml-auto' : 'mr-auto'}`}>
                 <span className={`text-sm font-bold ${textMuted}`}>{t.autoReplyMode}</span>
                 <div className="w-12 h-6 bg-green-500 rounded-full flex items-center p-1 cursor-pointer">
-                  <div className={`w-4 h-4 bg-white rounded-full shadow-sm transform ${t.dir === 'rtl' ? '-translate-x-6' : 'translate-x-6'}`}></div>
+                  <div className={`w-4 h-4 bg-white rounded-full shadow-sm transform transition-transform ${t.dir === 'rtl' ? '-translate-x-6' : 'translate-x-6'}`}></div>
                 </div>
               </div>
 
@@ -988,107 +1141,6 @@ const ReviewsDashboard = ({ isDark, t }: any) => {
 };
 
 // ==========================================
-// مكوّن التقويم التسويقي (الجديد) 📅
-// ==========================================
-const MarketingCalendar = ({ isDark, setActiveView, setRawIdea, setIsAiAssistOpen }: any) => {
-  const [completedEvents, setCompletedEvents] = useState<string[]>([]);
-
-  const toggleComplete = (id: string) => {
-    setCompletedEvents(prev => 
-      prev.includes(id) ? prev.filter(e => e !== id) : [...prev, id]
-    );
-  };
-
-  const events = [
-    { id: 'back-to-school', title: 'حملة العودة للمدارس', date: '2026-08-20', type: 'تجاري', icon: '🎒', color: 'text-blue-500', bg: 'bg-blue-500/10', border: 'border-blue-500/20' },
-    { id: 'salary-aug', title: 'يوم الراتب (أغسطس)', date: '2026-08-27', type: 'تجاري', icon: '💰', color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
-    { id: 'pizza-day', title: 'يوم البيتزا العالمي', date: '2026-09-09', type: 'ترفيهي', icon: '🍕', color: 'text-orange-500', bg: 'bg-orange-500/10', border: 'border-orange-500/20' },
-    { id: 'national-day', title: 'اليوم الوطني السعودي 94', date: '2026-09-23', type: 'وطني', icon: '🇸🇦', color: 'text-green-500', bg: 'bg-green-500/10', border: 'border-green-500/20' },
-    { id: 'salary-sep', title: 'يوم الراتب (سبتمبر)', date: '2026-09-27', type: 'تجاري', icon: '💰', color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
-    { id: 'coffee-day', title: 'اليوم العالمي للقهوة', date: '2026-10-01', type: 'ترفيهي', icon: '☕', color: 'text-amber-600', bg: 'bg-amber-500/10', border: 'border-amber-500/20' },
-    { id: 'teachers-day', title: 'يوم المعلم العالمي', date: '2026-10-05', type: 'عالمي', icon: '👨‍🏫', color: 'text-cyan-500', bg: 'bg-cyan-500/10', border: 'border-cyan-500/20' },
-    { id: 'food-day', title: 'يوم الغذاء العالمي', date: '2026-10-16', type: 'عالمي', icon: '🍔', color: 'text-orange-500', bg: 'bg-orange-500/10', border: 'border-orange-500/20' },
-    { id: 'salary-oct', title: 'يوم الراتب (أكتوبر)', date: '2026-10-27', type: 'تجاري', icon: '💰', color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
-    { id: 'singles-day', title: 'يوم العزاب 11:11', date: '2026-11-11', type: 'تجاري', icon: '🛍️', color: 'text-purple-500', bg: 'bg-purple-500/10', border: 'border-purple-500/20' },
-    { id: 'white-friday', title: 'الجمعة البيضاء', date: '2026-11-27', type: 'تجاري', icon: '🛒', color: 'text-slate-900 dark:text-white', bg: 'bg-slate-200 dark:bg-slate-800', border: 'border-slate-300 dark:border-slate-700' },
-    { id: 'salary-nov', title: 'يوم الراتب (نوفمبر)', date: '2026-11-27', type: 'تجاري', icon: '💰', color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
-    { id: 'cyber-monday', title: 'السايبر ماندي', date: '2026-11-30', type: 'تجاري', icon: '💻', color: 'text-indigo-500', bg: 'bg-indigo-500/10', border: 'border-indigo-500/20' },
-    { id: 'volunteer-day', title: 'يوم التطوع العالمي', date: '2026-12-05', type: 'عالمي', icon: '🤝', color: 'text-teal-500', bg: 'bg-teal-500/10', border: 'border-teal-500/20' },
-    { id: 'arabic-day', title: 'يوم اللغة العربية', date: '2026-12-18', type: 'عالمي', icon: '📖', color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
-    { id: 'end-year', title: 'تصفية نهاية العام', date: '2026-12-25', type: 'تجاري', icon: '❄️', color: 'text-sky-500', bg: 'bg-sky-500/10', border: 'border-sky-500/20' },
-    { id: 'salary-dec', title: 'يوم الراتب (ديسمبر)', date: '2026-12-27', type: 'تجاري', icon: '💰', color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
-  ];
-
-  const getDaysLeft = (dateStr: string) => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const eventDate = new Date(dateStr);
-    eventDate.setHours(0, 0, 0, 0);
-    const diffTime = eventDate.getTime() - today.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    if (diffDays < 0) return 'انتهت';
-    if (diffDays === 0) return 'اليوم!';
-    return `باقي ${diffDays} يوم`;
-  };
-
-  const handleLaunch = (title: string) => {
-    setRawIdea(`حملة إعلانية بمناسبة ${title} بخصومات مميزة`);
-    setIsAiAssistOpen(true);
-    setActiveView('studio');
-  };
-
-  return (
-    <div className="w-full max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 animate-in fade-in zoom-in duration-500">
-      <div className="mb-8">
-        <h2 className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500 mb-2">التقويم التسويقي الذكي 🗓️</h2>
-        <p className={`font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>خطط لحملاتك مسبقاً. اضغط على علامة الصح (✅) لتحديد المناسبات المنجزة.</p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {events.map((ev) => {
-          const isDone = completedEvents.includes(ev.id);
-          const daysLeft = getDaysLeft(ev.date);
-          
-          return (
-            <div key={ev.id} className={`p-6 rounded-3xl border transition-all duration-300 relative overflow-hidden ${isDone ? (isDark ? 'bg-slate-900/40 border-slate-800 opacity-60' : 'bg-slate-100 border-slate-200 opacity-60 grayscale-[50%]') : (isDark ? 'bg-slate-900/80 border-slate-700/80 shadow-lg hover:border-purple-500/50' : 'bg-white border-slate-200 shadow-xl hover:border-purple-400')}`}>
-              
-              <div className="flex justify-between items-start mb-4">
-                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-2xl border ${ev.bg} ${ev.color} ${ev.border}`}>
-                  {ev.icon}
-                </div>
-                
-                {/* زر علامة الصح (الإنجاز) */}
-                <button onClick={() => toggleComplete(ev.id)} title={isDone ? "التراجع عن الإنجاز" : "تحديد كمنجز"} className={`w-8 h-8 rounded-full flex items-center justify-center border transition-all ${isDone ? 'bg-green-500 border-green-500 text-white shadow-[0_0_15px_rgba(34,197,94,0.5)]' : (isDark ? 'bg-slate-800 border-slate-600 text-slate-500 hover:text-green-400 hover:border-green-400' : 'bg-slate-50 border-slate-300 text-slate-400 hover:text-green-500 hover:border-green-500')}`}>
-                  <CheckCircle2 size={18} />
-                </button>
-              </div>
-
-              <h3 className={`text-lg font-black mb-1 ${isDone ? 'line-through decoration-2' : ''} ${isDark ? 'text-white' : 'text-slate-900'}`}>{ev.title}</h3>
-              
-              <div className="flex gap-2 mb-6 mt-3">
-                <span className={`text-xs font-bold px-2.5 py-1 rounded-lg border ${ev.bg} ${ev.color} ${ev.border}`}>{ev.type}</span>
-                <span className={`text-xs font-bold px-2.5 py-1 rounded-lg border flex items-center gap-1 ${daysLeft === 'انتهت' ? 'bg-red-500/10 text-red-500 border-red-500/20' : (isDark ? 'bg-slate-800 text-slate-300 border-slate-700' : 'bg-slate-100 text-slate-600 border-slate-200')}`}>
-                   <Clock size={12} /> {daysLeft}
-                </span>
-                <span className={`text-xs font-bold px-2.5 py-1 rounded-lg border ${isDark ? 'bg-slate-800 text-slate-400 border-slate-700' : 'bg-slate-100 text-slate-500 border-slate-200'}`} dir="ltr">{ev.date}</span>
-              </div>
-
-              <button 
-                onClick={() => handleLaunch(ev.title)} 
-                disabled={isDone || daysLeft === 'انتهت'}
-                className={`w-full py-3 rounded-xl text-sm font-bold flex justify-center items-center gap-2 transition-all ${isDone || daysLeft === 'انتهت' ? (isDark ? 'bg-slate-800 text-slate-600 cursor-not-allowed' : 'bg-slate-200 text-slate-400 cursor-not-allowed') : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:shadow-lg hover:scale-[1.02]'}`}
-              >
-                <Wand2 size={16} /> {isDone ? 'تم تجهيز المحتوى' : 'تجهيز حملة للمناسبة'}
-              </button>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-};
-
-// ==========================================
 // 4. التطبيق الرئيسي (App)
 // ==========================================
 export default function App() {
@@ -1098,7 +1150,6 @@ export default function App() {
   const [userStatus, setUserStatus] = useState<'loading' | 'pending' | 'active'>('loading');
   const [isCheckingStatus, setIsCheckingStatus] = useState(false);
 
-  // جعل التقويم هو الشاشة الافتراضية
   const [activeView, setActiveView] = useState('calendar');
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
 
@@ -1110,6 +1161,7 @@ export default function App() {
   const [prompt, setPrompt] = useState("");
   const [contentType, setContentType] = useState("promo_video");
   const [activityType, setActivityType] = useState("");
+  const [customActivityType, setCustomActivityType] = useState(""); // <-- החقل المخصص
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [results, setResults] = useState<any[]>([]);
   const [isLoadingResults, setIsLoadingResults] = useState(false);
@@ -1127,10 +1179,10 @@ export default function App() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const [voiceGender, setVoiceGender] = useState("male_sa");
-  const [adTone, setAdTone] = useState("enthusiastic");
-  const [visualStyle, setVisualStyle] = useState("cinematic");
-  const [contentGoal, setContentGoal] = useState("sales");
-  const [textLength, setTextLength] = useState("medium");
+  const [adTone, setAdTone] = useState("toneViral");
+  const [visualStyle, setVisualStyle] = useState("styleUGC");
+  const [contentGoal, setContentGoal] = useState("goalConversion");
+  const [textLength, setTextLength] = useState("lengthMedium");
 
   const [theme, setTheme] = useState('dark');
   const [langCode, setLangCode] = useState('ar');
@@ -1140,8 +1192,9 @@ export default function App() {
   const isDark = theme === 'dark';
   const t = translations[langCode] || translations['ar']; 
 
-  const isVisualContent = contentType === "promo_video" || contentType === "delivery_campaign" || contentType === "product_shot";
+  const isVisualContent = contentType === "promo_video" || contentType === "social_story" || contentType === "product_shot";
   const isTextContent = contentType === "social_caption" || contentType === "ad_script" || contentType === "customer_response";
+  const isCustomBiz = activityType === "مجال آخر (كتابة يدوية) ✍️" || activityType === "Other (Custom Input) ✍️";
 
   useEffect(() => {
     if (window.innerWidth < 768) {
@@ -1154,7 +1207,6 @@ export default function App() {
     try {
       const { data, error } = await supabase.from('profiles').select('status').eq('id', user.id).maybeSingle();
       if (error) {
-        console.error("Supabase Error:", error);
         setUserStatus('pending');
         return;
       }
@@ -1164,7 +1216,6 @@ export default function App() {
         setUserStatus('pending'); 
       }
     } catch (e) {
-      console.error(e);
       setUserStatus('pending');
     }
   };
@@ -1251,7 +1302,7 @@ export default function App() {
     if(!rawIdea) return;
     setIsGeneratingPrompt(true);
     setTimeout(() => {
-        setGeneratedPrompt(`قم بصياغة إعلان احترافي وجذاب لـ: ${rawIdea}. ركز على إبراز الجودة العالية، واستخدم نبرة تسويقية مقنعة تحفز العميل على الطلب، مع إضافة عبارة تحث على اتخاذ إجراء (CTA) واضحة وقوية.`);
+        setGeneratedPrompt(`قم بصياغة إعلان احترافي وجذاب لـ: ${rawIdea}. ركز على إبراز الجودة العالية، واستخدم نبرة تسويقية مقنعة تحفز العميل على الطلب.`);
         setIsGeneratingPrompt(false);
     }, 1500);
   };
@@ -1268,6 +1319,9 @@ export default function App() {
     e.preventDefault();
     if (!session?.user?.id) return;
     if (!activityType) return alert(t.platformValidation);
+    
+    const finalActivityType = isCustomBiz ? customActivityType : activityType;
+    if (isCustomBiz && !customActivityType.trim()) return alert(t.platformValidation);
     
     if (credits < 10) {
       alert(t.insufficientCredits);
@@ -1295,7 +1349,7 @@ export default function App() {
 
     const payload = {
       store_id: session.user.id, 
-      activity_type: activityType, 
+      activity_type: finalActivityType, 
       content_type: contentType, 
       prompt: prompt,
       image_url: uploadedImageUrl,
@@ -1314,17 +1368,17 @@ export default function App() {
       });
 
       if (!response.ok) {
-        throw new Error("Server or API Overload");
+        throw new Error("Server Error");
       }
 
       setCredits(prev => prev - 10);
       setPrompt("");
       setImageFile(null);
       setImagePreview(null);
+      setCustomActivityType("");
       setTimeout(fetchResults, 4000); 
 
     } catch (error) {
-      console.error("Submission error:", error);
       alert(t.serverError);
     } finally {
       setIsSubmitting(false);
@@ -1382,7 +1436,7 @@ export default function App() {
           {/* زر التقويم التسويقي (الجديد) */}
           <button onClick={() => { setActiveView('calendar'); if(window.innerWidth < 768) setIsSidebarVisible(false); }} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${activeView === 'calendar' ? (isDark ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' : 'bg-purple-50 text-purple-600 border border-purple-200') : (isDark ? 'text-slate-400 hover:bg-slate-800 border border-transparent' : 'text-slate-600 hover:bg-slate-100 border border-transparent')}`}>
             <CalendarRange size={20} className={activeView === 'calendar' ? 'text-purple-500' : ''} /> 
-            التقويم التسويقي
+            {t.calendarTab}
           </button>
 
           <button onClick={() => { setActiveView('studio'); if(window.innerWidth < 768) setIsSidebarVisible(false); }} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${activeView === 'studio' ? (isDark ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : 'bg-blue-50 text-blue-600 border border-blue-200') : (isDark ? 'text-slate-400 hover:bg-slate-800 border border-transparent' : 'text-slate-600 hover:bg-slate-100 border border-transparent')}`}>
@@ -1589,6 +1643,7 @@ export default function App() {
             setActiveView={setActiveView} 
             setRawIdea={setRawIdea} 
             setIsAiAssistOpen={setIsAiAssistOpen} 
+            t={t} 
           />
         )}
 
@@ -1601,7 +1656,7 @@ export default function App() {
                 <p className={`font-medium text-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t.appDesc}</p>
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit} className={`space-y-6 ${t.dir === 'ltr' ? 'text-left' : 'text-right'}`}>
                 <div className="space-y-2">
                   <label className={`block text-sm font-bold px-1 ${labelColor}`}>{t.bizCategory}</label>
                   <div className="relative">
@@ -1613,13 +1668,20 @@ export default function App() {
                   </div>
                 </div>
 
+                {isCustomBiz && (
+                  <div className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
+                    <label className={`block text-sm font-bold px-1 ${labelColor}`}>{t.customBizLabel}</label>
+                    <input type="text" value={customActivityType} onChange={(e: any) => setCustomActivityType(e.target.value)} required placeholder={t.customBizPlaceholder} className={`w-full px-5 py-4 border rounded-2xl outline-none font-medium transition-all ${inputBg}`} />
+                  </div>
+                )}
+
                 <div className="space-y-2">
                   <label className={`block text-sm font-bold px-1 ${labelColor}`}>{t.contentType}</label>
                   <div className="relative">
                     <select value={contentType} onChange={(e: any) => setContentType(e.target.value)} className={`w-full px-5 py-4 border rounded-2xl outline-none font-medium appearance-none transition-all ${inputBg}`}>
                       <optgroup label={t.visualGroup} className={optionClass}>
                         <option className={optionClass} value="promo_video">{t.videoPromo}</option>
-                        <option className={optionClass} value="delivery_campaign">{t.deliveryApp}</option>
+                        <option className={optionClass} value="social_story">{t.socialStory}</option>
                         <option className={optionClass} value="product_shot">{t.poster}</option>
                       </optgroup>
                       <optgroup label={t.textGroup} className={optionClass}>
@@ -1642,6 +1704,7 @@ export default function App() {
                         <select value={voiceGender} onChange={(e: any) => setVoiceGender(e.target.value)} className={`w-full px-3 py-2.5 border rounded-xl outline-none text-sm appearance-none transition-all ${inputBg}`}>
                           <option className={optionClass} value="male_sa">{t.voiceMaleSA}</option>
                           <option className={optionClass} value="female_sa">{t.voiceFemaleSA}</option>
+                          <option className={optionClass} value="ai_voice">{t.voiceAI}</option>
                           <option className={optionClass} value="none">{t.voiceNone}</option>
                         </select>
                       </div>
@@ -1649,18 +1712,20 @@ export default function App() {
                       <div className="space-y-1.5">
                         <label className={`text-xs font-bold flex items-center gap-1.5 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}><Activity size={14} /> {t.toneLabel}</label>
                         <select value={adTone} onChange={(e: any) => setAdTone(e.target.value)} className={`w-full px-3 py-2.5 border rounded-xl outline-none text-sm appearance-none transition-all ${inputBg}`}>
-                          <option className={optionClass} value="enthusiastic">{t.toneEnthusiastic}</option>
-                          <option className={optionClass} value="calm">{t.toneCalm}</option>
-                          <option className={optionClass} value="formal">{t.toneFormal}</option>
+                          <option className={optionClass} value="toneViral">{t.toneViral}</option>
+                          <option className={optionClass} value="toneStory">{t.toneStory}</option>
+                          <option className={optionClass} value="toneSales">{t.toneSales}</option>
+                          <option className={optionClass} value="toneFormal">{t.toneFormal}</option>
                         </select>
                       </div>
 
                       <div className="space-y-1.5 sm:col-span-2">
                         <label className={`text-xs font-bold flex items-center gap-1.5 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}><Clapperboard size={14} /> {t.styleLabel}</label>
                         <select value={visualStyle} onChange={(e: any) => setVisualStyle(e.target.value)} className={`w-full px-3 py-2.5 border rounded-xl outline-none text-sm appearance-none transition-all ${inputBg}`}>
-                          <option className={optionClass} value="cinematic">{t.styleCinematic}</option>
-                          <option className={optionClass} value="ugc">{t.styleUGC}</option>
-                          <option className={optionClass} value="3d_animation">{t.style3D}</option>
+                          <option className={optionClass} value="styleUGC">{t.styleUGC}</option>
+                          <option className={optionClass} value="styleMotion">{t.styleMotion}</option>
+                          <option className={optionClass} value="styleAvatar">{t.styleAvatar}</option>
+                          <option className={optionClass} value="styleCinematic">{t.styleCinematic}</option>
                         </select>
                       </div>
                     </div>
@@ -1675,18 +1740,18 @@ export default function App() {
                       <div className="space-y-1.5">
                         <label className={`text-xs font-bold flex items-center gap-1.5 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}><Target size={14} /> {t.goalLabel}</label>
                         <select value={contentGoal} onChange={(e: any) => setContentGoal(e.target.value)} className={`w-full px-3 py-2.5 border rounded-xl outline-none text-sm appearance-none transition-all ${inputBg}`}>
-                          <option className={optionClass} value="sales">{t.goalSales}</option>
-                          <option className={optionClass} value="engagement">{t.goalEngagement}</option>
-                          <option className={optionClass} value="awareness">{t.goalAwareness}</option>
+                          <option className={optionClass} value="goalConversion">{t.goalConversion}</option>
+                          <option className={optionClass} value="goalEngagement">{t.goalEngagement}</option>
+                          <option className={optionClass} value="goalAwareness">{t.goalAwareness}</option>
                         </select>
                       </div>
 
                       <div className="space-y-1.5">
                         <label className={`text-xs font-bold flex items-center gap-1.5 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}><AlignLeft size={14} /> {t.lengthLabel}</label>
                         <select value={textLength} onChange={(e: any) => setTextLength(e.target.value)} className={`w-full px-3 py-2.5 border rounded-xl outline-none text-sm appearance-none transition-all ${inputBg}`}>
-                          <option className={optionClass} value="short">{t.lengthShort}</option>
-                          <option className={optionClass} value="medium">{t.lengthMedium}</option>
-                          <option className={optionClass} value="long">{t.lengthLong}</option>
+                          <option className={optionClass} value="lengthShort">{t.lengthShort}</option>
+                          <option className={optionClass} value="lengthMedium">{t.lengthMedium}</option>
+                          <option className={optionClass} value="lengthLong">{t.lengthLong}</option>
                         </select>
                       </div>
                     </div>
