@@ -184,6 +184,20 @@ export default function Auth() {
         </div>
 
       </div>
+
+      {/* تذييل الصفحة (Footer) المخصص لسياسة الخصوصية لكي يراه مراجع المنصات بوضوح */}
+      <div className="absolute bottom-6 w-full text-center z-50" dir="ltr">
+        <div className="flex items-center justify-center gap-4 text-sm font-bold text-slate-400 bg-slate-900/50 w-max mx-auto px-6 py-2 rounded-full backdrop-blur-md border border-slate-700/50">
+          <a href="https://www.freeprivacypolicy.com/live/669af52d-d619-4744-a7b8-ad653974cc5f" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">
+            Terms of Service
+          </a>
+          <span className="opacity-50">|</span>
+          <a href="https://www.freeprivacypolicy.com/live/fbe2253d-b5fd-4952-acff-a817ff86bf21" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">
+            Privacy Policy
+          </a>
+        </div>
+      </div>
+
     </div>
   );
 }
