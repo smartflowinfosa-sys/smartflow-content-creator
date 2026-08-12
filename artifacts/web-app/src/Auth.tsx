@@ -171,14 +171,14 @@ export default function Auth() {
           </button>
         </p>
 
-        {/* الروابط القانونية - تظهر في أسفل الكارت */}
+        {/* الروابط القانونية - تظهر في أسفل الكارت وترتبط بملفاتك الداخلية */}
         <div className="pt-2 text-center text-xs text-slate-500 font-medium">
           {t.agreementText}
-          <a href="https://www.freeprivacypolicy.com/live/669af52d-d619-4744-a7b8-ad653974cc5f" target="_blank" rel="noreferrer" className="underline hover:text-purple-400 transition-colors">
+          <a href="/terms.html" target="_blank" rel="noreferrer" className="underline hover:text-purple-400 transition-colors">
             {t.termsText}
           </a>
           {t.andText}
-          <a href="https://www.freeprivacypolicy.com/live/fbe2253d-b5fd-4952-acff-a817ff86bf21" target="_blank" rel="noreferrer" className="underline hover:text-purple-400 transition-colors">
+          <a href="/privacy.html" target="_blank" rel="noreferrer" className="underline hover:text-purple-400 transition-colors">
             {t.privacyText}
           </a>
         </div>
@@ -188,11 +188,11 @@ export default function Auth() {
       {/* تذييل الصفحة (Footer) المخصص لسياسة الخصوصية لكي يراه مراجع المنصات بوضوح */}
       <div className="absolute bottom-6 w-full text-center z-50" dir="ltr">
         <div className="flex items-center justify-center gap-4 text-sm font-bold text-slate-400 bg-slate-900/50 w-max mx-auto px-6 py-2 rounded-full backdrop-blur-md border border-slate-700/50">
-          <a href="https://www.freeprivacypolicy.com/live/669af52d-d619-4744-a7b8-ad653974cc5f" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">
+          <a href="/terms.html" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">
             Terms of Service
           </a>
           <span className="opacity-50">|</span>
-          <a href="https://www.freeprivacypolicy.com/live/fbe2253d-b5fd-4952-acff-a817ff86bf21" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">
+          <a href="/privacy.html" target="_blank" rel="noreferrer" className="hover:text-white transition-colors">
             Privacy Policy
           </a>
         </div>
