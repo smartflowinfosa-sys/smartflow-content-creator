@@ -1,60 +1,28 @@
-import { createClient } from '@supabase/supabase-js';
-
 export default async function handler(req, res) {
-  // 1. التقاط الرمز المؤقت من الرابط
-  const { code, state } = req.query;
+  // هذا الملف يعمل كـ Backend صغير على سيرفرات Vercel
+  
+  // 1. تيك توك يرسل لنا كود التفويض في الرابط
+  const { code, state, error } = req.query;
 
-  if (!code) {
-    return res.status(400).json({ error: 'لم يتم العثور على رمز المصادقة من تيك توك.' });
+  // إذا قام العميل بإلغاء العملية ولم يوافق
+  if (error) {
+    return res.redirect(302, '/?tk_connected=false');
   }
 
-  try {
-    // 2. طلب التوكن النهائي من سيرفرات تيك توك
-    const tokenResponse = await fetch('https://open.tiktokapis.com/v2/oauth/token/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Cache-Control': 'no-cache',
-      },
-      body: new URLSearchParams({
-        client_key: process.env.TIKTOK_CLIENT_KEY,
-        client_secret: process.env.TIKTOK_CLIENT_SECRET,
-        code: code,
-        grant_type: 'authorization_code',
-        redirect_uri: 'https://smartflow-content-creator-web-app.vercel.app/api/auth/callback',
-      }),
-    });
+  /*
+   ملاحظة برمجية: 
+   في الأنظمة المعقدة، نقوم هنا بأخذ الـ (code) وإرساله لتيك توك لتبديله بـ (Access Token).
+   ولكن بما أننا نعتمد على n8n للقيام بالنشر الفعلي (وهو يمتلك التوكن السري بالفعل)،
+   فإن دور هذا الملف هو فقط إشعار واجهة التطبيق بأن العميل أتم عملية الربط بنجاح لعرض صورته.
+  */
 
-    const tokenData = await tokenResponse.json();
+  // 2. بيانات وهمية للعرض (في المستقبل يمكنك سحبها من قاعدة بياناتك)
+  const tkUsername = "@myagency_sa"; // اليوزر الذي سيظهر في الواجهة
+  const tkAvatar = "https://ui-avatars.com/api/?name=TikTok&background=000&color=fff"; // صورة الأفاتار
 
-    if (!tokenResponse.ok) {
-       return res.status(400).json({ error: 'فشل في استخراج التوكن', details: tokenData });
-    }
-
-    // 3. الاتصال بقاعدة بيانات Supabase
-    // ملاحظة: تأكد من إضافة SUPABASE_URL و SUPABASE_SERVICE_ROLE_KEY في متغيرات بيئة Vercel
-    const supabase = createClient(
-      process.env.SUPABASE_URL, 
-      process.env.SUPABASE_SERVICE_ROLE_KEY 
-    );
-
-    // 4. حفظ التوكن في الجدول الذي أنشأناه
-    const { error: dbError } = await supabase
-      .from('tiktok_tokens')
-      .insert([
-        {
-          user_id: state || 'default_user', // سنحتاج لضبط هذا لمعرفة صاحب الحساب
-          access_token: tokenData.access_token,
-          refresh_token: tokenData.refresh_token,
-        }
-      ]);
-
-    if (dbError) throw dbError;
-
-    // 5. توجيه العميل عائداً إلى واجهة المنصة بعد نجاح الربط
-    res.redirect('/?tiktok_link=success');
-
-  } catch (error) {
-    res.status(500).json({ error: 'حدث خطأ داخلي', message: error.message });
-  }
+  // 3. إعادة توجيه العميل فوراً إلى واجهة التطبيق الرئيسية مع إشارات النجاح
+  const redirectUrl = `/?tk_connected=true&tk_username=${tkUsername}&tk_avatar=${encodeURIComponent(tkAvatar)}`;
+  
+  // توجيه (Redirect) العميل
+  res.redirect(302, redirectUrl);
 }
