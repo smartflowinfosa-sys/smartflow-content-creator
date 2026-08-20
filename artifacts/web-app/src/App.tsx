@@ -1596,7 +1596,12 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('general');
   
   const [isIgConnected, setIsIgConnected] = useState(true); 
+  
+  // حالات تيك توك المحدثة 🚀
   const [isTkConnected, setIsTkConnected] = useState(false); 
+  const [tkUsername, setTkUsername] = useState("");
+  const [tkAvatar, setTkAvatar] = useState("");
+  
   const [isConnecting, setIsConnecting] = useState(false);
 
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -1623,6 +1628,18 @@ export default function App() {
   useEffect(() => {
     if (window.innerWidth < 768) {
       setIsSidebarVisible(false);
+    }
+    
+    // التقاط بيانات تيك توك من الرابط بعد عودة العميل من المصادقة
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('tk_connected') === 'true') {
+      setIsTkConnected(true);
+      setTkUsername(urlParams.get('tk_username') || "@user");
+      setTkAvatar(urlParams.get('tk_avatar') || "");
+      setIsSettingsOpen(true);
+      setActiveTab('connections');
+      // تنظيف الرابط بعد السحب حتى لا يبقى الكود ظاهراً
+      window.history.replaceState({}, document.title, window.location.pathname);
     }
   }, []);
 
@@ -1714,9 +1731,22 @@ export default function App() {
     setIsConnecting(true);
     setTimeout(() => {
       if (platform === 'ig') setIsIgConnected(true);
-      if (platform === 'tk') setIsTkConnected(true);
       setIsConnecting(false);
     }, 1500);
+  };
+
+  // دالة توجيه تيك توك الديناميكية 🚀
+  const handleConnectTikTok = () => {
+    const clientKey = "awo6ohs5hl7tubqp"; 
+    const redirectUri = "https://smartflow-content-creator-web-app.vercel.app/api/auth/callback";
+    const scope = "user.info.basic,video.publish";
+    // توليد رمز حالة عشوائي لحماية الطلب (CSRF Protection)
+    const state = "tk_" + Math.random().toString(36).substring(7); 
+    
+    const authUrl = `https://www.tiktok.com/v2/auth/authorize/?client_key=${clientKey}&response_type=code&scope=${scope}&redirect_uri=${redirectUri}&state=${state}`;
+    
+    // نقل العميل فوراً لشاشة الموافقة
+    window.location.href = authUrl;
   };
 
   const handleImageChange = (e: any) => {
@@ -1993,25 +2023,30 @@ export default function App() {
                           )}
                         </div>
 
+                        {/* الكارت المحدث لتيك توك 🚀 */}
                         <div className={`p-5 rounded-2xl border flex items-center justify-between ${isDark ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-200'}`}>
                           <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-black text-white shadow-md">
-                              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z"/></svg>
-                            </div>
+                            {isTkConnected && tkAvatar ? (
+                              <img src={tkAvatar} alt="TikTok Avatar" className="w-12 h-12 rounded-xl object-cover shadow-md border border-slate-200 dark:border-slate-700" />
+                            ) : (
+                              <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-black text-white shadow-md">
+                                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z"/></svg>
+                              </div>
+                            )}
                             <div>
                               <h4 className="font-bold">تيك توك (TikTok)</h4>
                               {isTkConnected ? (
-                                <p className="text-xs font-bold text-green-500 flex items-center gap-1"><CheckCircle2 size={12}/> متصل بـ @myagency_sa</p>
+                                <p className="text-xs font-bold text-green-500 flex items-center gap-1"><CheckCircle2 size={12}/> متصل بـ {tkUsername || '@user'}</p>
                               ) : (
                                 <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>غير متصل</p>
                               )}
                             </div>
                           </div>
                           {isTkConnected ? (
-                            <button onClick={() => setIsTkConnected(false)} className={`px-4 py-2 rounded-lg text-xs font-bold border transition ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300 hover:text-red-400' : 'bg-slate-100 border-slate-200 text-slate-600 hover:text-red-500'}`}>{t.disconnectIg}</button>
+                            <button onClick={() => { setIsTkConnected(false); setTkUsername(""); setTkAvatar(""); }} className={`px-4 py-2 rounded-lg text-xs font-bold border transition ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300 hover:text-red-400' : 'bg-slate-100 border-slate-200 text-slate-600 hover:text-red-500'}`}>{t.disconnectIg}</button>
                           ) : (
-                            <button onClick={() => handleConnectOAuth('tk')} disabled={isConnecting} className="px-4 py-2 rounded-lg text-xs font-bold border bg-black text-white border-slate-800 hover:bg-slate-900 transition flex items-center gap-2">
-                              {isConnecting ? <Loader2 size={14} className="animate-spin" /> : t.connectTk}
+                            <button onClick={handleConnectTikTok} className="px-4 py-2 rounded-lg text-xs font-bold border bg-black text-white border-slate-800 hover:bg-slate-900 transition flex items-center gap-2">
+                              {t.connectTk}
                             </button>
                           )}
                         </div>
