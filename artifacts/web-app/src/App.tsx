@@ -1595,7 +1595,9 @@ export default function App() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('general');
   
-  const [isIgConnected, setIsIgConnected] = useState(true); 
+  const [isIgConnected, setIsIgConnected] = useState(false);
+  const [igUsername, setIgUsername] = useState("");
+  const [igAvatar, setIgAvatar] = useState("");
   
   // حالات تيك توك المحدثة 🚀
   const [isTkConnected, setIsTkConnected] = useState(false); 
@@ -1639,6 +1641,21 @@ export default function App() {
       setIsSettingsOpen(true);
       setActiveTab('connections');
       // تنظيف الرابط بعد السحب حتى لا يبقى الكود ظاهراً
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
+    // التقاط بيانات انستقرام الحقيقية من الرابط بعد عودة العميل من المصادقة
+    if (urlParams.get('ig_connected') === 'true') {
+      setIsIgConnected(true);
+      setIgUsername(urlParams.get('ig_username') || "@user");
+      setIgAvatar(urlParams.get('ig_avatar') || "");
+      setIsSettingsOpen(true);
+      setActiveTab('connections');
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (urlParams.get('ig_connected') === 'false') {
+      setIsIgConnected(false);
+      setIsSettingsOpen(true);
+      setActiveTab('connections');
       window.history.replaceState({}, document.title, window.location.pathname);
     }
   }, []);
@@ -1727,12 +1744,17 @@ export default function App() {
     }
   };
 
-  const handleConnectOAuth = (platform: string) => {
+  // دالة توجيه انستقرام الديناميكية 🚀
+  const handleConnectInstagram = () => {
     setIsConnecting(true);
-    setTimeout(() => {
-      if (platform === 'ig') setIsIgConnected(true);
-      setIsConnecting(false);
-    }, 1500);
+    const clientKey = "1038788628657969";
+    const redirectUri = "https://smartflow-content-creator-web-app.vercel.app/api/auth/instagram/callback";
+    const scope = "instagram_business_basic,instagram_business_content_publish";
+    const state = "ig_" + Math.random().toString(36).substring(7);
+
+    const authUrl = `https://www.instagram.com/oauth/authorize?client_id=${clientKey}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&state=${state}`;
+
+    window.location.href = authUrl;
   };
 
   // دالة توجيه تيك توك الديناميكية 🚀
@@ -2002,22 +2024,26 @@ export default function App() {
 
                         <div className={`p-5 rounded-2xl border flex items-center justify-between ${isDark ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-200'}`}>
                           <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 text-white shadow-md">
-                              <Instagram size={24} />
-                            </div>
+                            {isIgConnected && igAvatar ? (
+                              <img src={igAvatar} alt="Instagram Avatar" className="w-12 h-12 rounded-xl object-cover shadow-md border border-slate-200 dark:border-slate-700" />
+                            ) : (
+                              <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 text-white shadow-md">
+                                <Instagram size={24} />
+                              </div>
+                            )}
                             <div>
                               <h4 className="font-bold">إنستقرام (Instagram)</h4>
                               {isIgConnected ? (
-                                <p className="text-xs font-bold text-green-500 flex items-center gap-1"><CheckCircle2 size={12}/> متصل بـ @myagency_sa</p>
+                                <p className="text-xs font-bold text-green-500 flex items-center gap-1"><CheckCircle2 size={12}/> متصل بـ {igUsername}</p>
                               ) : (
                                 <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>غير متصل</p>
                               )}
                             </div>
                           </div>
                           {isIgConnected ? (
-                            <button onClick={() => setIsIgConnected(false)} className={`px-4 py-2 rounded-lg text-xs font-bold border transition ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300 hover:text-red-400' : 'bg-slate-100 border-slate-200 text-slate-600 hover:text-red-500'}`}>{t.disconnectIg}</button>
+                            <button onClick={() => { setIsIgConnected(false); setIgUsername(""); setIgAvatar(""); }} className={`px-4 py-2 rounded-lg text-xs font-bold border transition ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300 hover:text-red-400' : 'bg-slate-100 border-slate-200 text-slate-600 hover:text-red-500'}`}>{t.disconnectIg}</button>
                           ) : (
-                            <button onClick={() => handleConnectOAuth('ig')} disabled={isConnecting} className="px-4 py-2 rounded-lg text-xs font-bold border bg-slate-900 text-white border-slate-800 hover:bg-slate-800 transition flex items-center gap-2">
+                            <button onClick={handleConnectInstagram} disabled={isConnecting} className="px-4 py-2 rounded-lg text-xs font-bold border bg-slate-900 text-white border-slate-800 hover:bg-slate-800 transition flex items-center gap-2">
                               {isConnecting ? <Loader2 size={14} className="animate-spin" /> : t.connectIg}
                             </button>
                           )}
