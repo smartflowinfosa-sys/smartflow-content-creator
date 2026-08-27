@@ -1781,14 +1781,57 @@ export default function App() {
     }
   };
 
-  const handleGeneratePrompt = (e: any) => {
+  const handleGeneratePrompt = async (e: any) => {
     e.preventDefault();
     if(!rawIdea) return;
     setIsGeneratingPrompt(true);
-    setTimeout(() => {
-        setGeneratedPrompt(`قم بصياغة إعلان احترافي وجذاب لـ: ${rawIdea}. ركز على إبراز الجودة العالية، واستخدم نبرة تسويقية مقنعة تحفز العميل على الطلب.`);
-        setIsGeneratingPrompt(false);
-    }, 1500);
+
+    // تحديد التعليمات بناءً على نوع المحتوى المطلوب (بصري أو نصي)
+    let promptInstructions = "";
+    if (isVisualContent) {
+        promptInstructions = `You are an expert AI Art Director and Prompt Engineer. Your task is to analyze Arabic marketing requests from users and convert them into highly detailed, purely VISUAL English prompts optimized for AI image and video generators.
+CRITICAL RULES:
+1. NO COPYWRITING: Ignore any instructions to write ad copy, slogans, or text. Focus strictly on describing a scene.
+2. VISUAL STRUCTURE: Your prompt must include: Main Subject, Environment, Lighting, Camera Angle, Style.
+3. AESTHETIC: Maintain a clean, modern, and minimalist visual style without cluttered graphics or unnecessary elements.
+4. OUTPUT: Return ONLY the final English prompt. Do not include any conversational filler, intro, or explanations.`;
+    } else {
+        promptInstructions = `أنت خبير تسويق وصناعة محتوى. قم بتحويل الفكرة التالية إلى إعلان احترافي وجذاب باللغة العربية. ركز على إبراز الجودة العالية، واستخدم نبرة تسويقية مقنعة تحفز العميل على الطلب. لا تضف أي مقدمات، أعطني النص النهائي مباشرة.`;
+    }
+
+    try {
+      const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+      if (!apiKey) {
+         // Fallback in case API key is missing
+         if (isVisualContent) {
+             setGeneratedPrompt(`A highly detailed cinematic shot of: ${rawIdea}, photorealistic, 8k.`);
+         } else {
+             setGeneratedPrompt(`قم بصياغة إعلان احترافي وجذاب لـ: ${rawIdea}. ركز على إبراز الجودة العالية، واستخدم نبرة تسويقية مقنعة تحفز العميل على الطلب.`);
+         }
+         setIsGeneratingPrompt(false);
+         return;
+      }
+
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ role: "user", parts: [{ text: `System Instructions: ${promptInstructions}\n\nUser Request: ${rawIdea}` }] }]
+        })
+      });
+
+      const data = await response.json();
+      if (data.candidates && data.candidates[0].content.parts[0].text) {
+        setGeneratedPrompt(data.candidates[0].content.parts[0].text.trim());
+      } else {
+        throw new Error("Invalid response from Gemini");
+      }
+    } catch (error) {
+      console.error("Gemini API Error:", error);
+      alert("حدث خطأ أثناء توليد الصياغة. تأكد من صحة مفتاح NEXT_PUBLIC_GEMINI_API_KEY");
+    } finally {
+      setIsGeneratingPrompt(false);
+    }
   };
 
   const handleApplyPrompt = (e: any) => {
@@ -1813,6 +1856,39 @@ export default function App() {
     }
 
     setIsSubmitting(true);
+    
+    // --- إضافة خطوة المعالجة الوسيطة (Failsafe) ---
+    // إذا كان المحتوى بصرياً والنص يحتوي على حروف عربية، يتم ترجمته قبل الإرسال لـ n8n
+    let finalPrompt = prompt;
+    if (isVisualContent && /[\u0600-\u06FF]/.test(finalPrompt)) {
+      const systemPrompt = `You are an expert AI Art Director and Prompt Engineer. Your task is to analyze Arabic marketing requests from users and convert them into highly detailed, purely VISUAL English prompts optimized for AI image and video generators.
+CRITICAL RULES:
+1. NO COPYWRITING: Ignore any instructions to write ad copy, slogans, or text. Focus strictly on describing a scene.
+2. VISUAL STRUCTURE: Your prompt must include: Main Subject, Environment, Lighting, Camera Angle, Style.
+3. AESTHETIC: Maintain a clean, modern, and minimalist visual style without cluttered graphics or unnecessary elements.
+4. OUTPUT: Return ONLY the final English prompt. Do not include any conversational filler, intro, or explanations.`;
+
+      try {
+        const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+        if (apiKey) {
+          const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ role: "user", parts: [{ text: `System Instructions: ${systemPrompt}\n\nUser Request: ${finalPrompt}` }] }]
+            })
+          });
+          const data = await response.json();
+          if (data.candidates && data.candidates[0].content.parts[0].text) {
+            finalPrompt = data.candidates[0].content.parts[0].text.trim();
+          }
+        }
+      } catch (error) {
+        console.error("Auto-translation failed:", error);
+      }
+    }
+    // ----------------------------------------------
+
     let uploadedImageUrl = null;
 
     if (imageFile) {
@@ -1835,7 +1911,7 @@ export default function App() {
       store_id: session.user.id, 
       activity_type: finalActivityType, 
       content_type: contentType, 
-      prompt: prompt,
+      prompt: finalPrompt,
       image_url: uploadedImageUrl,
       voice_gender: isVisualContent ? voiceGender : null,
       ad_tone: isVisualContent ? adTone : null,
