@@ -2854,7 +2854,22 @@ CRITICAL RULES:
   const labelColor = isDark ? 'text-slate-300' : 'text-slate-700';
 
   return (
-    <div className={`flex min-h-screen transition-colors duration-500 font-sans ${mainBg}`} dir={t.dir}>
+    <div className={`flex min-h-screen transition-colors duration-500 font-sans relative ${mainBg}`} dir={t.dir}>
+
+      {/* خلفية الهوية البصرية (SmartFlow Brand) - تظهر فقط بالوضع الداكن وبشفافية خافتة 🚀 */}
+      {isDark && (
+        <div
+          aria-hidden="true"
+          className="fixed inset-0 pointer-events-none"
+          style={{
+            backgroundImage: "url('/smartflow-bg.jpg')",
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            opacity: 0.2,
+          }}
+        />
+      )}
       
       {isSidebarVisible && (
         <div className="fixed inset-0 bg-black/60 z-40 md:hidden backdrop-blur-sm" onClick={() => setIsSidebarVisible(false)} />
