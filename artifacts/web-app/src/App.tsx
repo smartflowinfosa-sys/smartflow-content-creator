@@ -9,7 +9,8 @@ import {
   Shield, Sliders, ImagePlus, Mic, Activity, Target, AlignLeft, 
   AlignJustify, Star, MessageCircle, Clapperboard, CalendarRange, 
   Bot, Bell, LineChart, Phone, Wand2, Hourglass, Clock, ShieldCheck, Users,
-  Megaphone, Edit, Zap, CircleDollarSign, ChevronRight, FileText
+  Megaphone, Edit, Zap, CircleDollarSign, ChevronRight, FileText,
+  Smartphone, LayoutDashboard, Share2, Inbox, BarChart3 // تم إضافة الأيقونات الجديدة هنا
 } from 'lucide-react';
 
 // ==========================================
@@ -25,6 +26,14 @@ const translations: any = {
     studioTab: "الاستوديو الذكي",
     reviewsTab: "تقييمات قوقل ماب",
     adminTab: "لوحة الإدارة",
+    socialHubTab: "إدارة السوشال ميديا", // جديد
+    hubDesc: "أدر حساباتك ومحتواك وتفاعلات عملائك وتحليلاتك من مكان واحد.", // جديد
+    tabOverview: "نظرة عامة", // جديد
+    tabAccounts: "الحسابات والقنوات", // جديد
+    tabPublishing: "النشر والمحتوى", // جديد
+    tabInbox: "صندوق الوارد", // جديد
+    tabComments: "التعليقات والتقييمات", // جديد
+    tabAnalytics: "التحليلات", // جديد
     currentPlan: "الباقة الحالية",
     freePlan: "الباقة الأساسية (Basic)",
     settings: "إعدادات الحساب",
@@ -260,6 +269,14 @@ const translations: any = {
     studioTab: "Smart Studio",
     reviewsTab: "Google Reviews",
     adminTab: "Admin Panel",
+    socialHubTab: "Social Media Hub", // New
+    hubDesc: "Manage your accounts, content, interactions, and analytics in one place.", // New
+    tabOverview: "Overview", // New
+    tabAccounts: "Accounts & Channels", // New
+    tabPublishing: "Publishing & Content", // New
+    tabInbox: "Unified Inbox", // New
+    tabComments: "Comments & Reviews", // New
+    tabAnalytics: "Analytics", // New
     currentPlan: "Current Plan",
     freePlan: "Basic Plan",
     settings: "Account Settings",
@@ -866,6 +883,188 @@ const AdminDashboard = ({ isDark, t }: any) => {
     </div>
   );
 };
+
+// ==========================================
+// 🚀 مركز إدارة السوشال ميديا الجديد (Social Media Hub) 🚀
+// ==========================================
+const SocialMediaHub = ({ isDark, t, isTkConnected, tkUsername, tkAvatar, setActiveView }: any) => {
+  const [activeTab, setActiveTab] = useState('overview');
+
+  const tabs = [
+    { id: 'overview', name: t.tabOverview },
+    { id: 'accounts', name: t.tabAccounts },
+    { id: 'publishing', name: t.tabPublishing },
+    { id: 'inbox', name: t.tabInbox },
+    { id: 'analytics', name: t.tabAnalytics },
+  ];
+
+  const StatusBadge = ({ status }: { status: string }) => {
+    if (status === 'connected') return <span className="flex items-center text-xs text-green-400 bg-green-400/10 px-2.5 py-1 rounded-full border border-green-500/20"><span className="w-1.5 h-1.5 rounded-full bg-green-400 ml-1.5"></span>متصل</span>;
+    if (status === 'pending') return <span className="flex items-center text-xs text-yellow-500 bg-yellow-500/10 px-2.5 py-1 rounded-full border border-yellow-500/20"><span className="w-1.5 h-1.5 rounded-full bg-yellow-500 ml-1.5"></span>بانتظار الموافقة</span>;
+    return <span className="flex items-center text-xs text-slate-400 bg-slate-800/50 px-2.5 py-1 rounded-full border border-slate-700"><span className="w-1.5 h-1.5 rounded-full bg-slate-500 ml-1.5"></span>غير متصل</span>;
+  };
+
+  const connections = [
+    { provider: 'tiktok', name: 'TikTok', status: isTkConnected ? 'connected' : 'disconnected', description: 'إدارة الفيديوهات والتعليقات' },
+    { provider: 'instagram', name: 'Instagram', status: 'pending', description: 'مشاركة الريلز والقصص تلقائياً' },
+    { provider: 'whatsapp', name: 'WhatsApp', status: 'disconnected', description: 'إدارة محادثات العملاء' },
+    { provider: 'google', name: 'Google Business', status: 'disconnected', description: 'إدارة التقييمات والأداء' },
+  ];
+
+  return (
+    <div className={`w-full max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 animate-in fade-in zoom-in duration-500 ${t.dir === 'ltr' ? 'text-left' : 'text-right'} ${isDark ? 'text-white' : 'text-slate-900'}`}>
+      
+      {/* Header */}
+      <div className="flex flex-col space-y-2 mb-8">
+        <h1 className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-l from-blue-400 to-purple-500">
+          {t.socialHubTab}
+        </h1>
+        <p className={`font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+          {t.hubDesc}
+        </p>
+      </div>
+
+      {/* Tabs Navigation */}
+      <div className={`border-b mb-6 ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
+        <nav className="flex space-x-6 space-x-reverse overflow-x-auto no-scrollbar">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`pb-4 text-sm font-bold transition-colors whitespace-nowrap border-b-2 ${
+                activeTab === tab.id
+                  ? 'border-purple-500 text-purple-500'
+                  : 'border-transparent text-slate-400 hover:text-slate-300'
+              }`}
+            >
+              {tab.name}
+            </button>
+          ))}
+        </nav>
+      </div>
+
+      {/* Content Area */}
+      <div className="animate-in fade-in slide-in-from-bottom-4 duration-300">
+        
+        {/* Tab: Overview */}
+        {activeTab === 'overview' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {connections.map((conn) => (
+              <div key={conn.provider} className={`p-5 rounded-2xl border flex flex-col justify-between ${isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
+                <div className="flex justify-between items-start mb-4">
+                  <h3 className="font-bold">{conn.name}</h3>
+                  <StatusBadge status={conn.status} />
+                </div>
+                <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{conn.description}</p>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Tab: Accounts */}
+        {activeTab === 'accounts' && (
+          <div className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-bold">القنوات المتاحة</h2>
+              <button className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-lg hover:opacity-90">
+                + إضافة حساب
+              </button>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {connections.map((conn) => (
+                <div key={conn.provider} className={`p-5 flex flex-col justify-between rounded-2xl border ${isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg ${isDark ? 'bg-slate-800' : 'bg-slate-100'}`}>
+                        {conn.name[0]}
+                      </div>
+                      <div>
+                        <h3 className="font-bold">{conn.name}</h3>
+                        <p className={`text-xs mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{conn.description}</p>
+                      </div>
+                    </div>
+                    <StatusBadge status={conn.status} />
+                  </div>
+                  
+                  <div className={`flex justify-end mt-4 pt-4 border-t ${isDark ? 'border-slate-800' : 'border-slate-100'}`}>
+                     {conn.status === 'connected' && <button className="text-sm font-bold px-4 py-1.5 rounded-lg bg-slate-800 text-white">إدارة الحساب</button>}
+                     {conn.status === 'pending' && <button disabled className="text-sm font-bold text-yellow-500/50 px-4 py-1.5 cursor-not-allowed">قيد المراجعة</button>}
+                     {conn.status === 'disconnected' && <button className="text-sm font-bold text-blue-500 bg-blue-500/10 hover:bg-blue-500/20 px-4 py-1.5 rounded-lg transition-colors">ربط الحساب</button>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Tab: Publishing */}
+        {activeTab === 'publishing' && (
+          <div className="space-y-6">
+            <div className="flex justify-between items-center bg-gradient-to-r from-blue-900/40 to-purple-900/40 border border-purple-500/20 rounded-2xl p-6">
+              <div>
+                <h2 className="text-lg font-bold text-white">هل لديك فكرة جديدة؟</h2>
+                <p className="text-sm text-slate-300 mt-1">استخدم الاستوديو الذكي لإنشاء، صياغة، وجدولة محتواك.</p>
+              </div>
+              <button onClick={() => setActiveView('studio')} className="bg-purple-600 hover:bg-purple-500 text-white px-6 py-2.5 rounded-xl text-sm font-bold transition-colors">
+                + إنشاء منشور ذكي
+              </button>
+            </div>
+            
+            <div>
+              <h3 className="text-lg font-bold mb-4">المحتوى المجدول القادم</h3>
+              <div className={`rounded-2xl border overflow-hidden ${isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-white border-slate-200'}`}>
+                <table className="w-full text-sm">
+                  <thead className={`border-b ${isDark ? 'bg-slate-800/80 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
+                    <tr>
+                      <th className="px-6 py-4 font-bold text-right">اسم المحتوى</th>
+                      <th className="px-6 py-4 font-bold text-right">المنصة</th>
+                      <th className="px-6 py-4 font-bold text-right">الموعد</th>
+                      <th className="px-6 py-4 font-bold text-right">الحالة</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-700/50">
+                    <tr className={isDark ? 'hover:bg-slate-800/30' : 'hover:bg-slate-50'}>
+                      <td className="px-6 py-4 font-bold">إعلان الصيف</td>
+                      <td className="px-6 py-4">TikTok</td>
+                      <td className="px-6 py-4 text-slate-400">اليوم — 8:00 PM</td>
+                      <td className="px-6 py-4"><span className="text-blue-400 bg-blue-400/10 px-2.5 py-1 rounded-lg text-xs font-bold border border-blue-500/20">مجدول</span></td>
+                    </tr>
+                    <tr className={isDark ? 'hover:bg-slate-800/30' : 'hover:bg-slate-50'}>
+                      <td className="px-6 py-4 font-bold">بوست الخصومات</td>
+                      <td className="px-6 py-4">Instagram</td>
+                      <td className="px-6 py-4 text-slate-400">غداً — 7:00 PM</td>
+                      <td className="px-6 py-4"><span className="text-yellow-500 bg-yellow-500/10 px-2.5 py-1 rounded-lg text-xs font-bold border border-yellow-500/20">بانتظار الموافقة</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Placeholder Tabs for Inbox & Analytics (Future Scalability) */}
+        {activeTab === 'inbox' && (
+          <div className={`flex flex-col items-center justify-center py-20 rounded-3xl border border-dashed ${isDark ? 'bg-slate-900/30 border-slate-800' : 'bg-slate-50 border-slate-300'}`}>
+            <Inbox size={48} className="text-slate-400 mb-4 opacity-50" />
+            <h3 className="text-lg font-bold mb-2">صندوق الوارد الموحد</h3>
+            <p className="text-slate-500 text-sm max-w-sm text-center">قم بربط حساباتك (WhatsApp, Instagram) لاستقبال رسائل العملاء والرد عليها من هنا.</p>
+          </div>
+        )}
+
+        {activeTab === 'analytics' && (
+          <div className={`flex flex-col items-center justify-center py-20 rounded-3xl border border-dashed ${isDark ? 'bg-slate-900/30 border-slate-800' : 'bg-slate-50 border-slate-300'}`}>
+            <BarChart3 size={48} className="text-slate-400 mb-4 opacity-50" />
+            <h3 className="text-lg font-bold mb-2">تحليلات الأداء</h3>
+            <p className="text-slate-500 text-sm max-w-sm text-center">سيتم تفعيل تقارير الأداء التفصيلية بمجرد نشاط حملاتك على المنصات المربوطة.</p>
+          </div>
+        )}
+
+      </div>
+    </div>
+  );
+};
+// ==========================================
+
 
 // ==========================================
 // مكون كارت المحتوى المستقل (الاستوديو) - محدث لعرض الصور والفيديو 📸
@@ -2015,6 +2214,15 @@ CRITICAL RULES:
             {t.studioTab}
           </button>
 
+          {/* ===================== القسم الجديد ===================== */}
+          <button onClick={() => { setActiveView('socialHub'); if(window.innerWidth < 768) setIsSidebarVisible(false); }} className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl font-bold transition-all relative group overflow-hidden border ${activeView === 'socialHub' ? (isDark ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20' : 'bg-indigo-50 text-indigo-600 border-indigo-200') : (isDark ? 'text-slate-400 hover:bg-slate-800 hover:border-slate-700 border-transparent' : 'text-slate-600 hover:bg-slate-100 hover:border-slate-200 border-transparent')}`}>
+              <div className="flex items-center gap-3 w-full">
+                <Smartphone size={20} className={activeView === 'socialHub' ? 'text-indigo-500 shrink-0' : 'group-hover:text-indigo-500 transition-colors shrink-0'} /> 
+                <span className="truncate flex-1 text-right">{t.socialHubTab}</span>
+              </div>
+          </button>
+          {/* ======================================================== */}
+
           {(hasReviews || userRole === 'admin') && (
             <button onClick={() => { setActiveView('reviews'); if(window.innerWidth < 768) setIsSidebarVisible(false); }} className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl font-bold transition-all relative group overflow-hidden border ${activeView === 'reviews' ? (isDark ? 'bg-pink-500/10 text-pink-400 border-pink-500/20' : 'bg-pink-50 text-pink-600 border-pink-200') : (isDark ? 'text-slate-400 hover:bg-slate-800 hover:border-slate-700 border-transparent' : 'text-slate-600 hover:bg-slate-100 hover:border-slate-200 border-transparent')}`}>
               <div className="flex items-center gap-3 w-full">
@@ -2232,6 +2440,19 @@ CRITICAL RULES:
             t={t} 
           />
         )}
+
+        {/* ===================== القسم الجديد ===================== */}
+        {activeView === 'socialHub' && (
+          <SocialMediaHub 
+            isDark={isDark} 
+            t={t} 
+            isTkConnected={isTkConnected} 
+            tkUsername={tkUsername} 
+            tkAvatar={tkAvatar} 
+            setActiveView={setActiveView} 
+          />
+        )}
+        {/* ======================================================== */}
 
         {activeView === 'studio' && (
           <>
