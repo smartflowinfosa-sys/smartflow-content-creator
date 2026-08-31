@@ -10,7 +10,7 @@ import {
   AlignJustify, Star, MessageCircle, Clapperboard, CalendarRange, 
   Bot, Bell, LineChart, Phone, Wand2, Hourglass, Clock, ShieldCheck, Users,
   Megaphone, Edit, Zap, CircleDollarSign, ChevronRight, FileText,
-  Smartphone, LayoutDashboard, Share2, Inbox, BarChart3, UploadCloud, PlayCircle, Store
+  Smartphone, LayoutDashboard, Share2, Inbox, BarChart3, UploadCloud, PlayCircle, Store, Send
 } from 'lucide-react';
 
 // ==========================================
@@ -894,6 +894,53 @@ const SOCIAL_PROVIDER_META: any = {
   google: { label: 'Google Business', icon: Store, iconClass: 'bg-blue-600 text-white' },
 };
 
+// قراءة/كتابة آمنة من التخزين المحلي حتى تبقى حالة الربط ثابتة بعد التحديث 🚀
+const sfReadLS = (key: string, fallback: any) => {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw !== null ? JSON.parse(raw) : fallback;
+  } catch (e) { return fallback; }
+};
+const sfWriteLS = (key: string, value: any) => {
+  try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {}
+};
+
+// بيانات محادثات تجريبية لكل منصة (للعرض حتى يتم ربط مزود الرسائل الحقيقي) 🚀
+const SF_DEMO_CONVERSATIONS: any = {
+  tiktok: [
+    { id: 't1', name: 'سارة العتيبي', online: true, unread: 2, messages: [
+      { id: 1, from: 'user', text: 'هل المنتج متوفر بلون أزرق؟', time: '10:24 ص' },
+      { id: 2, from: 'user', text: 'وكم سعر الشحن؟', time: '10:25 ص' },
+    ]},
+    { id: 't2', name: 'محمد الحربي', online: false, unread: 0, messages: [
+      { id: 1, from: 'user', text: 'شكراً على الرد السريع 🙏', time: 'أمس' },
+      { id: 2, from: 'me', text: 'العفو، بخدمتك دائماً', time: 'أمس' },
+    ]},
+  ],
+  instagram: [
+    { id: 'i1', name: 'نورة القحطاني', online: true, unread: 1, messages: [
+      { id: 1, from: 'user', text: 'أبغى أطلب طلبين من العرض', time: '9:10 ص' },
+    ]},
+  ],
+  whatsapp: [
+    { id: 'w1', name: '+966 55 123 4567', online: false, unread: 3, messages: [
+      { id: 1, from: 'user', text: 'وين وصل طلبي؟', time: '8:40 ص' },
+    ]},
+  ],
+  google: [
+    { id: 'g1', name: 'خالد المطيري', online: false, unread: 1, messages: [
+      { id: 1, from: 'user', text: 'تقييم 5 نجوم، خدمة ممتازة!', time: 'أمس' },
+    ]},
+  ],
+};
+
+const SF_DEFAULT_SETTINGS: any = {
+  tiktok: { aiReply: false, notify: true, autoReplyComments: false },
+  instagram: { aiReply: false, notify: true, autoReplyComments: false },
+  whatsapp: { aiReply: false, notify: true, welcomeMessage: '' },
+  google: { aiReply: false, notify: true, autoReplyReviews: false },
+};
+
 const SocialMediaHub = ({
   isDark, t, setActiveView,
   isTkConnected, tkUsername, tkAvatar, setIsTkConnected, setTkUsername, setTkAvatar, handleConnectTikTok,
@@ -901,14 +948,24 @@ const SocialMediaHub = ({
 }: any) => {
   const [activeTab, setActiveTab] = useState('overview');
 
-  // حالات واتساب وقوقل بزنس (مخصصة لهذا المركز) 🚀
-  const [isGoogleConnected, setIsGoogleConnected] = useState(false);
+  const ToggleSwitch = ({ isOn, onToggle }: any) => (
+    <div onClick={onToggle} className={`w-12 h-6 rounded-full flex items-center p-1 cursor-pointer transition-colors shrink-0 ${isOn ? 'bg-green-500' : (isDark ? 'bg-slate-700' : 'bg-slate-300')}`}>
+      <div className={`w-4 h-4 bg-white rounded-full shadow-sm transform transition-transform duration-300 ${isOn ? (t.dir === 'rtl' ? '-translate-x-6' : 'translate-x-6') : 'translate-x-0'}`}></div>
+    </div>
+  );
+
+  // حالات واتساب وقوقل بزنس (مخصصة لهذا المركز) - محفوظة في التخزين المحلي 🚀
+  const [isGoogleConnected, setIsGoogleConnected] = useState(() => sfReadLS('sf_google_connected', false));
   const [isConnectingGoogle, setIsConnectingGoogle] = useState(false);
-  const [isWaConnected, setIsWaConnected] = useState(false);
-  const [waPhone, setWaPhone] = useState("");
+  const [isWaConnected, setIsWaConnected] = useState(() => sfReadLS('sf_wa_connected', false));
+  const [waPhone, setWaPhone] = useState(() => sfReadLS('sf_wa_phone', ""));
   const [showWaModal, setShowWaModal] = useState(false);
   const [waInput, setWaInput] = useState("");
   const [showAddAccountModal, setShowAddAccountModal] = useState(false);
+
+  // حفظ حالة واتساب وقوقل بزنس تلقائياً عند أي تغيير 🚀
+  useEffect(() => { sfWriteLS('sf_google_connected', isGoogleConnected); }, [isGoogleConnected]);
+  useEffect(() => { sfWriteLS('sf_wa_connected', isWaConnected); sfWriteLS('sf_wa_phone', waPhone); }, [isWaConnected, waPhone]);
 
   // حالة رفع الميديا للجدولة 🚀
   const [scheduleMediaFile, setScheduleMediaFile] = useState<File | null>(null);
@@ -916,11 +973,35 @@ const SocialMediaHub = ({
   const [scheduleMediaType, setScheduleMediaType] = useState<'image' | 'video' | null>(null);
   const [scheduleCaption, setScheduleCaption] = useState("");
   const [schedulePlatform, setSchedulePlatform] = useState('tiktok');
-  const [scheduleDateTime, setScheduleDateTime] = useState("");
+  const [scheduleDate, setScheduleDate] = useState("");
+  const [scheduleTime, setScheduleTime] = useState("");
+  const dateRef = useRef<HTMLInputElement>(null);
+  const timeRef = useRef<HTMLInputElement>(null);
   const [scheduledPosts, setScheduledPosts] = useState([
     { id: 1, name: 'إعلان الصيف', platform: 'TikTok', time: 'اليوم — 8:00 PM', status: 'مجدول', statusColor: 'blue' },
     { id: 2, name: 'بوست الخصومات', platform: 'Instagram', time: 'غداً — 7:00 PM', status: 'بانتظار الموافقة', statusColor: 'yellow' },
   ]);
+
+  const formatScheduleDate = (dateStr: string) => {
+    if (!dateStr) return t.publishDate;
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr;
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return `${d.getFullYear()} ${months[d.getMonth()]} ${d.getDate()}`;
+  };
+
+  // حالات صندوق الوارد الموحد 🚀
+  const [conversations, setConversations] = useState<any>(SF_DEMO_CONVERSATIONS);
+  const [inboxFilter, setInboxFilter] = useState('all');
+  const [activeConversation, setActiveConversation] = useState<{ provider: string; id: string } | null>(null);
+  const [replyText, setReplyText] = useState("");
+
+  // إعدادات الرد الآلي لكل منصة - محفوظة في التخزين المحلي 🚀
+  const [appSettings, setAppSettings] = useState<any>(() => sfReadLS('sf_autoreply_settings', SF_DEFAULT_SETTINGS));
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [settingsProvider, setSettingsProvider] = useState<string | null>(null);
+
+  useEffect(() => { sfWriteLS('sf_autoreply_settings', appSettings); }, [appSettings]);
 
   const tabs = [
     { id: 'overview', name: t.tabOverview },
@@ -947,11 +1028,19 @@ const SocialMediaHub = ({
   };
 
   const connections = [
-    { provider: 'tiktok', name: 'TikTok', status: isTkConnected ? 'connected' : 'disconnected', description: 'إدارة الفيديوهات والتعليقات' },
-    { provider: 'instagram', name: 'Instagram', status: isIgConnected ? 'connected' : 'disconnected', description: 'مشاركة الريلز والقصص تلقائياً' },
-    { provider: 'whatsapp', name: 'WhatsApp', status: isWaConnected ? 'connected' : 'disconnected', description: 'إدارة محادثات العملاء' },
-    { provider: 'google', name: 'Google Business', status: isGoogleConnected ? 'connected' : 'disconnected', description: 'إدارة التقييمات والأداء' },
+    { provider: 'tiktok', name: 'TikTok', status: isTkConnected ? 'connected' : 'disconnected' },
+    { provider: 'instagram', name: 'Instagram', status: isIgConnected ? 'connected' : 'disconnected' },
+    { provider: 'whatsapp', name: 'WhatsApp', status: isWaConnected ? 'connected' : 'disconnected' },
+    { provider: 'google', name: 'Google Business', status: isGoogleConnected ? 'connected' : 'disconnected' },
   ];
+
+  // إحصائيات النشاط لكل منصة (رسائل واردة / غير مقروء) 🚀
+  const getProviderStats = (provider: string) => {
+    const convs = conversations[provider] || [];
+    const totalMessages = convs.reduce((sum: number, c: any) => sum + c.messages.length, 0);
+    const unread = convs.reduce((sum: number, c: any) => sum + c.unread, 0);
+    return { totalMessages, unread };
+  };
 
   // دالة موحدة لبدء ربط أي منصة 🚀
   const handleConnectProvider = (provider: string) => {
@@ -992,22 +1081,57 @@ const SocialMediaHub = ({
   };
 
   const handleAddToSchedule = () => {
-    if (!scheduleMediaFile || !scheduleDateTime) return;
+    if (!scheduleMediaFile || !scheduleDate || !scheduleTime) return;
     const platformMeta = SOCIAL_PROVIDER_META[schedulePlatform];
-    const dt = new Date(scheduleDateTime);
-    const timeLabel = dt.toLocaleString('ar-SA', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
     setScheduledPosts((prev) => [
-      { id: Date.now(), name: scheduleCaption || scheduleMediaFile.name, platform: platformMeta.label, time: timeLabel, status: 'مجدول', statusColor: 'blue' },
+      { id: Date.now(), name: scheduleCaption || scheduleMediaFile.name, platform: platformMeta.label, time: `${formatScheduleDate(scheduleDate)} — ${scheduleTime}`, status: 'مجدول', statusColor: 'blue' },
       ...prev,
     ]);
     setScheduleMediaFile(null);
     setScheduleMediaPreview(null);
     setScheduleMediaType(null);
     setScheduleCaption("");
-    setScheduleDateTime("");
+    setScheduleDate("");
+    setScheduleTime("");
   };
 
-  const inboxConnectedCount = connections.filter((c) => c.status === 'connected').length;
+  // فتح محادثة معينة وتصفيرها من غير المقروء 🚀
+  const openConversation = (provider: string, id: string) => {
+    setActiveConversation({ provider, id });
+    setConversations((prev: any) => ({
+      ...prev,
+      [provider]: prev[provider].map((c: any) => c.id === id ? { ...c, unread: 0 } : c),
+    }));
+  };
+
+  const handleSendReply = () => {
+    if (!replyText.trim() || !activeConversation) return;
+    const { provider, id } = activeConversation;
+    setConversations((prev: any) => ({
+      ...prev,
+      [provider]: prev[provider].map((c: any) => c.id === id
+        ? { ...c, messages: [...c.messages, { id: Date.now(), from: 'me', text: replyText.trim(), time: 'الآن' }] }
+        : c),
+    }));
+    setReplyText("");
+  };
+
+  const openSettings = (provider: string) => {
+    setSettingsProvider(provider);
+    setShowSettingsModal(true);
+  };
+
+  const updateProviderSetting = (provider: string, key: string, value: any) => {
+    setAppSettings((prev: any) => ({ ...prev, [provider]: { ...prev[provider], [key]: value } }));
+  };
+
+  const inboxProviders = inboxFilter === 'all' ? connections : connections.filter((c) => c.provider === inboxFilter);
+  const flattenedConversations = inboxProviders.flatMap((c) =>
+    (conversations[c.provider] || []).map((conv: any) => ({ ...conv, provider: c.provider }))
+  );
+  const activeConvData = activeConversation
+    ? (conversations[activeConversation.provider] || []).find((c: any) => c.id === activeConversation.id)
+    : null;
 
   return (
     <div className={`w-full max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 animate-in fade-in zoom-in duration-500 ${t.dir === 'ltr' ? 'text-left' : 'text-right'} ${isDark ? 'text-white' : 'text-slate-900'}`}>
@@ -1044,26 +1168,44 @@ const SocialMediaHub = ({
       {/* Content Area */}
       <div className="animate-in fade-in slide-in-from-bottom-4 duration-300">
         
-        {/* Tab: Overview */}
+        {/* Tab: Overview - يعرض نشاط كل حساب بدل الوصف الثابت 🚀 */}
         {activeTab === 'overview' && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {connections.map((conn) => (
-              <div key={conn.provider} className={`p-5 rounded-2xl border flex flex-col justify-between ${isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
-                <div className="flex justify-between items-start mb-4">
-                  <div className="flex items-center gap-3">
-                    <ProviderIcon provider={conn.provider} size={36} />
-                    <h3 className="font-bold">{conn.name}</h3>
+            {connections.map((conn) => {
+              const stats = getProviderStats(conn.provider);
+              return (
+                <div key={conn.provider} className={`p-5 rounded-2xl border flex flex-col justify-between ${isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="flex items-center gap-3">
+                      <ProviderIcon provider={conn.provider} size={36} />
+                      <h3 className="font-bold">{conn.name}</h3>
+                    </div>
+                    <StatusBadge status={conn.status} />
                   </div>
-                  <StatusBadge status={conn.status} />
+
+                  {conn.status === 'connected' ? (
+                    <div className="grid grid-cols-2 gap-2 mb-4">
+                      <div className={`rounded-xl p-3 text-center ${isDark ? 'bg-slate-800/60' : 'bg-slate-50'}`}>
+                        <p className="text-lg font-black">{stats.totalMessages}</p>
+                        <p className={`text-[11px] font-bold ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>رسالة واردة</p>
+                      </div>
+                      <div className={`rounded-xl p-3 text-center ${stats.unread > 0 ? (isDark ? 'bg-red-500/10' : 'bg-red-50') : (isDark ? 'bg-slate-800/60' : 'bg-slate-50')}`}>
+                        <p className={`text-lg font-black ${stats.unread > 0 ? 'text-red-500' : ''}`}>{stats.unread}</p>
+                        <p className={`text-[11px] font-bold ${stats.unread > 0 ? 'text-red-500/80' : (isDark ? 'text-slate-400' : 'text-slate-500')}`}>غير مقروء</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className={`text-xs mb-4 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>اربط الحساب لعرض النشاط والرسائل الواردة</p>
+                  )}
+
+                  {conn.status === 'connected' ? (
+                    <button onClick={() => handleDisconnectProvider(conn.provider)} className="text-xs font-bold text-red-500 hover:text-red-400 self-start">فصل الحساب</button>
+                  ) : (
+                    <button onClick={() => handleConnectProvider(conn.provider)} className="text-xs font-bold text-blue-500 bg-blue-500/10 hover:bg-blue-500/20 px-3 py-1.5 rounded-lg transition-colors self-start">ربط الحساب</button>
+                  )}
                 </div>
-                <p className={`text-xs mb-4 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{conn.description}</p>
-                {conn.status === 'connected' ? (
-                  <button onClick={() => handleDisconnectProvider(conn.provider)} className="text-xs font-bold text-red-500 hover:text-red-400 self-start">فصل الحساب</button>
-                ) : (
-                  <button onClick={() => handleConnectProvider(conn.provider)} className="text-xs font-bold text-blue-500 bg-blue-500/10 hover:bg-blue-500/20 px-3 py-1.5 rounded-lg transition-colors self-start">ربط الحساب</button>
-                )}
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
 
@@ -1085,7 +1227,7 @@ const SocialMediaHub = ({
                       <div>
                         <h3 className="font-bold">{conn.name}</h3>
                         <p className={`text-xs mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                          {conn.status === 'connected' && conn.provider === 'whatsapp' && waPhone ? waPhone : conn.description}
+                          {conn.status === 'connected' && conn.provider === 'whatsapp' && waPhone ? waPhone : (conn.status === 'connected' ? 'الحساب مربوط ونشط' : 'غير مربوط بعد')}
                         </p>
                       </div>
                     </div>
@@ -1094,11 +1236,8 @@ const SocialMediaHub = ({
                   
                   <div className={`flex justify-end mt-4 pt-4 border-t ${isDark ? 'border-slate-800' : 'border-slate-100'}`}>
                      {conn.status === 'connected' && (
-                       <div className="flex items-center gap-2">
-                         <button onClick={() => handleDisconnectProvider(conn.provider)} className="text-sm font-bold px-4 py-1.5 rounded-lg bg-slate-800 text-white hover:bg-red-500/80 transition-colors">فصل الحساب</button>
-                       </div>
+                       <button onClick={() => handleDisconnectProvider(conn.provider)} className="text-sm font-bold px-4 py-1.5 rounded-lg bg-slate-800 text-white hover:bg-red-500/80 transition-colors">فصل الحساب</button>
                      )}
-                     {conn.status === 'pending' && <button disabled className="text-sm font-bold text-yellow-500/50 px-4 py-1.5 cursor-not-allowed">قيد المراجعة</button>}
                      {conn.status === 'disconnected' && (
                        <button onClick={() => handleConnectProvider(conn.provider)} disabled={isConnectingGoogle && conn.provider === 'google'} className="text-sm font-bold text-blue-500 bg-blue-500/10 hover:bg-blue-500/20 px-4 py-1.5 rounded-lg transition-colors flex items-center gap-2">
                          {isConnectingGoogle && conn.provider === 'google' ? <Loader2 size={14} className="animate-spin" /> : null}
@@ -1152,13 +1291,54 @@ const SocialMediaHub = ({
 
                 <div className="space-y-3">
                   <textarea value={scheduleCaption} onChange={(e: any) => setScheduleCaption(e.target.value)} placeholder="اكتب وصف/كابشن المنشور..." rows={3} className={`w-full p-3 rounded-xl text-sm outline-none border resize-none ${isDark ? 'bg-slate-800/60 border-slate-700 text-white' : 'bg-white border-slate-200'}`} />
-                  <div className="grid grid-cols-2 gap-3">
-                    <select value={schedulePlatform} onChange={(e: any) => setSchedulePlatform(e.target.value)} className={`p-3 rounded-xl text-sm outline-none border ${isDark ? 'bg-slate-800/60 border-slate-700 text-white' : 'bg-white border-slate-200'}`}>
-                      {connections.map((c) => <option key={c.provider} value={c.provider}>{c.name}</option>)}
-                    </select>
-                    <input type="datetime-local" value={scheduleDateTime} onChange={(e: any) => setScheduleDateTime(e.target.value)} className={`p-3 rounded-xl text-sm outline-none border ${isDark ? 'bg-slate-800/60 border-slate-700 text-white' : 'bg-white border-slate-200'}`} />
+                  
+                  <select value={schedulePlatform} onChange={(e: any) => setSchedulePlatform(e.target.value)} className={`w-full p-3 rounded-xl text-sm outline-none border ${isDark ? 'bg-slate-800/60 border-slate-700 text-white' : 'bg-white border-slate-200'}`}>
+                    {connections.map((c) => <option key={c.provider} value={c.provider}>{c.name}</option>)}
+                  </select>
+
+                  {/* ================= شكل التاريخ والوقت الاحترافي (لا يظهر التقويم إلا عند الضغط) ================= */}
+                  <div className="flex gap-3">
+                    <div className="relative flex-1 group cursor-pointer" onClick={() => { try { dateRef.current?.showPicker(); } catch (e) {} }}>
+                      <div className={`w-full border rounded-xl px-4 py-3 text-sm transition-all flex items-center justify-between group-hover:border-purple-500 shadow-sm overflow-hidden ${isDark ? 'bg-slate-800/60 border-slate-700 text-slate-300' : 'bg-white border-slate-200 text-slate-900'}`}>
+                        <span className={`${scheduleDate ? 'font-black text-purple-500' : 'opacity-60 font-bold'} font-sans tracking-wide whitespace-nowrap`} dir="ltr">
+                          {formatScheduleDate(scheduleDate)}
+                        </span>
+                        <CalendarRange size={18} className={`shrink-0 ${scheduleDate ? 'text-purple-500' : 'text-slate-400'}`} />
+                      </div>
+                      <input
+                        ref={dateRef}
+                        type="date"
+                        lang="en-US"
+                        required
+                        value={scheduleDate}
+                        onChange={(e: any) => setScheduleDate(e.target.value)}
+                        className="absolute inset-0 w-full h-full opacity-0 pointer-events-none"
+                        style={{ colorScheme: isDark ? 'dark' : 'light' }}
+                      />
+                    </div>
+
+                    <div className="relative flex-1 group cursor-pointer" onClick={() => { try { timeRef.current?.showPicker(); } catch (e) {} }}>
+                      <div className={`w-full border rounded-xl px-4 py-3 text-sm transition-all flex items-center justify-between group-hover:border-purple-500 shadow-sm overflow-hidden ${isDark ? 'bg-slate-800/60 border-slate-700 text-slate-300' : 'bg-white border-slate-200 text-slate-900'}`}>
+                        <span className={`${scheduleTime ? 'font-black text-purple-500' : 'opacity-60 font-bold'} font-sans tracking-wide whitespace-nowrap`} dir="ltr">
+                          {scheduleTime || t.publishTime}
+                        </span>
+                        <Clock size={18} className={`shrink-0 ${scheduleTime ? 'text-purple-500' : 'text-slate-400'}`} />
+                      </div>
+                      <input
+                        ref={timeRef}
+                        type="time"
+                        lang="en-US"
+                        required
+                        value={scheduleTime}
+                        onChange={(e: any) => setScheduleTime(e.target.value)}
+                        className="absolute inset-0 w-full h-full opacity-0 pointer-events-none"
+                        style={{ colorScheme: isDark ? 'dark' : 'light' }}
+                      />
+                    </div>
                   </div>
-                  <button onClick={handleAddToSchedule} disabled={!scheduleMediaFile || !scheduleDateTime} className="w-full bg-blue-600 hover:bg-blue-500 disabled:opacity-40 disabled:cursor-not-allowed text-white px-4 py-2.5 rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2">
+                  {/* ================= نهاية شكل التاريخ والوقت ================= */}
+
+                  <button onClick={handleAddToSchedule} disabled={!scheduleMediaFile || !scheduleDate || !scheduleTime} className="w-full bg-blue-600 hover:bg-blue-500 disabled:opacity-40 disabled:cursor-not-allowed text-white px-4 py-2.5 rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2">
                     <CalendarRange size={16} /> جدولة المنشور
                   </button>
                 </div>
@@ -1195,14 +1375,14 @@ const SocialMediaHub = ({
           </div>
         )}
 
-        {/* Tab: Inbox - موحد لكل المنصات 🚀 */}
+        {/* Tab: Inbox - موحد لكل المنصات مع الرد المباشر 🚀 */}
         {activeTab === 'inbox' && (
           <div className="space-y-6">
             <div>
               <h3 className="text-lg font-bold mb-4">قنوات صندوق الوارد</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {connections.map((conn) => (
-                  <div key={conn.provider} className={`p-4 rounded-2xl border flex items-center justify-between gap-3 ${isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
+                  <div key={conn.provider} onClick={() => openSettings(conn.provider)} className={`p-4 rounded-2xl border flex items-center justify-between gap-3 cursor-pointer transition-colors ${isDark ? 'bg-slate-900/50 border-slate-800 hover:border-purple-500/50' : 'bg-white border-slate-200 shadow-sm hover:border-purple-300'}`}>
                     <div className="flex items-center gap-3">
                       <ProviderIcon provider={conn.provider} size={32} />
                       <div>
@@ -1211,32 +1391,105 @@ const SocialMediaHub = ({
                       </div>
                     </div>
                     {conn.status !== 'connected' ? (
-                      <button onClick={() => handleConnectProvider(conn.provider)} className="text-xs font-bold text-blue-500 bg-blue-500/10 hover:bg-blue-500/20 px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap">ربط</button>
+                      <button onClick={(e: any) => { e.stopPropagation(); handleConnectProvider(conn.provider); }} className="text-xs font-bold text-blue-500 bg-blue-500/10 hover:bg-blue-500/20 px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap">ربط</button>
                     ) : (
-                      <CheckCircle2 size={18} className="text-green-500 shrink-0" />
+                      <Sliders size={16} className="text-slate-400 shrink-0" />
                     )}
                   </div>
                 ))}
               </div>
+              <p className={`text-xs mt-2 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>اضغط على أي بطاقة لضبط إعدادات الرد الآلي بالذكاء الاصطناعي الخاصة بها.</p>
             </div>
 
-            {inboxConnectedCount === 0 ? (
+            {flattenedConversations.length === 0 ? (
               <div className={`flex flex-col items-center justify-center py-16 rounded-3xl border border-dashed ${isDark ? 'bg-slate-900/30 border-slate-800' : 'bg-slate-50 border-slate-300'}`}>
                 <Inbox size={48} className="text-slate-400 mb-4 opacity-50" />
                 <h3 className="text-lg font-bold mb-2">صندوق الوارد الموحد</h3>
                 <p className="text-slate-500 text-sm max-w-md text-center">اربط حساباتك (WhatsApp، Instagram، TikTok، Google Business) لاستقبال رسائل العملاء وتعليقاتهم وتقييماتهم والرد عليها جميعاً من مكان واحد.</p>
               </div>
             ) : (
-              <div className={`rounded-2xl border overflow-hidden divide-y ${isDark ? 'bg-slate-900/50 border-slate-800 divide-slate-800' : 'bg-white border-slate-200 divide-slate-100'}`}>
-                {connections.filter((c) => c.status === 'connected').map((c) => (
-                  <div key={c.provider} className="p-4 flex items-center gap-3">
-                    <ProviderIcon provider={c.provider} size={32} />
-                    <div className="flex-1">
-                      <p className="text-sm font-bold">رسائل وتعليقات {c.name}</p>
-                      <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>لا توجد رسائل جديدة حالياً — سيتم عرضها هنا فور وصولها.</p>
-                    </div>
+              <div className={`rounded-2xl border overflow-hidden ${isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-white border-slate-200'}`}>
+                {/* فلتر اختيار المنصة */}
+                <div className={`flex items-center gap-2 p-3 border-b overflow-x-auto no-scrollbar ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
+                  <button onClick={() => setInboxFilter('all')} className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-colors ${inboxFilter === 'all' ? 'bg-purple-500/20 text-purple-500' : (isDark ? 'text-slate-400 hover:bg-slate-800' : 'text-slate-600 hover:bg-slate-100')}`}>الكل</button>
+                  {connections.filter((c) => c.status === 'connected').map((c) => (
+                    <button key={c.provider} onClick={() => setInboxFilter(c.provider)} className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap flex items-center gap-1.5 transition-colors ${inboxFilter === c.provider ? 'bg-purple-500/20 text-purple-500' : (isDark ? 'text-slate-400 hover:bg-slate-800' : 'text-slate-600 hover:bg-slate-100')}`}>
+                      <ProviderIcon provider={c.provider} size={16} /> {c.name}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-5">
+                  {/* قائمة المحادثات */}
+                  <div className={`md:col-span-2 border-b md:border-b-0 md:border-l divide-y max-h-[420px] overflow-y-auto ${isDark ? 'border-slate-800 divide-slate-800' : 'border-slate-200 divide-slate-100'}`}>
+                    {flattenedConversations.map((conv: any) => {
+                      const lastMsg = conv.messages[conv.messages.length - 1];
+                      const isActive = activeConversation?.provider === conv.provider && activeConversation?.id === conv.id;
+                      return (
+                        <div key={`${conv.provider}-${conv.id}`} onClick={() => openConversation(conv.provider, conv.id)} className={`p-3 flex items-center gap-3 cursor-pointer transition-colors ${isActive ? (isDark ? 'bg-slate-800/70' : 'bg-slate-100') : (isDark ? 'hover:bg-slate-800/40' : 'hover:bg-slate-50')}`}>
+                          <div className="relative shrink-0">
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm ${isDark ? 'bg-slate-700 text-white' : 'bg-slate-200 text-slate-700'}`}>{conv.name[0]}</div>
+                            <div className={`absolute -bottom-0.5 -left-0.5 w-3.5 h-3.5 rounded-full border-2 ${isDark ? 'border-slate-900' : 'border-white'} ${conv.online ? 'bg-green-500' : 'bg-slate-400'}`}></div>
+                            <div className="absolute -top-1 -right-1"><ProviderIcon provider={conv.provider} size={16} /></div>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex justify-between items-center">
+                              <p className="text-sm font-bold truncate">{conv.name}</p>
+                              {conv.unread > 0 && <span className="text-[10px] font-black bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center shrink-0">{conv.unread}</span>}
+                            </div>
+                            <p className={`text-xs truncate ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{lastMsg?.text}</p>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
-                ))}
+
+                  {/* نافذة المحادثة والرد */}
+                  <div className="md:col-span-3 flex flex-col h-[420px]">
+                    {activeConvData ? (
+                      <>
+                        <div className={`p-3 border-b flex items-center gap-3 ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
+                          <div className="relative shrink-0">
+                            <div className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm ${isDark ? 'bg-slate-700 text-white' : 'bg-slate-200 text-slate-700'}`}>{activeConvData.name[0]}</div>
+                            <div className={`absolute -bottom-0.5 -left-0.5 w-3 h-3 rounded-full border-2 ${isDark ? 'border-slate-900' : 'border-white'} ${activeConvData.online ? 'bg-green-500' : 'bg-slate-400'}`}></div>
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold">{activeConvData.name}</p>
+                            <p className={`text-[11px] ${activeConvData.online ? 'text-green-500' : (isDark ? 'text-slate-500' : 'text-slate-400')}`}>{activeConvData.online ? 'متصل الآن' : 'غير متصل'}</p>
+                          </div>
+                        </div>
+                        <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                          {activeConvData.messages.map((msg: any) => (
+                            <div key={msg.id} className={`flex ${msg.from === 'me' ? 'justify-end' : 'justify-start'}`}>
+                              <div className={`max-w-[75%] px-4 py-2 rounded-2xl text-sm ${msg.from === 'me' ? 'bg-purple-600 text-white rounded-br-sm' : (isDark ? 'bg-slate-800 text-white rounded-bl-sm' : 'bg-slate-100 text-slate-900 rounded-bl-sm')}`}>
+                                <p>{msg.text}</p>
+                                <p className={`text-[10px] mt-1 ${msg.from === 'me' ? 'text-purple-200' : 'text-slate-400'}`}>{msg.time}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        <div className={`p-3 border-t flex items-center gap-2 ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
+                          <input
+                            type="text"
+                            value={replyText}
+                            onChange={(e: any) => setReplyText(e.target.value)}
+                            onKeyDown={(e: any) => { if (e.key === 'Enter') handleSendReply(); }}
+                            placeholder="اكتب ردك هنا..."
+                            className={`flex-1 p-2.5 rounded-xl text-sm outline-none border ${isDark ? 'bg-slate-800/60 border-slate-700 text-white' : 'bg-white border-slate-200'}`}
+                          />
+                          <button onClick={handleSendReply} disabled={!replyText.trim()} className="bg-purple-600 hover:bg-purple-500 disabled:opacity-40 text-white p-2.5 rounded-xl transition-colors">
+                            <Send size={18} />
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="flex-1 flex flex-col items-center justify-center text-center p-6">
+                        <MessageCircle size={36} className="text-slate-400 mb-3 opacity-50" />
+                        <p className={`text-sm font-bold ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>اختر محادثة من القائمة للرد عليها</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             )}
           </div>
@@ -1291,6 +1544,67 @@ const SocialMediaHub = ({
             <input type="tel" required value={waInput} onChange={(e: any) => setWaInput(e.target.value)} placeholder="+966 5X XXX XXXX" className={`w-full p-3 rounded-xl text-sm outline-none border mb-4 ${isDark ? 'bg-slate-800/60 border-slate-700 text-white' : 'bg-white border-slate-200'}`} />
             <button type="submit" className="w-full bg-green-600 hover:bg-green-500 text-white px-4 py-2.5 rounded-xl text-sm font-bold transition-colors">تأكيد الربط</button>
           </form>
+        </div>
+      )}
+
+      {/* Modal: إعدادات الرد الآلي الخاصة بكل تطبيق 🚀 */}
+      {showSettingsModal && settingsProvider && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" onClick={() => setShowSettingsModal(false)}>
+          <div onClick={(e: any) => e.stopPropagation()} className={`w-full max-w-md rounded-2xl border p-6 ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
+            <div className="flex justify-between items-center mb-1">
+              <div className="flex items-center gap-3">
+                <ProviderIcon provider={settingsProvider} size={36} />
+                <h3 className="font-bold text-lg">{SOCIAL_PROVIDER_META[settingsProvider].label}</h3>
+              </div>
+              <button onClick={() => setShowSettingsModal(false)}><X size={20} /></button>
+            </div>
+            <div className="mb-4"><StatusBadge status={connections.find((c) => c.provider === settingsProvider)?.status || 'disconnected'} /></div>
+
+            <div className="space-y-4">
+              <div className={`flex items-center justify-between p-3 rounded-xl border ${isDark ? 'border-slate-800 bg-slate-800/40' : 'border-slate-200 bg-slate-50'}`}>
+                <div>
+                  <p className="text-sm font-bold flex items-center gap-2"><Bot size={16} className="text-purple-500" /> الرد التلقائي بالذكاء الاصطناعي</p>
+                  <p className={`text-[11px] mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>الرد على رسائل العملاء تلقائياً دون تدخل يدوي</p>
+                </div>
+                <ToggleSwitch isOn={!!appSettings[settingsProvider]?.aiReply} onToggle={() => updateProviderSetting(settingsProvider, 'aiReply', !appSettings[settingsProvider]?.aiReply)} />
+              </div>
+
+              <div className={`flex items-center justify-between p-3 rounded-xl border ${isDark ? 'border-slate-800 bg-slate-800/40' : 'border-slate-200 bg-slate-50'}`}>
+                <div>
+                  <p className="text-sm font-bold flex items-center gap-2"><Bell size={16} className="text-orange-500" /> تنبيه عند وصول رسالة جديدة</p>
+                  <p className={`text-[11px] mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>إشعار فوري بأي رسالة أو تعليق جديد</p>
+                </div>
+                <ToggleSwitch isOn={!!appSettings[settingsProvider]?.notify} onToggle={() => updateProviderSetting(settingsProvider, 'notify', !appSettings[settingsProvider]?.notify)} />
+              </div>
+
+              {(settingsProvider === 'tiktok' || settingsProvider === 'instagram') && (
+                <div className={`flex items-center justify-between p-3 rounded-xl border ${isDark ? 'border-slate-800 bg-slate-800/40' : 'border-slate-200 bg-slate-50'}`}>
+                  <div>
+                    <p className="text-sm font-bold flex items-center gap-2"><MessageCircle size={16} className="text-blue-500" /> الرد التلقائي على التعليقات العامة</p>
+                    <p className={`text-[11px] mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>الرد على تعليقات المنشورات وليس فقط الرسائل الخاصة</p>
+                  </div>
+                  <ToggleSwitch isOn={!!appSettings[settingsProvider]?.autoReplyComments} onToggle={() => updateProviderSetting(settingsProvider, 'autoReplyComments', !appSettings[settingsProvider]?.autoReplyComments)} />
+                </div>
+              )}
+
+              {settingsProvider === 'google' && (
+                <div className={`flex items-center justify-between p-3 rounded-xl border ${isDark ? 'border-slate-800 bg-slate-800/40' : 'border-slate-200 bg-slate-50'}`}>
+                  <div>
+                    <p className="text-sm font-bold flex items-center gap-2"><Star size={16} className="text-yellow-500" /> الرد التلقائي على التقييمات</p>
+                    <p className={`text-[11px] mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>الرد الفوري على تقييمات العملاء على خرائط قوقل</p>
+                  </div>
+                  <ToggleSwitch isOn={!!appSettings[settingsProvider]?.autoReplyReviews} onToggle={() => updateProviderSetting(settingsProvider, 'autoReplyReviews', !appSettings[settingsProvider]?.autoReplyReviews)} />
+                </div>
+              )}
+
+              {settingsProvider === 'whatsapp' && (
+                <div className={`p-3 rounded-xl border ${isDark ? 'border-slate-800 bg-slate-800/40' : 'border-slate-200 bg-slate-50'}`}>
+                  <p className="text-sm font-bold flex items-center gap-2 mb-2"><MessageCircle size={16} className="text-green-500" /> رسالة الترحيب التلقائية</p>
+                  <textarea value={appSettings.whatsapp?.welcomeMessage || ''} onChange={(e: any) => updateProviderSetting('whatsapp', 'welcomeMessage', e.target.value)} placeholder="مرحباً بك، كيف يمكننا خدمتك اليوم؟" rows={2} className={`w-full p-2.5 rounded-lg text-sm outline-none border resize-none ${isDark ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-slate-200'}`} />
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       )}
 
@@ -2028,14 +2342,26 @@ export default function App() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('general');
   
-  const [isIgConnected, setIsIgConnected] = useState(false);
-  const [igUsername, setIgUsername] = useState("");
-  const [igAvatar, setIgAvatar] = useState("");
+  const [isIgConnected, setIsIgConnected] = useState(() => sfReadLS('sf_ig_connected', false));
+  const [igUsername, setIgUsername] = useState(() => sfReadLS('sf_ig_username', ""));
+  const [igAvatar, setIgAvatar] = useState(() => sfReadLS('sf_ig_avatar', ""));
   
   // حالات تيك توك المحدثة 🚀
-  const [isTkConnected, setIsTkConnected] = useState(false); 
-  const [tkUsername, setTkUsername] = useState("");
-  const [tkAvatar, setTkAvatar] = useState("");
+  const [isTkConnected, setIsTkConnected] = useState(() => sfReadLS('sf_tk_connected', false)); 
+  const [tkUsername, setTkUsername] = useState(() => sfReadLS('sf_tk_username', ""));
+  const [tkAvatar, setTkAvatar] = useState(() => sfReadLS('sf_tk_avatar', ""));
+
+  // حفظ حالة ربط تيك توك وانستقرام في التخزين المحلي حتى لا تُفصل عند تحديث الصفحة أو ربط منصة أخرى 🚀
+  useEffect(() => {
+    sfWriteLS('sf_ig_connected', isIgConnected);
+    sfWriteLS('sf_ig_username', igUsername);
+    sfWriteLS('sf_ig_avatar', igAvatar);
+  }, [isIgConnected, igUsername, igAvatar]);
+  useEffect(() => {
+    sfWriteLS('sf_tk_connected', isTkConnected);
+    sfWriteLS('sf_tk_username', tkUsername);
+    sfWriteLS('sf_tk_avatar', tkAvatar);
+  }, [isTkConnected, tkUsername, tkAvatar]);
   
   const [isConnecting, setIsConnecting] = useState(false);
 
