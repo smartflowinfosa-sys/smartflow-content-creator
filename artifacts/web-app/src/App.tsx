@@ -10,7 +10,7 @@ import {
   AlignJustify, Star, MessageCircle, Clapperboard, CalendarRange, 
   Bot, Bell, LineChart, Phone, Wand2, Hourglass, Clock, ShieldCheck, Users,
   Megaphone, Edit, Zap, CircleDollarSign, ChevronRight, FileText,
-  Smartphone, LayoutDashboard, Share2, Inbox, BarChart3 // تم إضافة الأيقونات الجديدة هنا
+  Smartphone, LayoutDashboard, Share2, Inbox, BarChart3, UploadCloud, PlayCircle, Store
 } from 'lucide-react';
 
 // ==========================================
@@ -887,8 +887,40 @@ const AdminDashboard = ({ isDark, t }: any) => {
 // ==========================================
 // 🚀 مركز إدارة السوشال ميديا الجديد (Social Media Hub) 🚀
 // ==========================================
-const SocialMediaHub = ({ isDark, t, isTkConnected, tkUsername, tkAvatar, setActiveView }: any) => {
+const SOCIAL_PROVIDER_META: any = {
+  tiktok: { label: 'TikTok', icon: PlayCircle, iconClass: 'bg-black text-white' },
+  instagram: { label: 'Instagram', icon: Instagram, iconClass: 'bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 text-white' },
+  whatsapp: { label: 'WhatsApp', icon: Phone, iconClass: 'bg-green-500 text-white' },
+  google: { label: 'Google Business', icon: Store, iconClass: 'bg-blue-600 text-white' },
+};
+
+const SocialMediaHub = ({
+  isDark, t, setActiveView,
+  isTkConnected, tkUsername, tkAvatar, setIsTkConnected, setTkUsername, setTkAvatar, handleConnectTikTok,
+  isIgConnected, igUsername, igAvatar, setIsIgConnected, setIgUsername, setIgAvatar, handleConnectInstagram,
+}: any) => {
   const [activeTab, setActiveTab] = useState('overview');
+
+  // حالات واتساب وقوقل بزنس (مخصصة لهذا المركز) 🚀
+  const [isGoogleConnected, setIsGoogleConnected] = useState(false);
+  const [isConnectingGoogle, setIsConnectingGoogle] = useState(false);
+  const [isWaConnected, setIsWaConnected] = useState(false);
+  const [waPhone, setWaPhone] = useState("");
+  const [showWaModal, setShowWaModal] = useState(false);
+  const [waInput, setWaInput] = useState("");
+  const [showAddAccountModal, setShowAddAccountModal] = useState(false);
+
+  // حالة رفع الميديا للجدولة 🚀
+  const [scheduleMediaFile, setScheduleMediaFile] = useState<File | null>(null);
+  const [scheduleMediaPreview, setScheduleMediaPreview] = useState<string | null>(null);
+  const [scheduleMediaType, setScheduleMediaType] = useState<'image' | 'video' | null>(null);
+  const [scheduleCaption, setScheduleCaption] = useState("");
+  const [schedulePlatform, setSchedulePlatform] = useState('tiktok');
+  const [scheduleDateTime, setScheduleDateTime] = useState("");
+  const [scheduledPosts, setScheduledPosts] = useState([
+    { id: 1, name: 'إعلان الصيف', platform: 'TikTok', time: 'اليوم — 8:00 PM', status: 'مجدول', statusColor: 'blue' },
+    { id: 2, name: 'بوست الخصومات', platform: 'Instagram', time: 'غداً — 7:00 PM', status: 'بانتظار الموافقة', statusColor: 'yellow' },
+  ]);
 
   const tabs = [
     { id: 'overview', name: t.tabOverview },
@@ -904,12 +936,78 @@ const SocialMediaHub = ({ isDark, t, isTkConnected, tkUsername, tkAvatar, setAct
     return <span className="flex items-center text-xs text-slate-400 bg-slate-800/50 px-2.5 py-1 rounded-full border border-slate-700"><span className="w-1.5 h-1.5 rounded-full bg-slate-500 ml-1.5"></span>غير متصل</span>;
   };
 
+  const ProviderIcon = ({ provider, size = 40 }: any) => {
+    const meta = SOCIAL_PROVIDER_META[provider];
+    const Icon = meta.icon;
+    return (
+      <div className={`rounded-xl flex items-center justify-center shrink-0 ${meta.iconClass}`} style={{ width: size, height: size }}>
+        <Icon size={size * 0.55} />
+      </div>
+    );
+  };
+
   const connections = [
     { provider: 'tiktok', name: 'TikTok', status: isTkConnected ? 'connected' : 'disconnected', description: 'إدارة الفيديوهات والتعليقات' },
-    { provider: 'instagram', name: 'Instagram', status: 'pending', description: 'مشاركة الريلز والقصص تلقائياً' },
-    { provider: 'whatsapp', name: 'WhatsApp', status: 'disconnected', description: 'إدارة محادثات العملاء' },
-    { provider: 'google', name: 'Google Business', status: 'disconnected', description: 'إدارة التقييمات والأداء' },
+    { provider: 'instagram', name: 'Instagram', status: isIgConnected ? 'connected' : 'disconnected', description: 'مشاركة الريلز والقصص تلقائياً' },
+    { provider: 'whatsapp', name: 'WhatsApp', status: isWaConnected ? 'connected' : 'disconnected', description: 'إدارة محادثات العملاء' },
+    { provider: 'google', name: 'Google Business', status: isGoogleConnected ? 'connected' : 'disconnected', description: 'إدارة التقييمات والأداء' },
   ];
+
+  // دالة موحدة لبدء ربط أي منصة 🚀
+  const handleConnectProvider = (provider: string) => {
+    if (provider === 'tiktok') return handleConnectTikTok();
+    if (provider === 'instagram') return handleConnectInstagram();
+    if (provider === 'whatsapp') { setWaInput(""); setShowWaModal(true); return; }
+    if (provider === 'google') {
+      setIsConnectingGoogle(true);
+      setTimeout(() => { setIsConnectingGoogle(false); setIsGoogleConnected(true); }, 1500);
+    }
+  };
+
+  // دالة موحدة لفصل أي منصة 🚀
+  const handleDisconnectProvider = (provider: string) => {
+    if (!window.confirm(t.disconnectConfirm)) return;
+    if (provider === 'tiktok') { setIsTkConnected(false); setTkUsername(""); setTkAvatar(""); }
+    if (provider === 'instagram') { setIsIgConnected(false); setIgUsername(""); setIgAvatar(""); }
+    if (provider === 'whatsapp') { setIsWaConnected(false); setWaPhone(""); }
+    if (provider === 'google') { setIsGoogleConnected(false); }
+  };
+
+  const handleWaSubmit = (e: any) => {
+    e.preventDefault();
+    if (!waInput.trim()) return;
+    setWaPhone(waInput.trim());
+    setIsWaConnected(true);
+    setShowWaModal(false);
+  };
+
+  const handleScheduleMediaChange = (e: any) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setScheduleMediaFile(file);
+    setScheduleMediaType(file.type.startsWith('video') ? 'video' : 'image');
+    const reader = new FileReader();
+    reader.onloadend = () => setScheduleMediaPreview(reader.result as string);
+    reader.readAsDataURL(file);
+  };
+
+  const handleAddToSchedule = () => {
+    if (!scheduleMediaFile || !scheduleDateTime) return;
+    const platformMeta = SOCIAL_PROVIDER_META[schedulePlatform];
+    const dt = new Date(scheduleDateTime);
+    const timeLabel = dt.toLocaleString('ar-SA', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+    setScheduledPosts((prev) => [
+      { id: Date.now(), name: scheduleCaption || scheduleMediaFile.name, platform: platformMeta.label, time: timeLabel, status: 'مجدول', statusColor: 'blue' },
+      ...prev,
+    ]);
+    setScheduleMediaFile(null);
+    setScheduleMediaPreview(null);
+    setScheduleMediaType(null);
+    setScheduleCaption("");
+    setScheduleDateTime("");
+  };
+
+  const inboxConnectedCount = connections.filter((c) => c.status === 'connected').length;
 
   return (
     <div className={`w-full max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 animate-in fade-in zoom-in duration-500 ${t.dir === 'ltr' ? 'text-left' : 'text-right'} ${isDark ? 'text-white' : 'text-slate-900'}`}>
@@ -952,10 +1050,18 @@ const SocialMediaHub = ({ isDark, t, isTkConnected, tkUsername, tkAvatar, setAct
             {connections.map((conn) => (
               <div key={conn.provider} className={`p-5 rounded-2xl border flex flex-col justify-between ${isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
                 <div className="flex justify-between items-start mb-4">
-                  <h3 className="font-bold">{conn.name}</h3>
+                  <div className="flex items-center gap-3">
+                    <ProviderIcon provider={conn.provider} size={36} />
+                    <h3 className="font-bold">{conn.name}</h3>
+                  </div>
                   <StatusBadge status={conn.status} />
                 </div>
-                <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{conn.description}</p>
+                <p className={`text-xs mb-4 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{conn.description}</p>
+                {conn.status === 'connected' ? (
+                  <button onClick={() => handleDisconnectProvider(conn.provider)} className="text-xs font-bold text-red-500 hover:text-red-400 self-start">فصل الحساب</button>
+                ) : (
+                  <button onClick={() => handleConnectProvider(conn.provider)} className="text-xs font-bold text-blue-500 bg-blue-500/10 hover:bg-blue-500/20 px-3 py-1.5 rounded-lg transition-colors self-start">ربط الحساب</button>
+                )}
               </div>
             ))}
           </div>
@@ -966,7 +1072,7 @@ const SocialMediaHub = ({ isDark, t, isTkConnected, tkUsername, tkAvatar, setAct
           <div className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-bold">القنوات المتاحة</h2>
-              <button className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-lg hover:opacity-90">
+              <button onClick={() => setShowAddAccountModal(true)} className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-lg hover:opacity-90 transition-opacity">
                 + إضافة حساب
               </button>
             </div>
@@ -975,21 +1081,30 @@ const SocialMediaHub = ({ isDark, t, isTkConnected, tkUsername, tkAvatar, setAct
                 <div key={conn.provider} className={`p-5 flex flex-col justify-between rounded-2xl border ${isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
                   <div className="flex justify-between items-start mb-4">
                     <div className="flex items-center gap-3">
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg ${isDark ? 'bg-slate-800' : 'bg-slate-100'}`}>
-                        {conn.name[0]}
-                      </div>
+                      <ProviderIcon provider={conn.provider} size={40} />
                       <div>
                         <h3 className="font-bold">{conn.name}</h3>
-                        <p className={`text-xs mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{conn.description}</p>
+                        <p className={`text-xs mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                          {conn.status === 'connected' && conn.provider === 'whatsapp' && waPhone ? waPhone : conn.description}
+                        </p>
                       </div>
                     </div>
                     <StatusBadge status={conn.status} />
                   </div>
                   
                   <div className={`flex justify-end mt-4 pt-4 border-t ${isDark ? 'border-slate-800' : 'border-slate-100'}`}>
-                     {conn.status === 'connected' && <button className="text-sm font-bold px-4 py-1.5 rounded-lg bg-slate-800 text-white">إدارة الحساب</button>}
+                     {conn.status === 'connected' && (
+                       <div className="flex items-center gap-2">
+                         <button onClick={() => handleDisconnectProvider(conn.provider)} className="text-sm font-bold px-4 py-1.5 rounded-lg bg-slate-800 text-white hover:bg-red-500/80 transition-colors">فصل الحساب</button>
+                       </div>
+                     )}
                      {conn.status === 'pending' && <button disabled className="text-sm font-bold text-yellow-500/50 px-4 py-1.5 cursor-not-allowed">قيد المراجعة</button>}
-                     {conn.status === 'disconnected' && <button className="text-sm font-bold text-blue-500 bg-blue-500/10 hover:bg-blue-500/20 px-4 py-1.5 rounded-lg transition-colors">ربط الحساب</button>}
+                     {conn.status === 'disconnected' && (
+                       <button onClick={() => handleConnectProvider(conn.provider)} disabled={isConnectingGoogle && conn.provider === 'google'} className="text-sm font-bold text-blue-500 bg-blue-500/10 hover:bg-blue-500/20 px-4 py-1.5 rounded-lg transition-colors flex items-center gap-2">
+                         {isConnectingGoogle && conn.provider === 'google' ? <Loader2 size={14} className="animate-spin" /> : null}
+                         ربط الحساب
+                       </button>
+                     )}
                   </div>
                 </div>
               ))}
@@ -1000,14 +1115,54 @@ const SocialMediaHub = ({ isDark, t, isTkConnected, tkUsername, tkAvatar, setAct
         {/* Tab: Publishing */}
         {activeTab === 'publishing' && (
           <div className="space-y-6">
-            <div className="flex justify-between items-center bg-gradient-to-r from-blue-900/40 to-purple-900/40 border border-purple-500/20 rounded-2xl p-6">
+            <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 bg-gradient-to-r from-blue-900/40 to-purple-900/40 border border-purple-500/20 rounded-2xl p-6">
               <div>
                 <h2 className="text-lg font-bold text-white">هل لديك فكرة جديدة؟</h2>
                 <p className="text-sm text-slate-300 mt-1">استخدم الاستوديو الذكي لإنشاء، صياغة، وجدولة محتواك.</p>
               </div>
-              <button onClick={() => setActiveView('studio')} className="bg-purple-600 hover:bg-purple-500 text-white px-6 py-2.5 rounded-xl text-sm font-bold transition-colors">
+              <button onClick={() => setActiveView('studio')} className="bg-purple-600 hover:bg-purple-500 text-white px-6 py-2.5 rounded-xl text-sm font-bold transition-colors whitespace-nowrap">
                 + إنشاء منشور ذكي
               </button>
+            </div>
+
+            {/* رفع ميديا خارجية للجدولة 🚀 */}
+            <div className={`rounded-2xl border p-6 ${isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-white border-slate-200'}`}>
+              <h3 className="text-lg font-bold mb-1 flex items-center gap-2"><UploadCloud size={20} className="text-blue-500" /> رفع صورة أو فيديو للجدولة</h3>
+              <p className={`text-xs mb-4 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>ارفع ملف ميديا جاهز من جهازك (صورة أو فيديو) وحدد موعد نشره على أي منصة متصلة.</p>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="relative">
+                  <input type="file" accept="image/*,video/*" onChange={handleScheduleMediaChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+                  <div className={`h-48 rounded-xl border-2 border-dashed flex flex-col items-center justify-center overflow-hidden ${isDark ? 'border-slate-700 bg-slate-800/40' : 'border-slate-300 bg-slate-50'}`}>
+                    {scheduleMediaPreview ? (
+                      scheduleMediaType === 'video' ? (
+                        <video src={scheduleMediaPreview} className="w-full h-full object-cover" controls />
+                      ) : (
+                        <img src={scheduleMediaPreview} alt="معاينة الميديا" className="w-full h-full object-cover" />
+                      )
+                    ) : (
+                      <>
+                        <UploadCloud size={28} className="text-slate-400 mb-2" />
+                        <p className={`text-sm font-bold ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>اسحب أو اضغط لرفع صورة/فيديو</p>
+                        <p className="text-xs text-slate-500 mt-1">PNG, JPG, MP4, MOV</p>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <textarea value={scheduleCaption} onChange={(e: any) => setScheduleCaption(e.target.value)} placeholder="اكتب وصف/كابشن المنشور..." rows={3} className={`w-full p-3 rounded-xl text-sm outline-none border resize-none ${isDark ? 'bg-slate-800/60 border-slate-700 text-white' : 'bg-white border-slate-200'}`} />
+                  <div className="grid grid-cols-2 gap-3">
+                    <select value={schedulePlatform} onChange={(e: any) => setSchedulePlatform(e.target.value)} className={`p-3 rounded-xl text-sm outline-none border ${isDark ? 'bg-slate-800/60 border-slate-700 text-white' : 'bg-white border-slate-200'}`}>
+                      {connections.map((c) => <option key={c.provider} value={c.provider}>{c.name}</option>)}
+                    </select>
+                    <input type="datetime-local" value={scheduleDateTime} onChange={(e: any) => setScheduleDateTime(e.target.value)} className={`p-3 rounded-xl text-sm outline-none border ${isDark ? 'bg-slate-800/60 border-slate-700 text-white' : 'bg-white border-slate-200'}`} />
+                  </div>
+                  <button onClick={handleAddToSchedule} disabled={!scheduleMediaFile || !scheduleDateTime} className="w-full bg-blue-600 hover:bg-blue-500 disabled:opacity-40 disabled:cursor-not-allowed text-white px-4 py-2.5 rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2">
+                    <CalendarRange size={16} /> جدولة المنشور
+                  </button>
+                </div>
+              </div>
             </div>
             
             <div>
@@ -1023,18 +1178,16 @@ const SocialMediaHub = ({ isDark, t, isTkConnected, tkUsername, tkAvatar, setAct
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-700/50">
-                    <tr className={isDark ? 'hover:bg-slate-800/30' : 'hover:bg-slate-50'}>
-                      <td className="px-6 py-4 font-bold">إعلان الصيف</td>
-                      <td className="px-6 py-4">TikTok</td>
-                      <td className="px-6 py-4 text-slate-400">اليوم — 8:00 PM</td>
-                      <td className="px-6 py-4"><span className="text-blue-400 bg-blue-400/10 px-2.5 py-1 rounded-lg text-xs font-bold border border-blue-500/20">مجدول</span></td>
-                    </tr>
-                    <tr className={isDark ? 'hover:bg-slate-800/30' : 'hover:bg-slate-50'}>
-                      <td className="px-6 py-4 font-bold">بوست الخصومات</td>
-                      <td className="px-6 py-4">Instagram</td>
-                      <td className="px-6 py-4 text-slate-400">غداً — 7:00 PM</td>
-                      <td className="px-6 py-4"><span className="text-yellow-500 bg-yellow-500/10 px-2.5 py-1 rounded-lg text-xs font-bold border border-yellow-500/20">بانتظار الموافقة</span></td>
-                    </tr>
+                    {scheduledPosts.map((post) => (
+                      <tr key={post.id} className={isDark ? 'hover:bg-slate-800/30' : 'hover:bg-slate-50'}>
+                        <td className="px-6 py-4 font-bold">{post.name}</td>
+                        <td className="px-6 py-4">{post.platform}</td>
+                        <td className="px-6 py-4 text-slate-400">{post.time}</td>
+                        <td className="px-6 py-4">
+                          <span className={`px-2.5 py-1 rounded-lg text-xs font-bold border ${post.statusColor === 'blue' ? 'text-blue-400 bg-blue-400/10 border-blue-500/20' : 'text-yellow-500 bg-yellow-500/10 border-yellow-500/20'}`}>{post.status}</span>
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
@@ -1042,12 +1195,50 @@ const SocialMediaHub = ({ isDark, t, isTkConnected, tkUsername, tkAvatar, setAct
           </div>
         )}
 
-        {/* Placeholder Tabs for Inbox & Analytics (Future Scalability) */}
+        {/* Tab: Inbox - موحد لكل المنصات 🚀 */}
         {activeTab === 'inbox' && (
-          <div className={`flex flex-col items-center justify-center py-20 rounded-3xl border border-dashed ${isDark ? 'bg-slate-900/30 border-slate-800' : 'bg-slate-50 border-slate-300'}`}>
-            <Inbox size={48} className="text-slate-400 mb-4 opacity-50" />
-            <h3 className="text-lg font-bold mb-2">صندوق الوارد الموحد</h3>
-            <p className="text-slate-500 text-sm max-w-sm text-center">قم بربط حساباتك (WhatsApp, Instagram) لاستقبال رسائل العملاء والرد عليها من هنا.</p>
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-lg font-bold mb-4">قنوات صندوق الوارد</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {connections.map((conn) => (
+                  <div key={conn.provider} className={`p-4 rounded-2xl border flex items-center justify-between gap-3 ${isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
+                    <div className="flex items-center gap-3">
+                      <ProviderIcon provider={conn.provider} size={32} />
+                      <div>
+                        <h4 className="font-bold text-sm">{conn.name}</h4>
+                        <StatusBadge status={conn.status} />
+                      </div>
+                    </div>
+                    {conn.status !== 'connected' ? (
+                      <button onClick={() => handleConnectProvider(conn.provider)} className="text-xs font-bold text-blue-500 bg-blue-500/10 hover:bg-blue-500/20 px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap">ربط</button>
+                    ) : (
+                      <CheckCircle2 size={18} className="text-green-500 shrink-0" />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {inboxConnectedCount === 0 ? (
+              <div className={`flex flex-col items-center justify-center py-16 rounded-3xl border border-dashed ${isDark ? 'bg-slate-900/30 border-slate-800' : 'bg-slate-50 border-slate-300'}`}>
+                <Inbox size={48} className="text-slate-400 mb-4 opacity-50" />
+                <h3 className="text-lg font-bold mb-2">صندوق الوارد الموحد</h3>
+                <p className="text-slate-500 text-sm max-w-md text-center">اربط حساباتك (WhatsApp، Instagram، TikTok، Google Business) لاستقبال رسائل العملاء وتعليقاتهم وتقييماتهم والرد عليها جميعاً من مكان واحد.</p>
+              </div>
+            ) : (
+              <div className={`rounded-2xl border overflow-hidden divide-y ${isDark ? 'bg-slate-900/50 border-slate-800 divide-slate-800' : 'bg-white border-slate-200 divide-slate-100'}`}>
+                {connections.filter((c) => c.status === 'connected').map((c) => (
+                  <div key={c.provider} className="p-4 flex items-center gap-3">
+                    <ProviderIcon provider={c.provider} size={32} />
+                    <div className="flex-1">
+                      <p className="text-sm font-bold">رسائل وتعليقات {c.name}</p>
+                      <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>لا توجد رسائل جديدة حالياً — سيتم عرضها هنا فور وصولها.</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
@@ -1060,6 +1251,49 @@ const SocialMediaHub = ({ isDark, t, isTkConnected, tkUsername, tkAvatar, setAct
         )}
 
       </div>
+
+      {/* Modal: إضافة حساب 🚀 */}
+      {showAddAccountModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" onClick={() => setShowAddAccountModal(false)}>
+          <div onClick={(e: any) => e.stopPropagation()} className={`w-full max-w-md rounded-2xl border p-6 ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="font-bold text-lg">إضافة حساب جديد</h3>
+              <button onClick={() => setShowAddAccountModal(false)}><X size={20} /></button>
+            </div>
+            <div className="space-y-3">
+              {connections.map((conn) => (
+                <div key={conn.provider} className={`flex items-center justify-between p-3 rounded-xl border ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
+                  <div className="flex items-center gap-3">
+                    <ProviderIcon provider={conn.provider} size={32} />
+                    <span className="font-bold text-sm">{conn.name}</span>
+                  </div>
+                  {conn.status === 'connected' ? (
+                    <span className="text-xs font-bold text-green-500">متصل بالفعل</span>
+                  ) : (
+                    <button onClick={() => { handleConnectProvider(conn.provider); setShowAddAccountModal(false); }} className="text-xs font-bold text-white bg-blue-600 hover:bg-blue-500 px-3 py-1.5 rounded-lg transition-colors">ربط</button>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: ربط واتساب 🚀 */}
+      {showWaModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" onClick={() => setShowWaModal(false)}>
+          <form onSubmit={handleWaSubmit} onClick={(e: any) => e.stopPropagation()} className={`w-full max-w-sm rounded-2xl border p-6 ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="font-bold text-lg flex items-center gap-2"><Phone size={18} className="text-green-500" /> ربط واتساب بزنس</h3>
+              <button type="button" onClick={() => setShowWaModal(false)}><X size={20} /></button>
+            </div>
+            <p className={`text-xs mb-3 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>أدخل رقم واتساب بزنس الخاص بمنشأتك لربطه وإدارة محادثات العملاء من صندوق الوارد الموحد.</p>
+            <input type="tel" required value={waInput} onChange={(e: any) => setWaInput(e.target.value)} placeholder="+966 5X XXX XXXX" className={`w-full p-3 rounded-xl text-sm outline-none border mb-4 ${isDark ? 'bg-slate-800/60 border-slate-700 text-white' : 'bg-white border-slate-200'}`} />
+            <button type="submit" className="w-full bg-green-600 hover:bg-green-500 text-white px-4 py-2.5 rounded-xl text-sm font-bold transition-colors">تأكيد الربط</button>
+          </form>
+        </div>
+      )}
+
     </div>
   );
 };
@@ -2446,10 +2680,21 @@ CRITICAL RULES:
           <SocialMediaHub 
             isDark={isDark} 
             t={t} 
+            setActiveView={setActiveView} 
             isTkConnected={isTkConnected} 
             tkUsername={tkUsername} 
             tkAvatar={tkAvatar} 
-            setActiveView={setActiveView} 
+            setIsTkConnected={setIsTkConnected}
+            setTkUsername={setTkUsername}
+            setTkAvatar={setTkAvatar}
+            handleConnectTikTok={handleConnectTikTok}
+            isIgConnected={isIgConnected}
+            igUsername={igUsername}
+            igAvatar={igAvatar}
+            setIsIgConnected={setIsIgConnected}
+            setIgUsername={setIgUsername}
+            setIgAvatar={setIgAvatar}
+            handleConnectInstagram={handleConnectInstagram}
           />
         )}
         {/* ======================================================== */}
