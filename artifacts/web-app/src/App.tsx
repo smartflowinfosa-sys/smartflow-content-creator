@@ -905,40 +905,48 @@ const sfWriteLS = (key: string, value: any) => {
   try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {}
 };
 
-// بيانات محادثات تجريبية لكل منصة (للعرض حتى يتم ربط مزود الرسائل الحقيقي) 🚀
+// بيانات محادثات تجريبية لكل منصة + رد الذكاء الاصطناعي المقترح على آخر رسالة واردة 🚀
 const SF_DEMO_CONVERSATIONS: any = {
   tiktok: [
     { id: 't1', name: 'سارة العتيبي', online: true, unread: 2, messages: [
       { id: 1, from: 'user', text: 'هل المنتج متوفر بلون أزرق؟', time: '10:24 ص' },
       { id: 2, from: 'user', text: 'وكم سعر الشحن؟', time: '10:25 ص' },
-    ]},
+    ], pendingSuggestion: { text: 'أهلاً سارة، نعم المنتج متوفر باللون الأزرق حالياً، والشحن مجاني للطلبات فوق 200 ريال 😊' } },
     { id: 't2', name: 'محمد الحربي', online: false, unread: 0, messages: [
       { id: 1, from: 'user', text: 'شكراً على الرد السريع 🙏', time: 'أمس' },
-      { id: 2, from: 'me', text: 'العفو، بخدمتك دائماً', time: 'أمس' },
-    ]},
+      { id: 2, from: 'ai', text: 'العفو، بخدمتك دائماً', time: 'أمس' },
+    ], pendingSuggestion: null },
   ],
   instagram: [
     { id: 'i1', name: 'نورة القحطاني', online: true, unread: 1, messages: [
       { id: 1, from: 'user', text: 'أبغى أطلب طلبين من العرض', time: '9:10 ص' },
-    ]},
+    ], pendingSuggestion: { text: 'حياك الله نورة، تقدرين تطلبين الطلبين مباشرة من خلال الرابط في البايو، وبانتظار طلبك 🌹' } },
   ],
   whatsapp: [
     { id: 'w1', name: '+966 55 123 4567', online: false, unread: 3, messages: [
       { id: 1, from: 'user', text: 'وين وصل طلبي؟', time: '8:40 ص' },
-    ]},
+    ], pendingSuggestion: { text: 'حياكم الله، طلبكم في الطريق وسيصلكم خلال الساعتين القادمتين إن شاء الله 🚚' } },
   ],
   google: [
     { id: 'g1', name: 'خالد المطيري', online: false, unread: 1, messages: [
       { id: 1, from: 'user', text: 'تقييم 5 نجوم، خدمة ممتازة!', time: 'أمس' },
-    ]},
+    ], pendingSuggestion: { text: 'شكراً لك خالد على ثقتك وتقييمك الرائع، سعداء بخدمتك دائماً 🙏' } },
   ],
 };
 
 const SF_DEFAULT_SETTINGS: any = {
-  tiktok: { aiReply: false, notify: true, autoReplyComments: false },
-  instagram: { aiReply: false, notify: true, autoReplyComments: false },
-  whatsapp: { aiReply: false, notify: true, welcomeMessage: '' },
-  google: { aiReply: false, notify: true, autoReplyReviews: false },
+  tiktok: { replyMode: 'suggest', notify: true, autoReplyComments: false },
+  instagram: { replyMode: 'suggest', notify: true, autoReplyComments: false },
+  whatsapp: { replyMode: 'suggest', notify: true, welcomeMessage: '' },
+  google: { replyMode: 'suggest', notify: true, autoReplyReviews: false },
+};
+
+// إحصائيات تجريبية خاصة بكل منصة (تصنيف الرسائل بما يناسب طبيعة كل تطبيق) 🚀
+const SF_PROVIDER_STATS: any = {
+  tiktok: { commentsToday: 18, responseRate: 92 },
+  instagram: { commentsToday: 11, responseRate: 88 },
+  whatsapp: { avgReplyTime: '15 دقيقة' },
+  google: { totalReviews: 47, avgRating: 4.6, positive: 41, negative: 6 },
 };
 
 const SocialMediaHub = ({
@@ -954,6 +962,36 @@ const SocialMediaHub = ({
     </div>
   );
 
+  // شخصية موظف خدمة العملاء الافتراضية (نفس منطق موظف تقييمات قوقل) 🚀
+  const currentHour = new Date().getHours();
+  const isDayShift = currentHour >= 6 && currentHour < 18;
+  const sfStoreSettings = {
+    storeName: "أسماك المحيط / Asmak Al Mohit",
+    storePhone: "+966 50 000 0000",
+    dayEmployeeName: "نورة / Noura",
+    nightEmployeeName: "خالد / Khaled",
+  };
+  const sfAiEmployeeName = isDayShift ? sfStoreSettings.dayEmployeeName : sfStoreSettings.nightEmployeeName;
+  const sfAiEmployeeAvatar = isDayShift ? "👩‍💻" : "👨‍💻";
+
+  // بطاقة توقيع موظف الذكاء الاصطناعي (تظهر أسفل كل رد آلي) 🚀
+  const AiSignature = () => (
+    <div className="flex items-center gap-2.5 mt-2">
+      <div className="text-[26px] leading-none shrink-0">{sfAiEmployeeAvatar}</div>
+      <div className="flex flex-col gap-0.5">
+        <div className="flex items-center gap-1.5">
+          <span className="text-xs font-black text-blue-500 dark:text-blue-400">{sfAiEmployeeName}</span>
+          <span className="text-[10px] font-bold text-pink-500 dark:text-pink-400">({t.aiEmp})</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 bg-green-500 rounded-full shrink-0"></span>
+          <span className={`text-[10px] font-bold ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t.csTeam} ({sfStoreSettings.storeName})</span>
+        </div>
+        <span className={`text-[10px] font-bold ${isDark ? 'text-slate-400' : 'text-slate-500'}`} dir="ltr">{sfStoreSettings.storePhone}</span>
+      </div>
+    </div>
+  );
+
   // حالات واتساب وقوقل بزنس (مخصصة لهذا المركز) - محفوظة في التخزين المحلي 🚀
   const [isGoogleConnected, setIsGoogleConnected] = useState(() => sfReadLS('sf_google_connected', false));
   const [isConnectingGoogle, setIsConnectingGoogle] = useState(false);
@@ -963,7 +1001,6 @@ const SocialMediaHub = ({
   const [waInput, setWaInput] = useState("");
   const [showAddAccountModal, setShowAddAccountModal] = useState(false);
 
-  // حفظ حالة واتساب وقوقل بزنس تلقائياً عند أي تغيير 🚀
   useEffect(() => { sfWriteLS('sf_google_connected', isGoogleConnected); }, [isGoogleConnected]);
   useEffect(() => { sfWriteLS('sf_wa_connected', isWaConnected); sfWriteLS('sf_wa_phone', waPhone); }, [isWaConnected, waPhone]);
 
@@ -994,14 +1031,14 @@ const SocialMediaHub = ({
   const [conversations, setConversations] = useState<any>(SF_DEMO_CONVERSATIONS);
   const [inboxFilter, setInboxFilter] = useState('all');
   const [activeConversation, setActiveConversation] = useState<{ provider: string; id: string } | null>(null);
-  const [replyText, setReplyText] = useState("");
+  const [editingSuggestion, setEditingSuggestion] = useState<{ provider: string; id: string } | null>(null);
+  const [editSuggestionText, setEditSuggestionText] = useState("");
 
-  // إعدادات الرد الآلي لكل منصة - محفوظة في التخزين المحلي 🚀
-  const [appSettings, setAppSettings] = useState<any>(() => sfReadLS('sf_autoreply_settings', SF_DEFAULT_SETTINGS));
-  const [showSettingsModal, setShowSettingsModal] = useState(false);
-  const [settingsProvider, setSettingsProvider] = useState<string | null>(null);
+  // إعدادات كل منصة (وضع الرد + خيارات خاصة) - محفوظة في التخزين المحلي 🚀
+  const [appSettings, setAppSettings] = useState<any>(() => sfReadLS('sf_autoreply_settings_v2', SF_DEFAULT_SETTINGS));
+  const [activeChannelDetail, setActiveChannelDetail] = useState<string | null>(null);
 
-  useEffect(() => { sfWriteLS('sf_autoreply_settings', appSettings); }, [appSettings]);
+  useEffect(() => { sfWriteLS('sf_autoreply_settings_v2', appSettings); }, [appSettings]);
 
   const tabs = [
     { id: 'overview', name: t.tabOverview },
@@ -1034,7 +1071,6 @@ const SocialMediaHub = ({
     { provider: 'google', name: 'Google Business', status: isGoogleConnected ? 'connected' : 'disconnected' },
   ];
 
-  // إحصائيات النشاط لكل منصة (رسائل واردة / غير مقروء) 🚀
   const getProviderStats = (provider: string) => {
     const convs = conversations[provider] || [];
     const totalMessages = convs.reduce((sum: number, c: any) => sum + c.messages.length, 0);
@@ -1042,7 +1078,6 @@ const SocialMediaHub = ({
     return { totalMessages, unread };
   };
 
-  // دالة موحدة لبدء ربط أي منصة 🚀
   const handleConnectProvider = (provider: string) => {
     if (provider === 'tiktok') return handleConnectTikTok();
     if (provider === 'instagram') return handleConnectInstagram();
@@ -1053,7 +1088,6 @@ const SocialMediaHub = ({
     }
   };
 
-  // دالة موحدة لفصل أي منصة 🚀
   const handleDisconnectProvider = (provider: string) => {
     if (!window.confirm(t.disconnectConfirm)) return;
     if (provider === 'tiktok') { setIsTkConnected(false); setTkUsername(""); setTkAvatar(""); }
@@ -1095,30 +1129,44 @@ const SocialMediaHub = ({
     setScheduleTime("");
   };
 
-  // فتح محادثة معينة وتصفيرها من غير المقروء 🚀
+  // فتح محادثة: إن كانت المنصة بوضع "تلقائي" يُنشر الرد المقترح فوراً، وإلا يبقى بانتظار المراجعة 🚀
   const openConversation = (provider: string, id: string) => {
     setActiveConversation({ provider, id });
     setConversations((prev: any) => ({
       ...prev,
-      [provider]: prev[provider].map((c: any) => c.id === id ? { ...c, unread: 0 } : c),
+      [provider]: prev[provider].map((c: any) => {
+        if (c.id !== id) return c;
+        let updated = { ...c, unread: 0 };
+        if (c.pendingSuggestion && appSettings[provider]?.replyMode === 'auto') {
+          updated = {
+            ...updated,
+            messages: [...c.messages, { id: Date.now(), from: 'ai', text: c.pendingSuggestion.text, time: 'الآن' }],
+            pendingSuggestion: null,
+          };
+        }
+        return updated;
+      }),
     }));
   };
 
-  const handleSendReply = () => {
-    if (!replyText.trim() || !activeConversation) return;
-    const { provider, id } = activeConversation;
+  const handleApproveSuggestion = (provider: string, id: string, textOverride?: string) => {
     setConversations((prev: any) => ({
       ...prev,
       [provider]: prev[provider].map((c: any) => c.id === id
-        ? { ...c, messages: [...c.messages, { id: Date.now(), from: 'me', text: replyText.trim(), time: 'الآن' }] }
+        ? { ...c, messages: [...c.messages, { id: Date.now(), from: 'ai', text: textOverride ?? c.pendingSuggestion?.text, time: 'الآن' }], pendingSuggestion: null }
         : c),
     }));
-    setReplyText("");
+    setEditingSuggestion(null);
   };
 
-  const openSettings = (provider: string) => {
-    setSettingsProvider(provider);
-    setShowSettingsModal(true);
+  const startEditSuggestion = (provider: string, id: string, currentText: string) => {
+    setEditingSuggestion({ provider, id });
+    setEditSuggestionText(currentText);
+  };
+
+  const submitEditedSuggestion = () => {
+    if (!editingSuggestion || !editSuggestionText.trim()) return;
+    handleApproveSuggestion(editingSuggestion.provider, editingSuggestion.id, editSuggestionText.trim());
   };
 
   const updateProviderSetting = (provider: string, key: string, value: any) => {
@@ -1133,6 +1181,25 @@ const SocialMediaHub = ({
     ? (conversations[activeConversation.provider] || []).find((c: any) => c.id === activeConversation.id)
     : null;
 
+  // ====== زر تبويب بحافة "ليزر" متوهجة عند التفعيل (نفس أسلوب شعار SmartFlow) 🚀 ======
+  const LaserTab = ({ tab }: any) => {
+    const isActive = activeTab === tab.id;
+    if (isActive) {
+      return (
+        <button onClick={() => setActiveTab(tab.id)} className="relative rounded-xl p-[2px] bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 animate-pulse shadow-[0_0_14px_rgba(168,85,247,0.5)] shrink-0">
+          <span className={`block px-4 py-2 rounded-[10px] text-sm font-black whitespace-nowrap ${isDark ? 'bg-[#0f172a] text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400' : 'bg-white text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600'}`}>
+            {tab.name}
+          </span>
+        </button>
+      );
+    }
+    return (
+      <button onClick={() => setActiveTab(tab.id)} className={`px-4 py-2.5 rounded-xl text-sm font-bold whitespace-nowrap border transition-colors shrink-0 ${isDark ? 'border-slate-800 text-slate-400 hover:text-slate-200 hover:border-slate-700' : 'border-slate-200 text-slate-500 hover:text-slate-800 hover:border-slate-300'}`}>
+        {tab.name}
+      </button>
+    );
+  };
+
   return (
     <div className={`w-full max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 animate-in fade-in zoom-in duration-500 ${t.dir === 'ltr' ? 'text-left' : 'text-right'} ${isDark ? 'text-white' : 'text-slate-900'}`}>
       
@@ -1146,29 +1213,15 @@ const SocialMediaHub = ({
         </p>
       </div>
 
-      {/* Tabs Navigation */}
-      <div className={`border-b mb-6 ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
-        <nav className="flex space-x-6 space-x-reverse overflow-x-auto no-scrollbar">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`pb-4 text-sm font-bold transition-colors whitespace-nowrap border-b-2 ${
-                activeTab === tab.id
-                  ? 'border-purple-500 text-purple-500'
-                  : 'border-transparent text-slate-400 hover:text-slate-300'
-              }`}
-            >
-              {tab.name}
-            </button>
-          ))}
-        </nav>
+      {/* Tabs Navigation - بتصميم الحواف المتوهجة 🚀 */}
+      <div className="flex flex-wrap items-center gap-2.5 mb-6 pb-2">
+        {tabs.map((tab) => <LaserTab key={tab.id} tab={tab} />)}
       </div>
 
       {/* Content Area */}
       <div className="animate-in fade-in slide-in-from-bottom-4 duration-300">
         
-        {/* Tab: Overview - يعرض نشاط كل حساب بدل الوصف الثابت 🚀 */}
+        {/* Tab: Overview - يعرض نشاط كل حساب، بلا زر فصل 🚀 */}
         {activeTab === 'overview' && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {connections.map((conn) => {
@@ -1184,7 +1237,7 @@ const SocialMediaHub = ({
                   </div>
 
                   {conn.status === 'connected' ? (
-                    <div className="grid grid-cols-2 gap-2 mb-4">
+                    <div className="grid grid-cols-2 gap-2">
                       <div className={`rounded-xl p-3 text-center ${isDark ? 'bg-slate-800/60' : 'bg-slate-50'}`}>
                         <p className="text-lg font-black">{stats.totalMessages}</p>
                         <p className={`text-[11px] font-bold ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>رسالة واردة</p>
@@ -1195,13 +1248,11 @@ const SocialMediaHub = ({
                       </div>
                     </div>
                   ) : (
-                    <p className={`text-xs mb-4 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>اربط الحساب لعرض النشاط والرسائل الواردة</p>
+                    <p className={`text-xs mb-1 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>اربط الحساب لعرض النشاط والرسائل الواردة</p>
                   )}
 
-                  {conn.status === 'connected' ? (
-                    <button onClick={() => handleDisconnectProvider(conn.provider)} className="text-xs font-bold text-red-500 hover:text-red-400 self-start">فصل الحساب</button>
-                  ) : (
-                    <button onClick={() => handleConnectProvider(conn.provider)} className="text-xs font-bold text-blue-500 bg-blue-500/10 hover:bg-blue-500/20 px-3 py-1.5 rounded-lg transition-colors self-start">ربط الحساب</button>
+                  {conn.status !== 'connected' && (
+                    <button onClick={() => handleConnectProvider(conn.provider)} className="text-xs font-bold text-blue-500 bg-blue-500/10 hover:bg-blue-500/20 px-3 py-1.5 rounded-lg transition-colors self-start mt-4">ربط الحساب</button>
                   )}
                 </div>
               );
@@ -1264,7 +1315,6 @@ const SocialMediaHub = ({
               </button>
             </div>
 
-            {/* رفع ميديا خارجية للجدولة 🚀 */}
             <div className={`rounded-2xl border p-6 ${isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-white border-slate-200'}`}>
               <h3 className="text-lg font-bold mb-1 flex items-center gap-2"><UploadCloud size={20} className="text-blue-500" /> رفع صورة أو فيديو للجدولة</h3>
               <p className={`text-xs mb-4 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>ارفع ملف ميديا جاهز من جهازك (صورة أو فيديو) وحدد موعد نشره على أي منصة متصلة.</p>
@@ -1296,7 +1346,6 @@ const SocialMediaHub = ({
                     {connections.map((c) => <option key={c.provider} value={c.provider}>{c.name}</option>)}
                   </select>
 
-                  {/* ================= شكل التاريخ والوقت الاحترافي (لا يظهر التقويم إلا عند الضغط) ================= */}
                   <div className="flex gap-3">
                     <div className="relative flex-1 group cursor-pointer" onClick={() => { try { dateRef.current?.showPicker(); } catch (e) {} }}>
                       <div className={`w-full border rounded-xl px-4 py-3 text-sm transition-all flex items-center justify-between group-hover:border-purple-500 shadow-sm overflow-hidden ${isDark ? 'bg-slate-800/60 border-slate-700 text-slate-300' : 'bg-white border-slate-200 text-slate-900'}`}>
@@ -1336,7 +1385,6 @@ const SocialMediaHub = ({
                       />
                     </div>
                   </div>
-                  {/* ================= نهاية شكل التاريخ والوقت ================= */}
 
                   <button onClick={handleAddToSchedule} disabled={!scheduleMediaFile || !scheduleDate || !scheduleTime} className="w-full bg-blue-600 hover:bg-blue-500 disabled:opacity-40 disabled:cursor-not-allowed text-white px-4 py-2.5 rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2">
                     <CalendarRange size={16} /> جدولة المنشور
@@ -1375,14 +1423,130 @@ const SocialMediaHub = ({
           </div>
         )}
 
-        {/* Tab: Inbox - موحد لكل المنصات مع الرد المباشر 🚀 */}
+        {/* Tab: Inbox - رد آلي بالكامل أو اقتراح + مراجعة، بلا كتابة يدوية حرة 🚀 */}
         {activeTab === 'inbox' && (
+          activeChannelDetail ? (
+            // ============ صفحة تفاصيل القناة المستقلة ============
+            (() => {
+              const provider = activeChannelDetail;
+              const conn = connections.find((c) => c.provider === provider)!;
+              const settings = appSettings[provider] || {};
+              const pStats = SF_PROVIDER_STATS[provider] || {};
+              const gStats = getProviderStats(provider);
+              return (
+                <div className="space-y-6">
+                  <button onClick={() => setActiveChannelDetail(null)} className={`flex items-center gap-1.5 text-sm font-bold ${isDark ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'}`}>
+                    <ChevronRight size={16} className={t.dir === 'rtl' ? '' : 'rotate-180'} /> رجوع لصندوق الوارد
+                  </button>
+
+                  <div className={`p-5 rounded-2xl border flex items-center justify-between flex-wrap gap-3 ${isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
+                    <div className="flex items-center gap-3">
+                      <ProviderIcon provider={provider} size={44} />
+                      <div>
+                        <h2 className="text-lg font-bold">{conn.name}</h2>
+                        <StatusBadge status={conn.status} />
+                      </div>
+                    </div>
+                    {conn.status === 'connected' && (
+                      <button onClick={() => handleDisconnectProvider(provider)} className="text-sm font-bold px-4 py-1.5 rounded-lg bg-slate-800 text-white hover:bg-red-500/80 transition-colors">فصل الحساب</button>
+                    )}
+                  </div>
+
+                  {/* إحصائيات مخصصة لكل تطبيق 🚀 */}
+                  <div>
+                    <h3 className="text-sm font-black mb-3">إحصائيات {conn.name}</h3>
+                    {provider === 'google' ? (
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <div className={`rounded-xl p-4 text-center ${isDark ? 'bg-slate-800/60' : 'bg-slate-50'}`}>
+                          <p className="text-xl font-black">{pStats.totalReviews}</p>
+                          <p className={`text-[11px] font-bold ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>إجمالي التقييمات</p>
+                        </div>
+                        <div className={`rounded-xl p-4 text-center flex flex-col items-center ${isDark ? 'bg-slate-800/60' : 'bg-slate-50'}`}>
+                          <p className="text-xl font-black flex items-center gap-1">{pStats.avgRating} <Star size={14} className="fill-yellow-400 text-yellow-400" /></p>
+                          <p className={`text-[11px] font-bold ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>متوسط التقييم</p>
+                        </div>
+                        <div className={`rounded-xl p-4 text-center ${isDark ? 'bg-green-500/10' : 'bg-green-50'}`}>
+                          <p className="text-xl font-black text-green-500">{pStats.positive}</p>
+                          <p className="text-[11px] font-bold text-green-500/80">{t.positive}</p>
+                        </div>
+                        <div className={`rounded-xl p-4 text-center ${isDark ? 'bg-red-500/10' : 'bg-red-50'}`}>
+                          <p className="text-xl font-black text-red-500">{pStats.negative}</p>
+                          <p className="text-[11px] font-bold text-red-500/80">{t.negative}</p>
+                        </div>
+                      </div>
+                    ) : provider === 'whatsapp' ? (
+                      <div className="grid grid-cols-3 gap-3">
+                        <div className={`rounded-xl p-4 text-center ${isDark ? 'bg-slate-800/60' : 'bg-slate-50'}`}><p className="text-xl font-black">{gStats.totalMessages}</p><p className={`text-[11px] font-bold ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>رسالة واردة</p></div>
+                        <div className={`rounded-xl p-4 text-center ${isDark ? 'bg-red-500/10' : 'bg-red-50'}`}><p className="text-xl font-black text-red-500">{gStats.unread}</p><p className="text-[11px] font-bold text-red-500/80">غير مقروء</p></div>
+                        <div className={`rounded-xl p-4 text-center ${isDark ? 'bg-slate-800/60' : 'bg-slate-50'}`}><p className="text-xl font-black">{pStats.avgReplyTime}</p><p className={`text-[11px] font-bold ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>متوسط وقت الرد</p></div>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <div className={`rounded-xl p-4 text-center ${isDark ? 'bg-slate-800/60' : 'bg-slate-50'}`}><p className="text-xl font-black">{gStats.totalMessages}</p><p className={`text-[11px] font-bold ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>رسالة واردة</p></div>
+                        <div className={`rounded-xl p-4 text-center ${isDark ? 'bg-red-500/10' : 'bg-red-50'}`}><p className="text-xl font-black text-red-500">{gStats.unread}</p><p className="text-[11px] font-bold text-red-500/80">غير مقروء</p></div>
+                        <div className={`rounded-xl p-4 text-center ${isDark ? 'bg-slate-800/60' : 'bg-slate-50'}`}><p className="text-xl font-black">{pStats.commentsToday}</p><p className={`text-[11px] font-bold ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>تعليق اليوم</p></div>
+                        <div className={`rounded-xl p-4 text-center ${isDark ? 'bg-green-500/10' : 'bg-green-50'}`}><p className="text-xl font-black text-green-500">%{pStats.responseRate}</p><p className="text-[11px] font-bold text-green-500/80">معدل الاستجابة</p></div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* إعدادات وضع الرد 🚀 */}
+                  <div>
+                    <h3 className="text-sm font-black mb-3">إعدادات الرد</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <button onClick={() => updateProviderSetting(provider, 'replyMode', 'auto')} className={`p-4 rounded-2xl border text-right transition-colors ${settings.replyMode === 'auto' ? 'border-purple-500 bg-purple-500/10' : (isDark ? 'border-slate-800 bg-slate-900/50' : 'border-slate-200 bg-white')}`}>
+                        <div className="flex items-center gap-2 mb-1"><Zap size={18} className={settings.replyMode === 'auto' ? 'text-purple-500' : 'text-slate-400'} /><span className="font-bold text-sm">رد تلقائي بالكامل</span></div>
+                        <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>يرسل الذكاء الاصطناعي الرد فور وصول الرسالة دون أي تدخل.</p>
+                      </button>
+                      <button onClick={() => updateProviderSetting(provider, 'replyMode', 'suggest')} className={`p-4 rounded-2xl border text-right transition-colors ${settings.replyMode === 'suggest' ? 'border-purple-500 bg-purple-500/10' : (isDark ? 'border-slate-800 bg-slate-900/50' : 'border-slate-200 bg-white')}`}>
+                        <div className="flex items-center gap-2 mb-1"><Edit size={18} className={settings.replyMode === 'suggest' ? 'text-purple-500' : 'text-slate-400'} /><span className="font-bold text-sm">اقتراح رد بانتظار المراجعة</span></div>
+                        <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>يجهز الذكاء الاصطناعي رداً مقترحاً، وتقوم أنت باعتماده أو تعديله قبل الإرسال.</p>
+                      </button>
+                    </div>
+
+                    <div className={`flex items-center justify-between p-3 rounded-xl border mt-3 ${isDark ? 'border-slate-800 bg-slate-800/40' : 'border-slate-200 bg-slate-50'}`}>
+                      <div>
+                        <p className="text-sm font-bold flex items-center gap-2"><Bell size={16} className="text-orange-500" /> تنبيه عند وصول رسالة جديدة</p>
+                      </div>
+                      <ToggleSwitch isOn={!!settings.notify} onToggle={() => updateProviderSetting(provider, 'notify', !settings.notify)} />
+                    </div>
+
+                    {(provider === 'tiktok' || provider === 'instagram') && (
+                      <div className={`flex items-center justify-between p-3 rounded-xl border mt-3 ${isDark ? 'border-slate-800 bg-slate-800/40' : 'border-slate-200 bg-slate-50'}`}>
+                        <div>
+                          <p className="text-sm font-bold flex items-center gap-2"><MessageCircle size={16} className="text-blue-500" /> الرد التلقائي على التعليقات العامة</p>
+                        </div>
+                        <ToggleSwitch isOn={!!settings.autoReplyComments} onToggle={() => updateProviderSetting(provider, 'autoReplyComments', !settings.autoReplyComments)} />
+                      </div>
+                    )}
+                    {provider === 'google' && (
+                      <div className={`flex items-center justify-between p-3 rounded-xl border mt-3 ${isDark ? 'border-slate-800 bg-slate-800/40' : 'border-slate-200 bg-slate-50'}`}>
+                        <div>
+                          <p className="text-sm font-bold flex items-center gap-2"><Star size={16} className="text-yellow-500" /> الرد التلقائي على التقييمات</p>
+                        </div>
+                        <ToggleSwitch isOn={!!settings.autoReplyReviews} onToggle={() => updateProviderSetting(provider, 'autoReplyReviews', !settings.autoReplyReviews)} />
+                      </div>
+                    )}
+                    {provider === 'google' && (
+                      <button onClick={() => setActiveView('reviews')} className="w-full mt-3 text-sm font-bold text-blue-500 bg-blue-500/10 hover:bg-blue-500/20 px-4 py-2.5 rounded-xl transition-colors">فتح لوحة تقييمات قوقل ماب الكاملة</button>
+                    )}
+                    {provider === 'whatsapp' && (
+                      <div className={`p-3 rounded-xl border mt-3 ${isDark ? 'border-slate-800 bg-slate-800/40' : 'border-slate-200 bg-slate-50'}`}>
+                        <p className="text-sm font-bold flex items-center gap-2 mb-2"><MessageCircle size={16} className="text-green-500" /> رسالة الترحيب التلقائية</p>
+                        <textarea value={settings.welcomeMessage || ''} onChange={(e: any) => updateProviderSetting('whatsapp', 'welcomeMessage', e.target.value)} placeholder="مرحباً بك، كيف يمكننا خدمتك اليوم؟" rows={2} className={`w-full p-2.5 rounded-lg text-sm outline-none border resize-none ${isDark ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-slate-200'}`} />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })()
+          ) : (
           <div className="space-y-6">
             <div>
               <h3 className="text-lg font-bold mb-4">قنوات صندوق الوارد</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {connections.map((conn) => (
-                  <div key={conn.provider} onClick={() => openSettings(conn.provider)} className={`p-4 rounded-2xl border flex items-center justify-between gap-3 cursor-pointer transition-colors ${isDark ? 'bg-slate-900/50 border-slate-800 hover:border-purple-500/50' : 'bg-white border-slate-200 shadow-sm hover:border-purple-300'}`}>
+                  <div key={conn.provider} onClick={() => setActiveChannelDetail(conn.provider)} className={`p-4 rounded-2xl border flex items-center justify-between gap-3 cursor-pointer transition-colors ${isDark ? 'bg-slate-900/50 border-slate-800 hover:border-purple-500/50' : 'bg-white border-slate-200 shadow-sm hover:border-purple-300'}`}>
                     <div className="flex items-center gap-3">
                       <ProviderIcon provider={conn.provider} size={32} />
                       <div>
@@ -1398,7 +1562,7 @@ const SocialMediaHub = ({
                   </div>
                 ))}
               </div>
-              <p className={`text-xs mt-2 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>اضغط على أي بطاقة لضبط إعدادات الرد الآلي بالذكاء الاصطناعي الخاصة بها.</p>
+              <p className={`text-xs mt-2 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>اضغط على أي بطاقة لفتح صفحة إعدادات وإحصائيات التطبيق الخاصة بها.</p>
             </div>
 
             {flattenedConversations.length === 0 ? (
@@ -1409,7 +1573,6 @@ const SocialMediaHub = ({
               </div>
             ) : (
               <div className={`rounded-2xl border overflow-hidden ${isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-white border-slate-200'}`}>
-                {/* فلتر اختيار المنصة */}
                 <div className={`flex items-center gap-2 p-3 border-b overflow-x-auto no-scrollbar ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
                   <button onClick={() => setInboxFilter('all')} className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-colors ${inboxFilter === 'all' ? 'bg-purple-500/20 text-purple-500' : (isDark ? 'text-slate-400 hover:bg-slate-800' : 'text-slate-600 hover:bg-slate-100')}`}>الكل</button>
                   {connections.filter((c) => c.status === 'connected').map((c) => (
@@ -1420,8 +1583,7 @@ const SocialMediaHub = ({
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-5">
-                  {/* قائمة المحادثات */}
-                  <div className={`md:col-span-2 border-b md:border-b-0 md:border-l divide-y max-h-[420px] overflow-y-auto ${isDark ? 'border-slate-800 divide-slate-800' : 'border-slate-200 divide-slate-100'}`}>
+                  <div className={`md:col-span-2 border-b md:border-b-0 md:border-l divide-y max-h-[520px] overflow-y-auto ${isDark ? 'border-slate-800 divide-slate-800' : 'border-slate-200 divide-slate-100'}`}>
                     {flattenedConversations.map((conv: any) => {
                       const lastMsg = conv.messages[conv.messages.length - 1];
                       const isActive = activeConversation?.provider === conv.provider && activeConversation?.id === conv.id;
@@ -1444,11 +1606,10 @@ const SocialMediaHub = ({
                     })}
                   </div>
 
-                  {/* نافذة المحادثة والرد */}
-                  <div className="md:col-span-3 flex flex-col h-[420px]">
+                  <div className="md:col-span-3 flex flex-col max-h-[520px]">
                     {activeConvData ? (
                       <>
-                        <div className={`p-3 border-b flex items-center gap-3 ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
+                        <div className={`p-3 border-b flex items-center gap-3 shrink-0 ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
                           <div className="relative shrink-0">
                             <div className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm ${isDark ? 'bg-slate-700 text-white' : 'bg-slate-200 text-slate-700'}`}>{activeConvData.name[0]}</div>
                             <div className={`absolute -bottom-0.5 -left-0.5 w-3 h-3 rounded-full border-2 ${isDark ? 'border-slate-900' : 'border-white'} ${activeConvData.online ? 'bg-green-500' : 'bg-slate-400'}`}></div>
@@ -1458,34 +1619,59 @@ const SocialMediaHub = ({
                             <p className={`text-[11px] ${activeConvData.online ? 'text-green-500' : (isDark ? 'text-slate-500' : 'text-slate-400')}`}>{activeConvData.online ? 'متصل الآن' : 'غير متصل'}</p>
                           </div>
                         </div>
-                        <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                        <div className="flex-1 overflow-y-auto p-4 space-y-4">
                           {activeConvData.messages.map((msg: any) => (
-                            <div key={msg.id} className={`flex ${msg.from === 'me' ? 'justify-end' : 'justify-start'}`}>
-                              <div className={`max-w-[75%] px-4 py-2 rounded-2xl text-sm ${msg.from === 'me' ? 'bg-purple-600 text-white rounded-br-sm' : (isDark ? 'bg-slate-800 text-white rounded-bl-sm' : 'bg-slate-100 text-slate-900 rounded-bl-sm')}`}>
+                            <div key={msg.id} className={`flex flex-col ${msg.from !== 'user' ? 'items-end' : 'items-start'}`}>
+                              <div className={`max-w-[85%] px-4 py-2 rounded-2xl text-sm ${msg.from !== 'user' ? 'bg-purple-600 text-white rounded-br-sm' : (isDark ? 'bg-slate-800 text-white rounded-bl-sm' : 'bg-slate-100 text-slate-900 rounded-bl-sm')}`}>
                                 <p>{msg.text}</p>
-                                <p className={`text-[10px] mt-1 ${msg.from === 'me' ? 'text-purple-200' : 'text-slate-400'}`}>{msg.time}</p>
+                                <p className={`text-[10px] mt-1 ${msg.from !== 'user' ? 'text-purple-200' : 'text-slate-400'}`}>{msg.time}</p>
                               </div>
+                              {msg.from === 'ai' && <div className="max-w-[85%]"><AiSignature /></div>}
                             </div>
                           ))}
-                        </div>
-                        <div className={`p-3 border-t flex items-center gap-2 ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
-                          <input
-                            type="text"
-                            value={replyText}
-                            onChange={(e: any) => setReplyText(e.target.value)}
-                            onKeyDown={(e: any) => { if (e.key === 'Enter') handleSendReply(); }}
-                            placeholder="اكتب ردك هنا..."
-                            className={`flex-1 p-2.5 rounded-xl text-sm outline-none border ${isDark ? 'bg-slate-800/60 border-slate-700 text-white' : 'bg-white border-slate-200'}`}
-                          />
-                          <button onClick={handleSendReply} disabled={!replyText.trim()} className="bg-purple-600 hover:bg-purple-500 disabled:opacity-40 text-white p-2.5 rounded-xl transition-colors">
-                            <Send size={18} />
-                          </button>
+
+                          {/* بطاقة الرد المقترح بانتظار المراجعة - نفس أسلوب تقييمات قوقل 🚀 */}
+                          {activeConvData.pendingSuggestion && appSettings[activeConvData.provider]?.replyMode === 'suggest' && (
+                            <div className={`rounded-2xl border p-4 ${isDark ? 'bg-blue-950/20 border-blue-900/30' : 'bg-blue-50/50 border-blue-100'}`}>
+                              <div className="flex justify-between items-start mb-3 gap-2 border-b border-blue-500/10 pb-2">
+                                <h4 className={`text-xs font-black flex items-center gap-2 ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>
+                                  <Bot size={16} /> {t.aiReplyTitle}
+                                </h4>
+                                <span className="text-xs font-bold text-orange-500 bg-orange-500/10 px-2.5 py-1 rounded-lg border border-orange-500/20 flex items-center gap-1.5 whitespace-nowrap">
+                                  <Info size={14}/> {t.draftReview}
+                                </span>
+                              </div>
+
+                              {editingSuggestion?.provider === activeConvData.provider && editingSuggestion?.id === activeConvData.id ? (
+                                <div className="space-y-2">
+                                  <textarea value={editSuggestionText} onChange={(e: any) => setEditSuggestionText(e.target.value)} rows={3} className={`w-full p-2.5 rounded-lg text-sm outline-none border resize-none ${isDark ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-slate-200'}`} />
+                                  <div className="flex gap-2">
+                                    <button onClick={submitEditedSuggestion} className="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-xl text-sm font-bold transition-all">إرسال الرد المعدّل</button>
+                                    <button onClick={() => setEditingSuggestion(null)} className={`flex-1 py-2 rounded-xl text-sm font-bold border transition-all ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}>إلغاء</button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <>
+                                  <p className="text-sm font-medium leading-relaxed mb-3">{activeConvData.pendingSuggestion.text}</p>
+                                  <AiSignature />
+                                  <div className="flex gap-2 mt-4">
+                                    <button onClick={() => handleApproveSuggestion(activeConvData.provider, activeConvData.id)} className="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-xl text-sm font-bold transition-all">{t.approvePublish}</button>
+                                    <button onClick={() => startEditSuggestion(activeConvData.provider, activeConvData.id, activeConvData.pendingSuggestion.text)} className={`flex-1 py-2 rounded-xl text-sm font-bold border transition-all ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}>{t.editReply}</button>
+                                  </div>
+                                </>
+                              )}
+                            </div>
+                          )}
+
+                          {!activeConvData.pendingSuggestion && (
+                            <p className={`text-center text-xs font-bold ${isDark ? 'text-slate-600' : 'text-slate-400'}`}>لا توجد رسائل جديدة بانتظار الرد</p>
+                          )}
                         </div>
                       </>
                     ) : (
                       <div className="flex-1 flex flex-col items-center justify-center text-center p-6">
                         <MessageCircle size={36} className="text-slate-400 mb-3 opacity-50" />
-                        <p className={`text-sm font-bold ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>اختر محادثة من القائمة للرد عليها</p>
+                        <p className={`text-sm font-bold ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>اختر محادثة من القائمة لعرض الرد عليها</p>
                       </div>
                     )}
                   </div>
@@ -1493,6 +1679,7 @@ const SocialMediaHub = ({
               </div>
             )}
           </div>
+          )
         )}
 
         {activeTab === 'analytics' && (
@@ -1544,67 +1731,6 @@ const SocialMediaHub = ({
             <input type="tel" required value={waInput} onChange={(e: any) => setWaInput(e.target.value)} placeholder="+966 5X XXX XXXX" className={`w-full p-3 rounded-xl text-sm outline-none border mb-4 ${isDark ? 'bg-slate-800/60 border-slate-700 text-white' : 'bg-white border-slate-200'}`} />
             <button type="submit" className="w-full bg-green-600 hover:bg-green-500 text-white px-4 py-2.5 rounded-xl text-sm font-bold transition-colors">تأكيد الربط</button>
           </form>
-        </div>
-      )}
-
-      {/* Modal: إعدادات الرد الآلي الخاصة بكل تطبيق 🚀 */}
-      {showSettingsModal && settingsProvider && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" onClick={() => setShowSettingsModal(false)}>
-          <div onClick={(e: any) => e.stopPropagation()} className={`w-full max-w-md rounded-2xl border p-6 ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
-            <div className="flex justify-between items-center mb-1">
-              <div className="flex items-center gap-3">
-                <ProviderIcon provider={settingsProvider} size={36} />
-                <h3 className="font-bold text-lg">{SOCIAL_PROVIDER_META[settingsProvider].label}</h3>
-              </div>
-              <button onClick={() => setShowSettingsModal(false)}><X size={20} /></button>
-            </div>
-            <div className="mb-4"><StatusBadge status={connections.find((c) => c.provider === settingsProvider)?.status || 'disconnected'} /></div>
-
-            <div className="space-y-4">
-              <div className={`flex items-center justify-between p-3 rounded-xl border ${isDark ? 'border-slate-800 bg-slate-800/40' : 'border-slate-200 bg-slate-50'}`}>
-                <div>
-                  <p className="text-sm font-bold flex items-center gap-2"><Bot size={16} className="text-purple-500" /> الرد التلقائي بالذكاء الاصطناعي</p>
-                  <p className={`text-[11px] mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>الرد على رسائل العملاء تلقائياً دون تدخل يدوي</p>
-                </div>
-                <ToggleSwitch isOn={!!appSettings[settingsProvider]?.aiReply} onToggle={() => updateProviderSetting(settingsProvider, 'aiReply', !appSettings[settingsProvider]?.aiReply)} />
-              </div>
-
-              <div className={`flex items-center justify-between p-3 rounded-xl border ${isDark ? 'border-slate-800 bg-slate-800/40' : 'border-slate-200 bg-slate-50'}`}>
-                <div>
-                  <p className="text-sm font-bold flex items-center gap-2"><Bell size={16} className="text-orange-500" /> تنبيه عند وصول رسالة جديدة</p>
-                  <p className={`text-[11px] mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>إشعار فوري بأي رسالة أو تعليق جديد</p>
-                </div>
-                <ToggleSwitch isOn={!!appSettings[settingsProvider]?.notify} onToggle={() => updateProviderSetting(settingsProvider, 'notify', !appSettings[settingsProvider]?.notify)} />
-              </div>
-
-              {(settingsProvider === 'tiktok' || settingsProvider === 'instagram') && (
-                <div className={`flex items-center justify-between p-3 rounded-xl border ${isDark ? 'border-slate-800 bg-slate-800/40' : 'border-slate-200 bg-slate-50'}`}>
-                  <div>
-                    <p className="text-sm font-bold flex items-center gap-2"><MessageCircle size={16} className="text-blue-500" /> الرد التلقائي على التعليقات العامة</p>
-                    <p className={`text-[11px] mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>الرد على تعليقات المنشورات وليس فقط الرسائل الخاصة</p>
-                  </div>
-                  <ToggleSwitch isOn={!!appSettings[settingsProvider]?.autoReplyComments} onToggle={() => updateProviderSetting(settingsProvider, 'autoReplyComments', !appSettings[settingsProvider]?.autoReplyComments)} />
-                </div>
-              )}
-
-              {settingsProvider === 'google' && (
-                <div className={`flex items-center justify-between p-3 rounded-xl border ${isDark ? 'border-slate-800 bg-slate-800/40' : 'border-slate-200 bg-slate-50'}`}>
-                  <div>
-                    <p className="text-sm font-bold flex items-center gap-2"><Star size={16} className="text-yellow-500" /> الرد التلقائي على التقييمات</p>
-                    <p className={`text-[11px] mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>الرد الفوري على تقييمات العملاء على خرائط قوقل</p>
-                  </div>
-                  <ToggleSwitch isOn={!!appSettings[settingsProvider]?.autoReplyReviews} onToggle={() => updateProviderSetting(settingsProvider, 'autoReplyReviews', !appSettings[settingsProvider]?.autoReplyReviews)} />
-                </div>
-              )}
-
-              {settingsProvider === 'whatsapp' && (
-                <div className={`p-3 rounded-xl border ${isDark ? 'border-slate-800 bg-slate-800/40' : 'border-slate-200 bg-slate-50'}`}>
-                  <p className="text-sm font-bold flex items-center gap-2 mb-2"><MessageCircle size={16} className="text-green-500" /> رسالة الترحيب التلقائية</p>
-                  <textarea value={appSettings.whatsapp?.welcomeMessage || ''} onChange={(e: any) => updateProviderSetting('whatsapp', 'welcomeMessage', e.target.value)} placeholder="مرحباً بك، كيف يمكننا خدمتك اليوم؟" rows={2} className={`w-full p-2.5 rounded-lg text-sm outline-none border resize-none ${isDark ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-slate-200'}`} />
-                </div>
-              )}
-            </div>
-          </div>
         </div>
       )}
 
