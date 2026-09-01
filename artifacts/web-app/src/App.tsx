@@ -522,7 +522,7 @@ const PendingScreen = ({ isDark, t, checkStatus, isChecking }: any) => {
           {t.pendingDesc}
         </p>
         <div className="flex flex-col gap-3">
-          <button onClick={checkStatus} disabled={isChecking} className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3.5 rounded-xl transition-all flex justify-center items-center gap-2">
+          <button onClick={checkStatus} disabled={isChecking} className="w-full bg-[#06AFCE] hover:bg-[#06C6EA] text-white font-bold py-3.5 rounded-xl transition-all flex justify-center items-center gap-2">
             {isChecking ? <Loader2 size={18} className="animate-spin" /> : <Activity size={18} />}
             {isChecking ? t.updating : t.pendingRefresh}
           </button>
@@ -980,7 +980,7 @@ const SocialMediaHub = ({
       <div className="text-[26px] leading-none shrink-0">{sfAiEmployeeAvatar}</div>
       <div className="flex flex-col gap-0.5">
         <div className="flex items-center gap-1.5">
-          <span className="text-xs font-black text-blue-500 dark:text-blue-400">{sfAiEmployeeName}</span>
+          <span className="text-xs font-black text-[#06C6EA] dark:text-[#67e2f5]">{sfAiEmployeeName}</span>
           <span className="text-[10px] font-bold text-pink-500 dark:text-pink-400">({t.aiEmp})</span>
         </div>
         <div className="flex items-center gap-1.5">
@@ -1186,8 +1186,8 @@ const SocialMediaHub = ({
     const isActive = activeTab === tab.id;
     if (isActive) {
       return (
-        <button onClick={() => setActiveTab(tab.id)} className="relative rounded-xl p-[2px] bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 animate-pulse shadow-[0_0_14px_rgba(168,85,247,0.5)] shrink-0">
-          <span className={`block px-4 py-2 rounded-[10px] text-sm font-black whitespace-nowrap ${isDark ? 'bg-[#0f172a] text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400' : 'bg-white text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600'}`}>
+        <button onClick={() => setActiveTab(tab.id)} className="relative rounded-xl p-[2px] bg-gradient-to-r from-[#06C6EA] to-[#426CEA] animate-pulse shadow-[0_0_14px_rgba(66,108,234,0.5)] shrink-0">
+          <span className={`block px-4 py-2 rounded-[10px] text-sm font-black whitespace-nowrap ${isDark ? 'bg-[#0f172a] text-transparent bg-clip-text bg-gradient-to-r from-[#06C6EA] to-[#426CEA]' : 'bg-white text-transparent bg-clip-text bg-gradient-to-r from-[#06C6EA] to-[#426CEA]'}`}>
             {tab.name}
           </span>
         </button>
@@ -1205,7 +1205,7 @@ const SocialMediaHub = ({
       
       {/* Header */}
       <div className="flex flex-col space-y-2 mb-8">
-        <h1 className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-l from-blue-400 to-purple-500">
+        <h1 className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-l from-[#67e2f5] to-[#426CEA]">
           {t.socialHubTab}
         </h1>
         <p className={`font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
@@ -1252,7 +1252,7 @@ const SocialMediaHub = ({
                   )}
 
                   {conn.status !== 'connected' && (
-                    <button onClick={() => handleConnectProvider(conn.provider)} className="text-xs font-bold text-blue-500 bg-blue-500/10 hover:bg-blue-500/20 px-3 py-1.5 rounded-lg transition-colors self-start mt-4">ربط الحساب</button>
+                    <button onClick={() => handleConnectProvider(conn.provider)} className="text-xs font-bold text-[#06C6EA] bg-[#06C6EA]/10 hover:bg-[#06C6EA]/20 px-3 py-1.5 rounded-lg transition-colors self-start mt-4">ربط الحساب</button>
                   )}
                 </div>
               );
@@ -1265,7 +1265,7 @@ const SocialMediaHub = ({
           <div className="space-y-6">
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-bold">القنوات المتاحة</h2>
-              <button onClick={() => setShowAddAccountModal(true)} className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-lg hover:opacity-90 transition-opacity">
+              <button onClick={() => setShowAddAccountModal(true)} className="bg-gradient-to-r from-[#06AFCE] to-[#3557d1] text-white px-4 py-2 rounded-lg text-sm font-bold shadow-lg hover:opacity-90 transition-opacity">
                 + إضافة حساب
               </button>
             </div>
@@ -1290,7 +1290,7 @@ const SocialMediaHub = ({
                        <button onClick={() => handleDisconnectProvider(conn.provider)} className="text-sm font-bold px-4 py-1.5 rounded-lg bg-slate-800 text-white hover:bg-red-500/80 transition-colors">فصل الحساب</button>
                      )}
                      {conn.status === 'disconnected' && (
-                       <button onClick={() => handleConnectProvider(conn.provider)} disabled={isConnectingGoogle && conn.provider === 'google'} className="text-sm font-bold text-blue-500 bg-blue-500/10 hover:bg-blue-500/20 px-4 py-1.5 rounded-lg transition-colors flex items-center gap-2">
+                       <button onClick={() => handleConnectProvider(conn.provider)} disabled={isConnectingGoogle && conn.provider === 'google'} className="text-sm font-bold text-[#06C6EA] bg-[#06C6EA]/10 hover:bg-[#06C6EA]/20 px-4 py-1.5 rounded-lg transition-colors flex items-center gap-2">
                          {isConnectingGoogle && conn.provider === 'google' ? <Loader2 size={14} className="animate-spin" /> : null}
                          ربط الحساب
                        </button>
@@ -1305,18 +1305,18 @@ const SocialMediaHub = ({
         {/* Tab: Publishing */}
         {activeTab === 'publishing' && (
           <div className="space-y-6">
-            <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 bg-gradient-to-r from-blue-900/40 to-purple-900/40 border border-purple-500/20 rounded-2xl p-6">
+            <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 bg-gradient-to-r from-[#04303d]/40 to-[#16234f]/40 border border-[#426CEA]/20 rounded-2xl p-6">
               <div>
                 <h2 className="text-lg font-bold text-white">هل لديك فكرة جديدة؟</h2>
                 <p className="text-sm text-slate-300 mt-1">استخدم الاستوديو الذكي لإنشاء، صياغة، وجدولة محتواك.</p>
               </div>
-              <button onClick={() => setActiveView('studio')} className="bg-purple-600 hover:bg-purple-500 text-white px-6 py-2.5 rounded-xl text-sm font-bold transition-colors whitespace-nowrap">
+              <button onClick={() => setActiveView('studio')} className="bg-[#3557d1] hover:bg-[#426CEA] text-white px-6 py-2.5 rounded-xl text-sm font-bold transition-colors whitespace-nowrap">
                 + إنشاء منشور ذكي
               </button>
             </div>
 
             <div className={`rounded-2xl border p-6 ${isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-white border-slate-200'}`}>
-              <h3 className="text-lg font-bold mb-1 flex items-center gap-2"><UploadCloud size={20} className="text-blue-500" /> رفع صورة أو فيديو للجدولة</h3>
+              <h3 className="text-lg font-bold mb-1 flex items-center gap-2"><UploadCloud size={20} className="text-[#06C6EA]" /> رفع صورة أو فيديو للجدولة</h3>
               <p className={`text-xs mb-4 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>ارفع ملف ميديا جاهز من جهازك (صورة أو فيديو) وحدد موعد نشره على أي منصة متصلة.</p>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1348,11 +1348,11 @@ const SocialMediaHub = ({
 
                   <div className="flex gap-3">
                     <div className="relative flex-1 group cursor-pointer" onClick={() => { try { dateRef.current?.showPicker(); } catch (e) {} }}>
-                      <div className={`w-full border rounded-xl px-4 py-3 text-sm transition-all flex items-center justify-between group-hover:border-purple-500 shadow-sm overflow-hidden ${isDark ? 'bg-slate-800/60 border-slate-700 text-slate-300' : 'bg-white border-slate-200 text-slate-900'}`}>
-                        <span className={`${scheduleDate ? 'font-black text-purple-500' : 'opacity-60 font-bold'} font-sans tracking-wide whitespace-nowrap`} dir="ltr">
+                      <div className={`w-full border rounded-xl px-4 py-3 text-sm transition-all flex items-center justify-between group-hover:border-[#426CEA] shadow-sm overflow-hidden ${isDark ? 'bg-slate-800/60 border-slate-700 text-slate-300' : 'bg-white border-slate-200 text-slate-900'}`}>
+                        <span className={`${scheduleDate ? 'font-black text-[#426CEA]' : 'opacity-60 font-bold'} font-sans tracking-wide whitespace-nowrap`} dir="ltr">
                           {formatScheduleDate(scheduleDate)}
                         </span>
-                        <CalendarRange size={18} className={`shrink-0 ${scheduleDate ? 'text-purple-500' : 'text-slate-400'}`} />
+                        <CalendarRange size={18} className={`shrink-0 ${scheduleDate ? 'text-[#426CEA]' : 'text-slate-400'}`} />
                       </div>
                       <input
                         ref={dateRef}
@@ -1367,11 +1367,11 @@ const SocialMediaHub = ({
                     </div>
 
                     <div className="relative flex-1 group cursor-pointer" onClick={() => { try { timeRef.current?.showPicker(); } catch (e) {} }}>
-                      <div className={`w-full border rounded-xl px-4 py-3 text-sm transition-all flex items-center justify-between group-hover:border-purple-500 shadow-sm overflow-hidden ${isDark ? 'bg-slate-800/60 border-slate-700 text-slate-300' : 'bg-white border-slate-200 text-slate-900'}`}>
-                        <span className={`${scheduleTime ? 'font-black text-purple-500' : 'opacity-60 font-bold'} font-sans tracking-wide whitespace-nowrap`} dir="ltr">
+                      <div className={`w-full border rounded-xl px-4 py-3 text-sm transition-all flex items-center justify-between group-hover:border-[#426CEA] shadow-sm overflow-hidden ${isDark ? 'bg-slate-800/60 border-slate-700 text-slate-300' : 'bg-white border-slate-200 text-slate-900'}`}>
+                        <span className={`${scheduleTime ? 'font-black text-[#426CEA]' : 'opacity-60 font-bold'} font-sans tracking-wide whitespace-nowrap`} dir="ltr">
                           {scheduleTime || t.publishTime}
                         </span>
-                        <Clock size={18} className={`shrink-0 ${scheduleTime ? 'text-purple-500' : 'text-slate-400'}`} />
+                        <Clock size={18} className={`shrink-0 ${scheduleTime ? 'text-[#426CEA]' : 'text-slate-400'}`} />
                       </div>
                       <input
                         ref={timeRef}
@@ -1386,7 +1386,7 @@ const SocialMediaHub = ({
                     </div>
                   </div>
 
-                  <button onClick={handleAddToSchedule} disabled={!scheduleMediaFile || !scheduleDate || !scheduleTime} className="w-full bg-blue-600 hover:bg-blue-500 disabled:opacity-40 disabled:cursor-not-allowed text-white px-4 py-2.5 rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2">
+                  <button onClick={handleAddToSchedule} disabled={!scheduleMediaFile || !scheduleDate || !scheduleTime} className="w-full bg-[#06AFCE] hover:bg-[#06C6EA] disabled:opacity-40 disabled:cursor-not-allowed text-white px-4 py-2.5 rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2">
                     <CalendarRange size={16} /> جدولة المنشور
                   </button>
                 </div>
@@ -1412,7 +1412,7 @@ const SocialMediaHub = ({
                         <td className="px-6 py-4">{post.platform}</td>
                         <td className="px-6 py-4 text-slate-400">{post.time}</td>
                         <td className="px-6 py-4">
-                          <span className={`px-2.5 py-1 rounded-lg text-xs font-bold border ${post.statusColor === 'blue' ? 'text-blue-400 bg-blue-400/10 border-blue-500/20' : 'text-yellow-500 bg-yellow-500/10 border-yellow-500/20'}`}>{post.status}</span>
+                          <span className={`px-2.5 py-1 rounded-lg text-xs font-bold border ${post.statusColor === 'blue' ? 'text-[#67e2f5] bg-[#67e2f5]/10 border-[#06C6EA]/20' : 'text-yellow-500 bg-yellow-500/10 border-yellow-500/20'}`}>{post.status}</span>
                         </td>
                       </tr>
                     ))}
@@ -1494,12 +1494,12 @@ const SocialMediaHub = ({
                   <div>
                     <h3 className="text-sm font-black mb-3">إعدادات الرد</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      <button onClick={() => updateProviderSetting(provider, 'replyMode', 'auto')} className={`p-4 rounded-2xl border text-right transition-colors ${settings.replyMode === 'auto' ? 'border-purple-500 bg-purple-500/10' : (isDark ? 'border-slate-800 bg-slate-900/50' : 'border-slate-200 bg-white')}`}>
-                        <div className="flex items-center gap-2 mb-1"><Zap size={18} className={settings.replyMode === 'auto' ? 'text-purple-500' : 'text-slate-400'} /><span className="font-bold text-sm">رد تلقائي بالكامل</span></div>
+                      <button onClick={() => updateProviderSetting(provider, 'replyMode', 'auto')} className={`p-4 rounded-2xl border text-right transition-colors ${settings.replyMode === 'auto' ? 'border-[#426CEA] bg-[#426CEA]/10' : (isDark ? 'border-slate-800 bg-slate-900/50' : 'border-slate-200 bg-white')}`}>
+                        <div className="flex items-center gap-2 mb-1"><Zap size={18} className={settings.replyMode === 'auto' ? 'text-[#426CEA]' : 'text-slate-400'} /><span className="font-bold text-sm">رد تلقائي بالكامل</span></div>
                         <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>يرسل الذكاء الاصطناعي الرد فور وصول الرسالة دون أي تدخل.</p>
                       </button>
-                      <button onClick={() => updateProviderSetting(provider, 'replyMode', 'suggest')} className={`p-4 rounded-2xl border text-right transition-colors ${settings.replyMode === 'suggest' ? 'border-purple-500 bg-purple-500/10' : (isDark ? 'border-slate-800 bg-slate-900/50' : 'border-slate-200 bg-white')}`}>
-                        <div className="flex items-center gap-2 mb-1"><Edit size={18} className={settings.replyMode === 'suggest' ? 'text-purple-500' : 'text-slate-400'} /><span className="font-bold text-sm">اقتراح رد بانتظار المراجعة</span></div>
+                      <button onClick={() => updateProviderSetting(provider, 'replyMode', 'suggest')} className={`p-4 rounded-2xl border text-right transition-colors ${settings.replyMode === 'suggest' ? 'border-[#426CEA] bg-[#426CEA]/10' : (isDark ? 'border-slate-800 bg-slate-900/50' : 'border-slate-200 bg-white')}`}>
+                        <div className="flex items-center gap-2 mb-1"><Edit size={18} className={settings.replyMode === 'suggest' ? 'text-[#426CEA]' : 'text-slate-400'} /><span className="font-bold text-sm">اقتراح رد بانتظار المراجعة</span></div>
                         <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>يجهز الذكاء الاصطناعي رداً مقترحاً، وتقوم أنت باعتماده أو تعديله قبل الإرسال.</p>
                       </button>
                     </div>
@@ -1514,7 +1514,7 @@ const SocialMediaHub = ({
                     {(provider === 'tiktok' || provider === 'instagram') && (
                       <div className={`flex items-center justify-between p-3 rounded-xl border mt-3 ${isDark ? 'border-slate-800 bg-slate-800/40' : 'border-slate-200 bg-slate-50'}`}>
                         <div>
-                          <p className="text-sm font-bold flex items-center gap-2"><MessageCircle size={16} className="text-blue-500" /> الرد التلقائي على التعليقات العامة</p>
+                          <p className="text-sm font-bold flex items-center gap-2"><MessageCircle size={16} className="text-[#06C6EA]" /> الرد التلقائي على التعليقات العامة</p>
                         </div>
                         <ToggleSwitch isOn={!!settings.autoReplyComments} onToggle={() => updateProviderSetting(provider, 'autoReplyComments', !settings.autoReplyComments)} />
                       </div>
@@ -1528,7 +1528,7 @@ const SocialMediaHub = ({
                       </div>
                     )}
                     {provider === 'google' && (
-                      <button onClick={() => setActiveView('reviews')} className="w-full mt-3 text-sm font-bold text-blue-500 bg-blue-500/10 hover:bg-blue-500/20 px-4 py-2.5 rounded-xl transition-colors">فتح لوحة تقييمات قوقل ماب الكاملة</button>
+                      <button onClick={() => setActiveView('reviews')} className="w-full mt-3 text-sm font-bold text-[#06C6EA] bg-[#06C6EA]/10 hover:bg-[#06C6EA]/20 px-4 py-2.5 rounded-xl transition-colors">فتح لوحة تقييمات قوقل ماب الكاملة</button>
                     )}
                     {provider === 'whatsapp' && (
                       <div className={`p-3 rounded-xl border mt-3 ${isDark ? 'border-slate-800 bg-slate-800/40' : 'border-slate-200 bg-slate-50'}`}>
@@ -1546,7 +1546,7 @@ const SocialMediaHub = ({
               <h3 className="text-lg font-bold mb-4">قنوات صندوق الوارد</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {connections.map((conn) => (
-                  <div key={conn.provider} onClick={() => setActiveChannelDetail(conn.provider)} className={`p-4 rounded-2xl border flex items-center justify-between gap-3 cursor-pointer transition-colors ${isDark ? 'bg-slate-900/50 border-slate-800 hover:border-purple-500/50' : 'bg-white border-slate-200 shadow-sm hover:border-purple-300'}`}>
+                  <div key={conn.provider} onClick={() => setActiveChannelDetail(conn.provider)} className={`p-4 rounded-2xl border flex items-center justify-between gap-3 cursor-pointer transition-colors ${isDark ? 'bg-slate-900/50 border-slate-800 hover:border-[#426CEA]/50' : 'bg-white border-slate-200 shadow-sm hover:border-[#a6b9f7]'}`}>
                     <div className="flex items-center gap-3">
                       <ProviderIcon provider={conn.provider} size={32} />
                       <div>
@@ -1555,7 +1555,7 @@ const SocialMediaHub = ({
                       </div>
                     </div>
                     {conn.status !== 'connected' ? (
-                      <button onClick={(e: any) => { e.stopPropagation(); handleConnectProvider(conn.provider); }} className="text-xs font-bold text-blue-500 bg-blue-500/10 hover:bg-blue-500/20 px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap">ربط</button>
+                      <button onClick={(e: any) => { e.stopPropagation(); handleConnectProvider(conn.provider); }} className="text-xs font-bold text-[#06C6EA] bg-[#06C6EA]/10 hover:bg-[#06C6EA]/20 px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap">ربط</button>
                     ) : (
                       <Sliders size={16} className="text-slate-400 shrink-0" />
                     )}
@@ -1574,9 +1574,9 @@ const SocialMediaHub = ({
             ) : (
               <div className={`rounded-2xl border overflow-hidden ${isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-white border-slate-200'}`}>
                 <div className={`flex items-center gap-2 p-3 border-b overflow-x-auto no-scrollbar ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
-                  <button onClick={() => setInboxFilter('all')} className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-colors ${inboxFilter === 'all' ? 'bg-purple-500/20 text-purple-500' : (isDark ? 'text-slate-400 hover:bg-slate-800' : 'text-slate-600 hover:bg-slate-100')}`}>الكل</button>
+                  <button onClick={() => setInboxFilter('all')} className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-colors ${inboxFilter === 'all' ? 'bg-[#426CEA]/20 text-[#426CEA]' : (isDark ? 'text-slate-400 hover:bg-slate-800' : 'text-slate-600 hover:bg-slate-100')}`}>الكل</button>
                   {connections.filter((c) => c.status === 'connected').map((c) => (
-                    <button key={c.provider} onClick={() => setInboxFilter(c.provider)} className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap flex items-center gap-1.5 transition-colors ${inboxFilter === c.provider ? 'bg-purple-500/20 text-purple-500' : (isDark ? 'text-slate-400 hover:bg-slate-800' : 'text-slate-600 hover:bg-slate-100')}`}>
+                    <button key={c.provider} onClick={() => setInboxFilter(c.provider)} className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap flex items-center gap-1.5 transition-colors ${inboxFilter === c.provider ? 'bg-[#426CEA]/20 text-[#426CEA]' : (isDark ? 'text-slate-400 hover:bg-slate-800' : 'text-slate-600 hover:bg-slate-100')}`}>
                       <ProviderIcon provider={c.provider} size={16} /> {c.name}
                     </button>
                   ))}
@@ -1622,9 +1622,9 @@ const SocialMediaHub = ({
                         <div className="flex-1 overflow-y-auto p-4 space-y-4">
                           {activeConvData.messages.map((msg: any) => (
                             <div key={msg.id} className={`flex flex-col ${msg.from !== 'user' ? 'items-end' : 'items-start'}`}>
-                              <div className={`max-w-[85%] px-4 py-2 rounded-2xl text-sm ${msg.from !== 'user' ? 'bg-purple-600 text-white rounded-br-sm' : (isDark ? 'bg-slate-800 text-white rounded-bl-sm' : 'bg-slate-100 text-slate-900 rounded-bl-sm')}`}>
+                              <div className={`max-w-[85%] px-4 py-2 rounded-2xl text-sm ${msg.from !== 'user' ? 'bg-[#3557d1] text-white rounded-br-sm' : (isDark ? 'bg-slate-800 text-white rounded-bl-sm' : 'bg-slate-100 text-slate-900 rounded-bl-sm')}`}>
                                 <p>{msg.text}</p>
-                                <p className={`text-[10px] mt-1 ${msg.from !== 'user' ? 'text-purple-200' : 'text-slate-400'}`}>{msg.time}</p>
+                                <p className={`text-[10px] mt-1 ${msg.from !== 'user' ? 'text-[#c3d0fa]' : 'text-slate-400'}`}>{msg.time}</p>
                               </div>
                               {msg.from === 'ai' && <div className="max-w-[85%]"><AiSignature /></div>}
                             </div>
@@ -1632,9 +1632,9 @@ const SocialMediaHub = ({
 
                           {/* بطاقة الرد المقترح بانتظار المراجعة - نفس أسلوب تقييمات قوقل 🚀 */}
                           {activeConvData.pendingSuggestion && appSettings[activeConvData.provider]?.replyMode === 'suggest' && (
-                            <div className={`rounded-2xl border p-4 ${isDark ? 'bg-blue-950/20 border-blue-900/30' : 'bg-blue-50/50 border-blue-100'}`}>
-                              <div className="flex justify-between items-start mb-3 gap-2 border-b border-blue-500/10 pb-2">
-                                <h4 className={`text-xs font-black flex items-center gap-2 ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>
+                            <div className={`rounded-2xl border p-4 ${isDark ? 'bg-[#021a20]/20 border-[#04303d]/30' : 'bg-[#e8fafd]/50 border-[#cff3fa]'}`}>
+                              <div className="flex justify-between items-start mb-3 gap-2 border-b border-[#06C6EA]/10 pb-2">
+                                <h4 className={`text-xs font-black flex items-center gap-2 ${isDark ? 'text-[#67e2f5]' : 'text-[#06AFCE]'}`}>
                                   <Bot size={16} /> {t.aiReplyTitle}
                                 </h4>
                                 <span className="text-xs font-bold text-orange-500 bg-orange-500/10 px-2.5 py-1 rounded-lg border border-orange-500/20 flex items-center gap-1.5 whitespace-nowrap">
@@ -1646,7 +1646,7 @@ const SocialMediaHub = ({
                                 <div className="space-y-2">
                                   <textarea value={editSuggestionText} onChange={(e: any) => setEditSuggestionText(e.target.value)} rows={3} className={`w-full p-2.5 rounded-lg text-sm outline-none border resize-none ${isDark ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-slate-200'}`} />
                                   <div className="flex gap-2">
-                                    <button onClick={submitEditedSuggestion} className="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-xl text-sm font-bold transition-all">إرسال الرد المعدّل</button>
+                                    <button onClick={submitEditedSuggestion} className="flex-1 bg-[#06AFCE] hover:bg-[#06C6EA] text-white py-2 rounded-xl text-sm font-bold transition-all">إرسال الرد المعدّل</button>
                                     <button onClick={() => setEditingSuggestion(null)} className={`flex-1 py-2 rounded-xl text-sm font-bold border transition-all ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}>إلغاء</button>
                                   </div>
                                 </div>
@@ -1655,7 +1655,7 @@ const SocialMediaHub = ({
                                   <p className="text-sm font-medium leading-relaxed mb-3">{activeConvData.pendingSuggestion.text}</p>
                                   <AiSignature />
                                   <div className="flex gap-2 mt-4">
-                                    <button onClick={() => handleApproveSuggestion(activeConvData.provider, activeConvData.id)} className="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-xl text-sm font-bold transition-all">{t.approvePublish}</button>
+                                    <button onClick={() => handleApproveSuggestion(activeConvData.provider, activeConvData.id)} className="flex-1 bg-[#06AFCE] hover:bg-[#06C6EA] text-white py-2 rounded-xl text-sm font-bold transition-all">{t.approvePublish}</button>
                                     <button onClick={() => startEditSuggestion(activeConvData.provider, activeConvData.id, activeConvData.pendingSuggestion.text)} className={`flex-1 py-2 rounded-xl text-sm font-bold border transition-all ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}>{t.editReply}</button>
                                   </div>
                                 </>
@@ -1710,7 +1710,7 @@ const SocialMediaHub = ({
                   {conn.status === 'connected' ? (
                     <span className="text-xs font-bold text-green-500">متصل بالفعل</span>
                   ) : (
-                    <button onClick={() => { handleConnectProvider(conn.provider); setShowAddAccountModal(false); }} className="text-xs font-bold text-white bg-blue-600 hover:bg-blue-500 px-3 py-1.5 rounded-lg transition-colors">ربط</button>
+                    <button onClick={() => { handleConnectProvider(conn.provider); setShowAddAccountModal(false); }} className="text-xs font-bold text-white bg-[#06AFCE] hover:bg-[#06C6EA] px-3 py-1.5 rounded-lg transition-colors">ربط</button>
                   )}
                 </div>
               ))}
@@ -1818,7 +1818,7 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
   const headerBg = isDark ? 'bg-slate-950/50 border-slate-800/80' : 'bg-slate-50 border-slate-200';
   const textPrimary = isDark ? 'text-white border-slate-800/80' : 'text-slate-900 border-slate-200';
   const textSecondary = isDark ? 'text-slate-300' : 'text-slate-600';
-  const inputBg = isDark ? 'bg-slate-900 border-slate-700 text-slate-300 focus:border-purple-500' : 'bg-white border-slate-300 text-slate-900 focus:border-purple-500';
+  const inputBg = isDark ? 'bg-slate-900 border-slate-700 text-slate-300 focus:border-[#426CEA]' : 'bg-white border-slate-300 text-slate-900 focus:border-[#426CEA]';
 
   // 👉 تحديد نوع الشارة (Badge)
   let badgeText = t.textBadge;
@@ -1826,9 +1826,9 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
   else if (item.content_type === 'product_shot' || item.content_type === 'poster') badgeText = "📸";
 
   return (
-    <div className={`${cardBg} backdrop-blur-xl rounded-[2rem] border overflow-hidden transition-all duration-300 flex flex-col h-full group hover:border-purple-500/50`}>
+    <div className={`${cardBg} backdrop-blur-xl rounded-[2rem] border overflow-hidden transition-all duration-300 flex flex-col h-full group hover:border-[#426CEA]/50`}>
       <div className={`p-5 flex justify-between items-center border-b ${headerBg}`}>
-        <span className="text-xs font-black text-white bg-gradient-to-r from-blue-600 to-blue-500 px-3 py-1.5 rounded-lg shadow-md">
+        <span className="text-xs font-black text-white bg-gradient-to-r from-[#06AFCE] to-[#06C6EA] px-3 py-1.5 rounded-lg shadow-md">
           {badgeText}
         </span>
         <div className="flex items-center gap-2">
@@ -1889,11 +1889,11 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
           
           {/* حقل التاريخ */}
           <div className="relative flex-1 group cursor-pointer" onClick={() => { try { dateRef.current?.showPicker(); } catch(e){} }}>
-            <div className={`w-full border rounded-xl px-4 py-3 text-sm transition-all flex items-center justify-between group-hover:border-purple-500 shadow-sm overflow-hidden ${inputBg}`}>
-              <span className={`${scheduleDate ? 'font-black text-purple-500' : 'opacity-60 font-bold'} font-sans tracking-wide whitespace-nowrap`} dir="ltr">
+            <div className={`w-full border rounded-xl px-4 py-3 text-sm transition-all flex items-center justify-between group-hover:border-[#426CEA] shadow-sm overflow-hidden ${inputBg}`}>
+              <span className={`${scheduleDate ? 'font-black text-[#426CEA]' : 'opacity-60 font-bold'} font-sans tracking-wide whitespace-nowrap`} dir="ltr">
                 {formatScheduleDate(scheduleDate)}
               </span>
-              <CalendarRange size={18} className={`shrink-0 ${scheduleDate ? 'text-purple-500' : 'text-slate-400'}`} />
+              <CalendarRange size={18} className={`shrink-0 ${scheduleDate ? 'text-[#426CEA]' : 'text-slate-400'}`} />
             </div>
             <input 
               ref={dateRef}
@@ -1909,11 +1909,11 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
 
           {/* حقل الوقت */}
           <div className="relative flex-1 group cursor-pointer" onClick={() => { try { timeRef.current?.showPicker(); } catch(e){} }}>
-            <div className={`w-full border rounded-xl px-4 py-3 text-sm transition-all flex items-center justify-between group-hover:border-purple-500 shadow-sm overflow-hidden ${inputBg}`}>
-              <span className={`${scheduleTime ? 'font-black text-purple-500' : 'opacity-60 font-bold'} font-sans tracking-wide whitespace-nowrap`} dir="ltr">
+            <div className={`w-full border rounded-xl px-4 py-3 text-sm transition-all flex items-center justify-between group-hover:border-[#426CEA] shadow-sm overflow-hidden ${inputBg}`}>
+              <span className={`${scheduleTime ? 'font-black text-[#426CEA]' : 'opacity-60 font-bold'} font-sans tracking-wide whitespace-nowrap`} dir="ltr">
                 {scheduleTime || t.publishTime}
               </span>
-              <Clock size={18} className={`shrink-0 ${scheduleTime ? 'text-purple-500' : 'text-slate-400'}`} />
+              <Clock size={18} className={`shrink-0 ${scheduleTime ? 'text-[#426CEA]' : 'text-slate-400'}`} />
             </div>
             <input 
               ref={timeRef}
@@ -1930,7 +1930,7 @@ const ContentCard = ({ item, handleDelete, isDark, t }: any) => {
         </div>
         {/* ================= نهاية شكل التاريخ والوقت الاحترافي ================= */}
 
-        <button onClick={handleSchedule} disabled={isPublishing} className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition-colors text-sm flex justify-center items-center gap-2 disabled:opacity-50">
+        <button onClick={handleSchedule} disabled={isPublishing} className="w-full bg-[#06AFCE] hover:bg-[#06C6EA] text-white font-bold py-3 rounded-xl transition-colors text-sm flex justify-center items-center gap-2 disabled:opacity-50">
           {isPublishing ? <Loader2 className="animate-spin" size={16} /> : null}
           {isPublishing ? t.scheduling : t.scheduleBtn}
         </button>
@@ -1957,7 +1957,7 @@ const MarketingCalendar = ({ isDark, setActiveView, setRawIdea, setIsAiAssistOpe
   );
 
   const events = [
-    { id: 'back-to-school', title: t.calEvents.backToSchool, date: '2026-08-20', type: t.calTypes.commercial, icon: '🎒', color: 'text-blue-500', bg: 'bg-blue-500/10', border: 'border-blue-500/20' },
+    { id: 'back-to-school', title: t.calEvents.backToSchool, date: '2026-08-20', type: t.calTypes.commercial, icon: '🎒', color: 'text-[#06C6EA]', bg: 'bg-[#06C6EA]/10', border: 'border-[#06C6EA]/20' },
     { id: 'salary-aug', title: t.calEvents.salaryAug, date: '2026-08-27', type: t.calTypes.commercial, icon: '💰', color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
     { id: 'pizza-day', title: t.calEvents.pizzaDay, date: '2026-09-09', type: t.calTypes.entertainment, icon: '🍕', color: 'text-orange-500', bg: 'bg-orange-500/10', border: 'border-orange-500/20' },
     { id: 'national-day', title: t.calEvents.nationalDay, date: '2026-09-23', type: t.calTypes.national, icon: <SaudiFlag />, color: 'text-green-500', bg: 'bg-green-500/10', border: 'border-green-500/20' },
@@ -1966,10 +1966,10 @@ const MarketingCalendar = ({ isDark, setActiveView, setRawIdea, setIsAiAssistOpe
     { id: 'teachers-day', title: t.calEvents.teachersDay, date: '2026-10-05', type: t.calTypes.global, icon: '👨‍🏫', color: 'text-cyan-500', bg: 'bg-cyan-500/10', border: 'border-cyan-500/20' },
     { id: 'food-day', title: t.calEvents.foodDay, date: '2026-10-16', type: t.calTypes.global, icon: '🍔', color: 'text-orange-500', bg: 'bg-orange-500/10', border: 'border-orange-500/20' },
     { id: 'salary-oct', title: t.calEvents.salaryOct, date: '2026-10-27', type: t.calTypes.commercial, icon: '💰', color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
-    { id: 'singles-day', title: t.calEvents.singlesDay, date: '2026-11-11', type: t.calTypes.commercial, icon: '🛍️', color: 'text-purple-500', bg: 'bg-purple-500/10', border: 'border-purple-500/20' },
+    { id: 'singles-day', title: t.calEvents.singlesDay, date: '2026-11-11', type: t.calTypes.commercial, icon: '🛍️', color: 'text-[#426CEA]', bg: 'bg-[#426CEA]/10', border: 'border-[#426CEA]/20' },
     { id: 'white-friday', title: t.calEvents.whiteFriday, date: '2026-11-27', type: t.calTypes.commercial, icon: '🛒', color: 'text-slate-900 dark:text-white', bg: 'bg-slate-200 dark:bg-slate-800', border: 'border-slate-300 dark:border-slate-700' },
     { id: 'salary-nov', title: t.calEvents.salaryNov, date: '2026-11-27', type: t.calTypes.commercial, icon: '💰', color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
-    { id: 'cyber-monday', title: t.calEvents.cyberMonday, date: '2026-11-30', type: t.calTypes.commercial, icon: '💻', color: 'text-indigo-500', bg: 'bg-indigo-500/10', border: 'border-indigo-500/20' },
+    { id: 'cyber-monday', title: t.calEvents.cyberMonday, date: '2026-11-30', type: t.calTypes.commercial, icon: '💻', color: 'text-[#426CEA]', bg: 'bg-[#426CEA]/10', border: 'border-[#426CEA]/20' },
     { id: 'volunteer-day', title: t.calEvents.volunteerDay, date: '2026-12-05', type: t.calTypes.global, icon: '🤝', color: 'text-teal-500', bg: 'bg-teal-500/10', border: 'border-teal-500/20' },
     { id: 'arabic-day', title: t.calEvents.arabicDay, date: '2026-12-18', type: t.calTypes.global, icon: '📖', color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
     { id: 'end-year', title: t.calEvents.endYear, date: '2026-12-25', type: t.calTypes.commercial, icon: '❄️', color: 'text-sky-500', bg: 'bg-sky-500/10', border: 'border-sky-500/20' },
@@ -1998,7 +1998,7 @@ const MarketingCalendar = ({ isDark, setActiveView, setRawIdea, setIsAiAssistOpe
   return (
     <div className="w-full max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 animate-in fade-in zoom-in duration-500">
       <div className={`mb-8 ${t.dir === 'ltr' ? 'text-left' : 'text-right'}`}>
-        <h2 className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500 mb-2">{t.calTitle}</h2>
+        <h2 className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-[#67e2f5] to-[#426CEA] mb-2">{t.calTitle}</h2>
         <p className={`font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t.calDesc}</p>
       </div>
 
@@ -2008,7 +2008,7 @@ const MarketingCalendar = ({ isDark, setActiveView, setRawIdea, setIsAiAssistOpe
           const daysLeft = getDaysLeft(ev.date);
           
           return (
-            <div key={ev.id} className={`p-6 rounded-3xl border transition-all duration-300 relative overflow-hidden ${isDone ? (isDark ? 'bg-slate-900/40 border-slate-800 opacity-60' : 'bg-slate-100 border-slate-200 opacity-60 grayscale-[50%]') : (isDark ? 'bg-slate-900/80 border-slate-700/80 shadow-lg hover:border-purple-500/50' : 'bg-white border-slate-200 shadow-xl hover:border-purple-400')}`}>
+            <div key={ev.id} className={`p-6 rounded-3xl border transition-all duration-300 relative overflow-hidden ${isDone ? (isDark ? 'bg-slate-900/40 border-slate-800 opacity-60' : 'bg-slate-100 border-slate-200 opacity-60 grayscale-[50%]') : (isDark ? 'bg-slate-900/80 border-slate-700/80 shadow-lg hover:border-[#426CEA]/50' : 'bg-white border-slate-200 shadow-xl hover:border-[#8fa6f3]')}`}>
               
               <div className="flex justify-between items-start mb-4">
                 <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-2xl border ${ev.bg} ${ev.color} ${ev.border}`}>
@@ -2033,7 +2033,7 @@ const MarketingCalendar = ({ isDark, setActiveView, setRawIdea, setIsAiAssistOpe
               <button 
                 onClick={() => handleLaunch(ev.title)} 
                 disabled={isDone || daysLeft === t.calEnded}
-                className={`w-full py-3 rounded-xl text-sm font-bold flex justify-center items-center gap-2 transition-all ${isDone || daysLeft === t.calEnded ? (isDark ? 'bg-slate-800 text-slate-600 cursor-not-allowed' : 'bg-slate-200 text-slate-400 cursor-not-allowed') : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:shadow-lg hover:scale-[1.02]'}`}
+                className={`w-full py-3 rounded-xl text-sm font-bold flex justify-center items-center gap-2 transition-all ${isDone || daysLeft === t.calEnded ? (isDark ? 'bg-slate-800 text-slate-600 cursor-not-allowed' : 'bg-slate-200 text-slate-400 cursor-not-allowed') : 'bg-gradient-to-r from-[#06AFCE] to-[#3557d1] text-white hover:shadow-lg hover:scale-[1.02]'}`}
               >
                 <Wand2 size={16} /> {isDone ? t.calPrepared : t.calLaunch}
               </button>
@@ -2145,7 +2145,7 @@ const ReviewsDashboard = ({ isDark, t }: any) => {
 
   const cardClass = isDark ? 'bg-slate-900/50 border-slate-700/50 text-white' : 'bg-white border-slate-200 text-slate-900';
   const textMuted = isDark ? 'text-slate-400' : 'text-slate-500';
-  const inputBg = isDark ? 'bg-slate-950/50 border-slate-700/80 text-white focus:border-blue-500/50' : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-blue-500/50';
+  const inputBg = isDark ? 'bg-slate-950/50 border-slate-700/80 text-white focus:border-[#06C6EA]/50' : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-[#06C6EA]/50';
 
   const ToggleSwitch = ({ isOn, onToggle }: any) => (
     <div onClick={onToggle} className={`w-12 h-6 rounded-full flex items-center p-1 cursor-pointer transition-colors ${isOn ? 'bg-green-500' : (isDark ? 'bg-slate-700' : 'bg-slate-300')}`}>
@@ -2158,13 +2158,13 @@ const ReviewsDashboard = ({ isDark, t }: any) => {
       
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
-          <h2 className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-pink-500 mb-2">{t.reviewsTitle}</h2>
+          <h2 className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-[#67e2f5] to-pink-500 mb-2">{t.reviewsTitle}</h2>
           <p className={`font-medium ${textMuted}`}>{t.reviewsSubtitle}</p>
         </div>
         
         <div className="flex flex-col items-end gap-3 w-full md:w-auto">
           {!isGoogleConnected ? (
-            <button onClick={handleConnectGoogle} disabled={isConnecting} className="bg-white text-blue-600 hover:bg-slate-50 px-6 py-3 rounded-xl font-bold text-sm shadow-lg flex items-center gap-2 transition-all disabled:opacity-70 w-full justify-center md:w-auto">
+            <button onClick={handleConnectGoogle} disabled={isConnecting} className="bg-white text-[#06AFCE] hover:bg-slate-50 px-6 py-3 rounded-xl font-bold text-sm shadow-lg flex items-center gap-2 transition-all disabled:opacity-70 w-full justify-center md:w-auto">
               {isConnecting ? <Loader2 size={18} className="animate-spin" /> : <Globe size={18} />}
               {isConnecting ? t.googleConnecting : t.connectGoogleBtn}
             </button>
@@ -2177,9 +2177,9 @@ const ReviewsDashboard = ({ isDark, t }: any) => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className={`p-6 rounded-2xl border ${cardClass} flex items-center gap-4 shadow-sm hover:border-blue-500/30 transition-colors`}>
-          <div className="w-14 h-14 rounded-full bg-blue-500/20 flex items-center justify-center shrink-0">
-            <MessageCircle size={24} className="text-blue-500" />
+        <div className={`p-6 rounded-2xl border ${cardClass} flex items-center gap-4 shadow-sm hover:border-[#06C6EA]/30 transition-colors`}>
+          <div className="w-14 h-14 rounded-full bg-[#06C6EA]/20 flex items-center justify-center shrink-0">
+            <MessageCircle size={24} className="text-[#06C6EA]" />
           </div>
           <div>
             <p className={`text-sm font-bold mb-1 ${textMuted}`}>{t.totalComments}</p>
@@ -2216,7 +2216,7 @@ const ReviewsDashboard = ({ isDark, t }: any) => {
           </div>
           <h3 className="text-xl font-bold mb-2">{t.noDataTitle}</h3>
           <p className={`${textMuted} mb-6 max-w-sm`}>{t.noDataDesc}</p>
-          <button onClick={handleConnectGoogle} disabled={isConnecting} className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg transition-all flex items-center gap-2">
+          <button onClick={handleConnectGoogle} disabled={isConnecting} className="bg-[#06AFCE] hover:bg-[#06C6EA] text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg transition-all flex items-center gap-2">
             {isConnecting ? <Loader2 size={18} className="animate-spin" /> : t.startConnect}
           </button>
         </div>
@@ -2224,12 +2224,12 @@ const ReviewsDashboard = ({ isDark, t }: any) => {
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
           
           <div className={`rounded-3xl border p-6 ${cardClass}`}>
-             <h3 className="font-bold text-lg mb-6 flex items-center gap-2"><Settings size={20} className="text-purple-500"/> {t.advSettings}</h3>
+             <h3 className="font-bold text-lg mb-6 flex items-center gap-2"><Settings size={20} className="text-[#426CEA]"/> {t.advSettings}</h3>
              
              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className={`p-5 rounded-2xl border ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
                    <div className="flex justify-between items-center mb-3">
-                      <div className="flex items-center gap-2 font-bold text-sm"><Bot size={18} className="text-blue-500"/> {t.customPrompt}</div>
+                      <div className="flex items-center gap-2 font-bold text-sm"><Bot size={18} className="text-[#06C6EA]"/> {t.customPrompt}</div>
                       <ToggleSwitch isOn={featCustomPrompt} onToggle={() => setFeatCustomPrompt(!featCustomPrompt)} />
                    </div>
                    <p className={`text-xs mb-3 ${textMuted}`}>{t.customPromptDesc}</p>
@@ -2237,7 +2237,7 @@ const ReviewsDashboard = ({ isDark, t }: any) => {
                      <div className="mt-3 animate-in fade-in slide-in-from-top-2 duration-300">
                        <textarea value={customPromptText} onChange={(e: any)=>setCustomPromptText(e.target.value)} placeholder={t.customPromptPlaceholder} className={`w-full p-3 rounded-xl text-sm outline-none border transition-all resize-none ${inputBg}`} rows={2}></textarea>
                        <div className="flex justify-end mt-2">
-                         <button onClick={handleSavePrompt} disabled={isSavingPrompt} className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${isDark ? 'bg-blue-600 hover:bg-blue-500 text-white' : 'bg-blue-100 hover:bg-blue-200 text-blue-700'}`}>
+                         <button onClick={handleSavePrompt} disabled={isSavingPrompt} className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${isDark ? 'bg-[#06AFCE] hover:bg-[#06C6EA] text-white' : 'bg-[#cff3fa] hover:bg-[#a0e9f6] text-[#058fac]'}`}>
                            {isSavingPrompt ? <Loader2 size={14} className="animate-spin" /> : <CheckCircle2 size={14} />}
                            {isSavingPrompt ? t.saving : t.savePrompt}
                          </button>
@@ -2366,15 +2366,15 @@ const ReviewsDashboard = ({ isDark, t }: any) => {
                       </div>
                     </div>
 
-                    <div className={`flex-1 p-5 rounded-2xl border ${isDark ? 'bg-blue-950/20 border-blue-900/30' : 'bg-blue-50/50 border-blue-100'} flex flex-col justify-between relative`}>
+                    <div className={`flex-1 p-5 rounded-2xl border ${isDark ? 'bg-[#021a20]/20 border-[#04303d]/30' : 'bg-[#e8fafd]/50 border-[#cff3fa]'} flex flex-col justify-between relative`}>
                       <div>
-                        <div className="flex justify-between items-start mb-4 gap-2 border-b border-blue-500/10 pb-3">
-                          <h4 className={`text-xs font-black flex items-center gap-2 mt-1 ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>
+                        <div className="flex justify-between items-start mb-4 gap-2 border-b border-[#06C6EA]/10 pb-3">
+                          <h4 className={`text-xs font-black flex items-center gap-2 mt-1 ${isDark ? 'text-[#67e2f5]' : 'text-[#06AFCE]'}`}>
                             <Bot size={16} /> {t.aiReplyTitle}
                           </h4>
                           <div>
                             {review.status === 'published' ? (
-                              <span className="text-xs font-bold text-blue-600 bg-blue-500/20 px-2.5 py-1.5 rounded-lg border border-blue-500/30 flex items-center gap-1.5 whitespace-nowrap">
+                              <span className="text-xs font-bold text-[#06AFCE] bg-[#06C6EA]/20 px-2.5 py-1.5 rounded-lg border border-[#06C6EA]/30 flex items-center gap-1.5 whitespace-nowrap">
                                 <CheckCircle2 size={14}/> {t.autoPublished}
                               </span>
                             ) : (
@@ -2388,14 +2388,14 @@ const ReviewsDashboard = ({ isDark, t }: any) => {
                         <p className="text-sm font-medium leading-relaxed mb-4">{review.aiReply}</p>
                       </div>
 
-                      <div className={`mt-4 pt-4 border-t ${isDark ? 'border-slate-800/80' : 'border-blue-500/10'} flex flex-col md:flex-row gap-3 items-start md:items-center justify-between`}>
+                      <div className={`mt-4 pt-4 border-t ${isDark ? 'border-slate-800/80' : 'border-[#06C6EA]/10'} flex flex-col md:flex-row gap-3 items-start md:items-center justify-between`}>
                         <div className="flex items-center gap-3">
                           <div className={`text-[42px] drop-shadow-md ${t.dir === 'rtl' ? 'ml-1' : 'mr-1'}`}>
                             {aiEmployeeAvatar}
                           </div>
                           <div className="flex flex-col justify-center gap-1">
                             <div className="flex items-center gap-1.5">
-                              <span className="text-sm font-black text-blue-500 dark:text-blue-400">{aiEmployeeName}</span>
+                              <span className="text-sm font-black text-[#06C6EA] dark:text-[#67e2f5]">{aiEmployeeName}</span>
                               <span className={`text-xs font-bold text-pink-500 dark:text-pink-400`}>({t.aiEmp})</span>
                             </div>
                             <div className="flex items-center gap-1.5">
@@ -2413,7 +2413,7 @@ const ReviewsDashboard = ({ isDark, t }: any) => {
                       
                       {review.status === 'draft' && (
                         <div className="flex gap-2 mt-4">
-                          <button className="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-xl text-sm font-bold transition-all">{t.approvePublish}</button>
+                          <button className="flex-1 bg-[#06AFCE] hover:bg-[#06C6EA] text-white py-2 rounded-xl text-sm font-bold transition-all">{t.approvePublish}</button>
                           <button className={`flex-1 py-2 rounded-xl text-sm font-bold border transition-all ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}>{t.editReply}</button>
                         </div>
                       )}
@@ -2839,7 +2839,7 @@ CRITICAL RULES:
   if (!session) return <Auth />;
   
   if (userStatus === 'loading') {
-    return <div className={`min-h-screen flex items-center justify-center ${isDark ? 'bg-[#0b1121]' : 'bg-slate-50'}`}><Loader2 className="animate-spin text-blue-500" size={40} /></div>;
+    return <div className={`min-h-screen flex items-center justify-center ${isDark ? 'bg-[#0b1121]' : 'bg-slate-50'}`}><Loader2 className="animate-spin text-[#06C6EA]" size={40} /></div>;
   }
 
   if (userStatus === 'pending') {
@@ -2849,7 +2849,7 @@ CRITICAL RULES:
   const mainBg = isDark ? 'bg-[#0b1121]' : 'bg-slate-50';
   const textMain = isDark ? 'text-white' : 'text-slate-900';
   const panelBg = isDark ? 'bg-slate-900/40 border-slate-800' : 'bg-white/80 border-slate-200 shadow-2xl';
-  const inputBg = isDark ? 'bg-slate-950/50 border-slate-700/80 text-white focus:bg-slate-900 focus:border-purple-500/50' : 'bg-white border-slate-300 text-slate-900 focus:border-purple-500/50';
+  const inputBg = isDark ? 'bg-slate-950/50 border-slate-700/80 text-white focus:bg-slate-900 focus:border-[#426CEA]/50' : 'bg-white border-slate-300 text-slate-900 focus:border-[#426CEA]/50';
   const optionClass = isDark ? 'bg-[#0f172a] text-slate-200 font-medium' : 'bg-white text-slate-900 font-medium';
   const labelColor = isDark ? 'text-slate-300' : 'text-slate-700';
 
@@ -2883,9 +2883,9 @@ CRITICAL RULES:
           </button>
           
           <div className="flex justify-center items-center w-full mt-2 mb-2">
-            <div className="relative rounded-2xl p-1 bg-gradient-to-r from-[#2563EB] via-[#9333EA] to-[#DB2777] animate-pulse shadow-[0_0_20px_rgba(147,51,234,0.5)] w-full text-center">
+            <div className="relative rounded-2xl p-1 bg-gradient-to-r from-[#06C6EA] to-[#426CEA] animate-pulse shadow-[0_0_20px_rgba(66,108,234,0.5)] w-full text-center">
                <div className={`px-4 py-3 rounded-xl ${isDark ? 'bg-[#0f172a]' : 'bg-white'}`}>
-                 <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#2563EB] via-[#9333EA] to-[#DB2777] tracking-tight">
+                 <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#06C6EA] to-[#426CEA] tracking-tight">
                     {t.appTitle}
                  </h2>
                </div>
@@ -2904,30 +2904,30 @@ CRITICAL RULES:
 
           {/* ظهور القوائم بناءً على صلاحيات الباقة */}
           {(hasCalendar || userRole === 'admin') && (
-            <button onClick={() => { setActiveView('calendar'); if(window.innerWidth < 768) setIsSidebarVisible(false); }} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${activeView === 'calendar' ? (isDark ? 'bg-[#9333EA]/10 text-[#c084fc] border border-[#9333EA]/20' : 'bg-purple-50 text-purple-600 border border-purple-200') : (isDark ? 'text-slate-400 hover:bg-slate-800 border border-transparent' : 'text-slate-600 hover:bg-slate-100 border border-transparent')}`}>
-              <CalendarRange size={20} className={activeView === 'calendar' ? 'text-[#9333EA]' : ''} /> 
+            <button onClick={() => { setActiveView('calendar'); if(window.innerWidth < 768) setIsSidebarVisible(false); }} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${activeView === 'calendar' ? (isDark ? 'bg-[#426CEA]/10 text-[#8fa6f3] border border-[#426CEA]/20' : 'bg-[#eef1fd] text-[#3557d1] border border-[#c3d0fa]') : (isDark ? 'text-slate-400 hover:bg-slate-800 border border-transparent' : 'text-slate-600 hover:bg-slate-100 border border-transparent')}`}>
+              <CalendarRange size={20} className={activeView === 'calendar' ? 'text-[#426CEA]' : ''} /> 
               {t.calendarTab}
             </button>
           )}
 
-          <button onClick={() => { setActiveView('studio'); if(window.innerWidth < 768) setIsSidebarVisible(false); }} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${activeView === 'studio' ? (isDark ? 'bg-[#2563EB]/10 text-[#60a5fa] border border-[#2563EB]/20' : 'bg-blue-50 text-blue-600 border border-blue-200') : (isDark ? 'text-slate-400 hover:bg-slate-800 border border-transparent' : 'text-slate-600 hover:bg-slate-100 border border-transparent')}`}>
-            <Star size={20} className={activeView === 'studio' ? 'text-[#2563EB]' : ''} /> 
+          <button onClick={() => { setActiveView('studio'); if(window.innerWidth < 768) setIsSidebarVisible(false); }} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${activeView === 'studio' ? (isDark ? 'bg-[#06C6EA]/10 text-[#67e2f5] border border-[#06C6EA]/20' : 'bg-cyan-50 text-cyan-700 border border-cyan-200') : (isDark ? 'text-slate-400 hover:bg-slate-800 border border-transparent' : 'text-slate-600 hover:bg-slate-100 border border-transparent')}`}>
+            <Star size={20} className={activeView === 'studio' ? 'text-[#06C6EA]' : ''} /> 
             {t.studioTab}
           </button>
 
           {/* ===================== القسم الجديد ===================== */}
-          <button onClick={() => { setActiveView('socialHub'); if(window.innerWidth < 768) setIsSidebarVisible(false); }} className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl font-bold transition-all relative group overflow-hidden border ${activeView === 'socialHub' ? (isDark ? 'bg-[#2563EB]/10 text-[#60a5fa] border-[#2563EB]/20' : 'bg-indigo-50 text-indigo-600 border-indigo-200') : (isDark ? 'text-slate-400 hover:bg-slate-800 hover:border-slate-700 border-transparent' : 'text-slate-600 hover:bg-slate-100 hover:border-slate-200 border-transparent')}`}>
+          <button onClick={() => { setActiveView('socialHub'); if(window.innerWidth < 768) setIsSidebarVisible(false); }} className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl font-bold transition-all relative group overflow-hidden border ${activeView === 'socialHub' ? (isDark ? 'bg-[#426CEA]/10 text-[#8fa6f3] border-[#426CEA]/20' : 'bg-[#eef1fd] text-[#3557d1] border-[#c3d0fa]') : (isDark ? 'text-slate-400 hover:bg-slate-800 hover:border-slate-700 border-transparent' : 'text-slate-600 hover:bg-slate-100 hover:border-slate-200 border-transparent')}`}>
               <div className="flex items-center gap-3 w-full">
-                <Smartphone size={20} className={activeView === 'socialHub' ? 'text-[#2563EB] shrink-0' : 'group-hover:text-[#2563EB] transition-colors shrink-0'} /> 
+                <Smartphone size={20} className={activeView === 'socialHub' ? 'text-[#426CEA] shrink-0' : 'group-hover:text-[#426CEA] transition-colors shrink-0'} /> 
                 <span className="truncate flex-1 text-right">{t.socialHubTab}</span>
               </div>
           </button>
           {/* ======================================================== */}
 
           {(hasReviews || userRole === 'admin') && (
-            <button onClick={() => { setActiveView('reviews'); if(window.innerWidth < 768) setIsSidebarVisible(false); }} className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl font-bold transition-all relative group overflow-hidden border ${activeView === 'reviews' ? (isDark ? 'bg-[#DB2777]/10 text-[#f472b6] border-[#DB2777]/20' : 'bg-pink-50 text-pink-600 border-pink-200') : (isDark ? 'text-slate-400 hover:bg-slate-800 hover:border-slate-700 border-transparent' : 'text-slate-600 hover:bg-slate-100 hover:border-slate-200 border-transparent')}`}>
+            <button onClick={() => { setActiveView('reviews'); if(window.innerWidth < 768) setIsSidebarVisible(false); }} className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl font-bold transition-all relative group overflow-hidden border ${activeView === 'reviews' ? (isDark ? 'bg-[#06C6EA]/10 text-[#67e2f5] border-[#06C6EA]/20' : 'bg-cyan-50 text-cyan-700 border-cyan-200') : (isDark ? 'text-slate-400 hover:bg-slate-800 hover:border-slate-700 border-transparent' : 'text-slate-600 hover:bg-slate-100 hover:border-slate-200 border-transparent')}`}>
               <div className="flex items-center gap-3 w-full">
-                <MessageCircle size={20} className={activeView === 'reviews' ? 'text-[#DB2777] shrink-0' : 'group-hover:text-[#DB2777] transition-colors shrink-0'} /> 
+                <MessageCircle size={20} className={activeView === 'reviews' ? 'text-[#06C6EA] shrink-0' : 'group-hover:text-[#06C6EA] transition-colors shrink-0'} /> 
                 <span className="truncate flex-1 text-right">{t.reviewsTab}</span>
               </div>
             </button>
@@ -2943,7 +2943,7 @@ CRITICAL RULES:
               
               <div className={`px-6 py-4 border-b flex justify-between items-center shrink-0 ${isDark ? 'border-slate-800 bg-[#0f172a]' : 'border-slate-100 bg-slate-50'}`}>
                 <h3 className="text-lg font-black flex items-center gap-2">
-                  <Settings className="text-blue-500" size={20} /> {t.settings}
+                  <Settings className="text-[#06C6EA]" size={20} /> {t.settings}
                 </h3>
                 <button onClick={() => setIsSettingsOpen(false)} className={`p-2 rounded-full transition ${isDark ? 'text-slate-400 hover:bg-slate-800 hover:text-white' : 'text-slate-500 hover:bg-slate-200 hover:text-slate-900'}`}>
                   <X size={20} />
@@ -2952,7 +2952,7 @@ CRITICAL RULES:
               
               <div className="flex flex-col md:flex-row flex-1 overflow-hidden">
                 <div className={`w-full md:w-1/3 p-4 flex flex-col gap-2 overflow-y-auto border-b md:border-b-0 ${t.dir === 'rtl' ? 'md:border-l' : 'md:border-r'} ${isDark ? 'border-slate-800 bg-slate-900/30' : 'border-slate-100 bg-slate-50/50'}`}>
-                  <button onClick={() => setActiveTab('general')} className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeTab === 'general' ? (isDark ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-50 text-blue-600') : (isDark ? 'text-slate-400 hover:bg-slate-800/50 hover:text-white' : 'text-slate-600 hover:bg-slate-100')}`}><Sliders size={18} /> {t.tabGeneral}</button>
+                  <button onClick={() => setActiveTab('general')} className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeTab === 'general' ? (isDark ? 'bg-[#06C6EA]/20 text-[#67e2f5]' : 'bg-[#e8fafd] text-[#06AFCE]') : (isDark ? 'text-slate-400 hover:bg-slate-800/50 hover:text-white' : 'text-slate-600 hover:bg-slate-100')}`}><Sliders size={18} /> {t.tabGeneral}</button>
                   <button onClick={() => setActiveTab('billing')} className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeTab === 'billing' ? (isDark ? 'bg-yellow-500/20 text-yellow-400' : 'bg-yellow-50 text-yellow-600') : (isDark ? 'text-slate-400 hover:bg-slate-800/50 hover:text-white' : 'text-slate-600 hover:bg-slate-100')}`}><CreditCard size={18} /> {t.tabBilling}</button>
                   <button onClick={() => setActiveTab('connections')} className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeTab === 'connections' ? (isDark ? 'bg-pink-500/20 text-pink-400' : 'bg-pink-50 text-pink-600') : (isDark ? 'text-slate-400 hover:bg-slate-800/50 hover:text-white' : 'text-slate-600 hover:bg-slate-100')}`}><Globe size={18} /> {t.tabConnections}</button>
                   <button onClick={() => setActiveTab('security')} className={`flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${activeTab === 'security' ? (isDark ? 'bg-green-500/20 text-green-400' : 'bg-green-50 text-green-600') : (isDark ? 'text-slate-400 hover:bg-slate-800/50 hover:text-white' : 'text-slate-600 hover:bg-slate-100')}`}><Shield size={18} /> {t.tabSecurity}</button>
@@ -2962,7 +2962,7 @@ CRITICAL RULES:
                   {activeTab === 'general' && (
                     <div className="space-y-6 animate-in fade-in">
                       <div className="space-y-3">
-                        <label className={`text-sm font-bold flex items-center gap-2 ${labelColor}`}><Globe size={16} className="text-blue-400"/> {t.langUi}</label>
+                        <label className={`text-sm font-bold flex items-center gap-2 ${labelColor}`}><Globe size={16} className="text-[#67e2f5]"/> {t.langUi}</label>
                         <select value={langCode} onChange={(e: any) => setLangCode(e.target.value)} className={`w-full border rounded-xl px-4 py-3 outline-none ${isDark ? 'bg-slate-950 border-slate-700 text-white' : 'bg-slate-50 border-slate-300 text-slate-900'}`}>
                           <option className={optionClass} value="ar">العربية (Arabic)</option>
                           <option className={optionClass} value="en">English (الإنجليزية)</option>
@@ -2971,8 +2971,8 @@ CRITICAL RULES:
                       <div className="space-y-3">
                         <label className={`text-sm font-bold flex items-center gap-2 ${labelColor}`}><Palette size={16} className="text-pink-400"/> {t.theme}</label>
                         <div className="flex gap-3">
-                          <button onClick={() => setTheme('dark')} className={`flex-1 py-2.5 rounded-xl font-bold text-sm border transition-all ${theme === 'dark' ? 'bg-purple-600/20 border-purple-500 text-purple-400' : isDark ? 'border-slate-700 text-slate-400 hover:text-white' : 'bg-slate-50 border-slate-300 text-slate-500'}`}>{t.dark}</button>
-                          <button onClick={() => setTheme('light')} className={`flex-1 py-2.5 rounded-xl font-bold text-sm border transition-all ${theme === 'light' ? 'bg-purple-600/10 border-purple-500 text-purple-600' : isDark ? 'border-slate-700 text-slate-400 hover:text-white' : 'bg-slate-50 border-slate-300 text-slate-500'}`}>{t.light}</button>
+                          <button onClick={() => setTheme('dark')} className={`flex-1 py-2.5 rounded-xl font-bold text-sm border transition-all ${theme === 'dark' ? 'bg-[#3557d1]/20 border-[#426CEA] text-[#8fa6f3]' : isDark ? 'border-slate-700 text-slate-400 hover:text-white' : 'bg-slate-50 border-slate-300 text-slate-500'}`}>{t.dark}</button>
+                          <button onClick={() => setTheme('light')} className={`flex-1 py-2.5 rounded-xl font-bold text-sm border transition-all ${theme === 'light' ? 'bg-[#3557d1]/10 border-[#426CEA] text-[#3557d1]' : isDark ? 'border-slate-700 text-slate-400 hover:text-white' : 'bg-slate-50 border-slate-300 text-slate-500'}`}>{t.light}</button>
                         </div>
                         <p className={`text-xs mt-2 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>{t.passNote}</p>
                       </div>
@@ -2998,11 +2998,11 @@ CRITICAL RULES:
                     <div className="space-y-6 animate-in fade-in">
                       <div className="space-y-4">
                         <label className={`text-sm font-bold flex items-center gap-2 ${labelColor}`}>
-                          <Globe size={16} className="text-blue-500"/> {t.socialAuth}
+                          <Globe size={16} className="text-[#06C6EA]"/> {t.socialAuth}
                         </label>
-                        <div className={`p-4 rounded-xl border flex gap-3 items-start ${isDark ? 'bg-blue-500/10 border-blue-500/20' : 'bg-blue-50 border-blue-100'}`}>
-                          <Info size={20} className={`mt-0.5 shrink-0 ${isDark ? 'text-blue-400' : 'text-blue-600'}`} />
-                          <p className={`text-sm leading-relaxed font-medium ${isDark ? 'text-blue-300' : 'text-blue-800'}`}>
+                        <div className={`p-4 rounded-xl border flex gap-3 items-start ${isDark ? 'bg-[#06C6EA]/10 border-[#06C6EA]/20' : 'bg-[#e8fafd] border-[#cff3fa]'}`}>
+                          <Info size={20} className={`mt-0.5 shrink-0 ${isDark ? 'text-[#67e2f5]' : 'text-[#06AFCE]'}`} />
+                          <p className={`text-sm leading-relaxed font-medium ${isDark ? 'text-[#7fe3f2]' : 'text-[#056f85]'}`}>
                             {t.igTrustMsg}
                           </p>
                         </div>
@@ -3170,8 +3170,8 @@ CRITICAL RULES:
           <>
             <div className={`relative z-10 backdrop-blur-2xl p-6 sm:p-10 rounded-[2.5rem] border w-full max-w-xl mx-auto mt-4 transition-colors duration-500 ${panelBg}`}>
               <div className="text-center mb-10">
-                <span className="inline-block py-1 px-3 rounded-full bg-blue-500/10 text-blue-500 text-xs font-bold mb-4 border border-blue-500/20">{t.badge}</span>
-                <h1 className="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#2563EB] via-[#9333EA] to-[#DB2777] mb-3 drop-shadow-xl">{t.appTitle}</h1>
+                <span className="inline-block py-1 px-3 rounded-full bg-[#06C6EA]/10 text-[#06C6EA] text-xs font-bold mb-4 border border-[#06C6EA]/20">{t.badge}</span>
+                <h1 className="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#06C6EA] to-[#426CEA] mb-3 drop-shadow-xl">{t.appTitle}</h1>
                 <p className={`font-medium text-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t.appDesc}</p>
               </div>
 
@@ -3214,8 +3214,8 @@ CRITICAL RULES:
                 </div>
 
                 {isVisualContent && (
-                  <div className={`p-5 rounded-2xl border animate-in fade-in slide-in-from-top-2 duration-300 space-y-4 ${isDark ? 'bg-purple-900/10 border-purple-500/20' : 'bg-purple-50 border-purple-100'}`}>
-                    <h3 className={`text-sm font-black mb-3 flex items-center gap-2 ${isDark ? 'text-purple-300' : 'text-purple-700'}`}>{t.visualOptionsTitle}</h3>
+                  <div className={`p-5 rounded-2xl border animate-in fade-in slide-in-from-top-2 duration-300 space-y-4 ${isDark ? 'bg-[#16234f]/10 border-[#426CEA]/20' : 'bg-[#eef1fd] border-[#dbe3fb]'}`}>
+                    <h3 className={`text-sm font-black mb-3 flex items-center gap-2 ${isDark ? 'text-[#a6b9f7]' : 'text-[#2c47ab]'}`}>{t.visualOptionsTitle}</h3>
                     
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-1.5">
@@ -3252,8 +3252,8 @@ CRITICAL RULES:
                 )}
 
                 {isTextContent && (
-                  <div className={`p-5 rounded-2xl border animate-in fade-in slide-in-from-top-2 duration-300 space-y-4 ${isDark ? 'bg-blue-900/10 border-blue-500/20' : 'bg-blue-50 border-blue-100'}`}>
-                    <h3 className={`text-sm font-black mb-3 flex items-center gap-2 ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>{t.textOptionsTitle}</h3>
+                  <div className={`p-5 rounded-2xl border animate-in fade-in slide-in-from-top-2 duration-300 space-y-4 ${isDark ? 'bg-[#04303d]/10 border-[#06C6EA]/20' : 'bg-[#e8fafd] border-[#cff3fa]'}`}>
+                    <h3 className={`text-sm font-black mb-3 flex items-center gap-2 ${isDark ? 'text-[#7fe3f2]' : 'text-[#058fac]'}`}>{t.textOptionsTitle}</h3>
                     
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-1.5">
@@ -3280,14 +3280,14 @@ CRITICAL RULES:
                 {isVisualContent && (
                   <div className="space-y-2 animate-in fade-in zoom-in duration-300">
                     <label className={`block text-sm font-bold px-1 ${labelColor}`}>{t.uploadImageTitle}</label>
-                    <div className={`relative border-2 border-dashed rounded-2xl p-4 transition-all ${imagePreview ? 'border-purple-500/50 bg-purple-500/5' : isDark ? 'border-slate-700 hover:border-slate-500 bg-slate-900/50' : 'border-slate-300 hover:border-slate-400 bg-slate-50'}`}>
+                    <div className={`relative border-2 border-dashed rounded-2xl p-4 transition-all ${imagePreview ? 'border-[#426CEA]/50 bg-[#426CEA]/5' : isDark ? 'border-slate-700 hover:border-slate-500 bg-slate-900/50' : 'border-slate-300 hover:border-slate-400 bg-slate-50'}`}>
                       <input type="file" accept="image/*" onChange={handleImageChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
                       {imagePreview ? (
                         <div className="flex items-center gap-4">
                           <img src={imagePreview} alt="Preview" className="w-16 h-16 object-cover rounded-xl shadow-md border border-slate-200/20" />
                           <div className="flex-1">
                             <p className={`text-sm font-bold ${textMain}`}>{imageFile?.name}</p>
-                            <p className={`text-xs mt-1 ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>{t.changeImage}</p>
+                            <p className={`text-xs mt-1 ${isDark ? 'text-[#67e2f5]' : 'text-[#06AFCE]'}`}>{t.changeImage}</p>
                           </div>
                         </div>
                       ) : (
@@ -3304,17 +3304,17 @@ CRITICAL RULES:
                 <div className="space-y-2">
                   <div className="flex justify-between items-center px-1 mb-2">
                     <label className={`block text-sm font-bold ${labelColor}`}>{t.idea}</label>
-                    <button type="button" onClick={() => setIsAiAssistOpen(!isAiAssistOpen)} className={`text-xs font-bold flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-colors ${isAiAssistOpen ? 'bg-purple-500 text-white' : 'text-purple-500 bg-purple-500/10 hover:bg-purple-500/20'}`}>
+                    <button type="button" onClick={() => setIsAiAssistOpen(!isAiAssistOpen)} className={`text-xs font-bold flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-colors ${isAiAssistOpen ? 'bg-[#426CEA] text-white' : 'text-[#426CEA] bg-[#426CEA]/10 hover:bg-[#426CEA]/20'}`}>
                         <Wand2 size={14}/> {t.aiAssistBtn}
                     </button>
                   </div>
                   
                   {isAiAssistOpen && (
-                    <div className={`p-4 mb-4 rounded-2xl border ${isDark ? 'bg-slate-800/50 border-purple-500/30' : 'bg-purple-50/50 border-purple-200'} animate-in fade-in slide-in-from-top-2`}>
-                        <p className={`text-xs font-bold mb-3 ${isDark ? 'text-purple-400' : 'text-purple-700'}`}>{t.aiAssistDesc}</p>
+                    <div className={`p-4 mb-4 rounded-2xl border ${isDark ? 'bg-slate-800/50 border-[#426CEA]/30' : 'bg-[#eef1fd]/50 border-[#c3d0fa]'} animate-in fade-in slide-in-from-top-2`}>
+                        <p className={`text-xs font-bold mb-3 ${isDark ? 'text-[#8fa6f3]' : 'text-[#2c47ab]'}`}>{t.aiAssistDesc}</p>
                         <div className="flex flex-col sm:flex-row gap-2 mb-3">
                             <input type="text" value={rawIdea} onChange={(e: any)=>setRawIdea(e.target.value)} placeholder={t.aiAssistPlaceholder} className={`flex-1 px-3 py-2 text-sm rounded-xl outline-none border ${inputBg}`} />
-                            <button type="button" onClick={handleGeneratePrompt} disabled={isGeneratingPrompt} className="bg-purple-600 hover:bg-purple-500 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-2 whitespace-nowrap transition-colors">
+                            <button type="button" onClick={handleGeneratePrompt} disabled={isGeneratingPrompt} className="bg-[#3557d1] hover:bg-[#426CEA] text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-2 whitespace-nowrap transition-colors">
                                 {isGeneratingPrompt ? <Loader2 size={14} className="animate-spin" /> : <Bot size={14} />}
                                 {t.aiAssistGenerate}
                             </button>
@@ -3324,7 +3324,7 @@ CRITICAL RULES:
                                 <div className={`p-3 rounded-xl border ${isDark ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-200'} mb-3`}>
                                     <p className={`text-sm font-medium leading-relaxed ${isDark ? 'text-white' : 'text-slate-900'}`}>{generatedPrompt}</p>
                                 </div>
-                                <button type="button" onClick={handleApplyPrompt} className="w-full bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-xl text-sm font-bold flex justify-center items-center gap-2 transition-colors">
+                                <button type="button" onClick={handleApplyPrompt} className="w-full bg-[#06AFCE] hover:bg-[#06C6EA] text-white px-4 py-2 rounded-xl text-sm font-bold flex justify-center items-center gap-2 transition-colors">
                                     <CheckCircle2 size={16}/> {t.aiAssistApply}
                                 </button>
                             </>
@@ -3336,7 +3336,7 @@ CRITICAL RULES:
                 </div>
 
                 <div className="pt-4">
-                  <button type="submit" disabled={isSubmitting} className="relative w-full group overflow-hidden py-4 px-6 rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-black text-lg shadow-[0_10px_40px_-10px_rgba(59,130,246,0.5)] hover:shadow-[0_10px_50px_-10px_rgba(59,130,246,0.7)] transform active:scale-[0.98] transition-all duration-300 disabled:opacity-50">
+                  <button type="submit" disabled={isSubmitting} className="relative w-full group overflow-hidden py-4 px-6 rounded-2xl bg-gradient-to-r from-[#06AFCE] to-[#3557d1] hover:from-[#06C6EA] hover:to-[#426CEA] text-white font-black text-lg shadow-[0_10px_40px_-10px_rgba(6,198,234,0.5)] hover:shadow-[0_10px_50px_-10px_rgba(6,198,234,0.7)] transform active:scale-[0.98] transition-all duration-300 disabled:opacity-50">
                     <span className="relative z-10 flex items-center justify-center gap-2">
                       {isSubmitting ? <><Loader2 className="animate-spin" size={24} /> <span>{t.producing}</span></> : <><span>✨</span> <span>{t.launchBtn}</span></>}
                     </span>
