@@ -2875,7 +2875,7 @@ CRITICAL RULES:
         <div className="fixed inset-0 bg-black/60 z-40 md:hidden backdrop-blur-sm" onClick={() => setIsSidebarVisible(false)} />
       )}
 
-      <aside className={`fixed top-0 bottom-0 ${t.dir === 'rtl' ? 'right-0 border-l' : 'left-0 border-r'} w-64 z-50 transition-transform duration-300 transform ${isSidebarVisible ? 'translate-x-0' : (t.dir === 'rtl' ? 'translate-x-full' : '-translate-x-full')} ${isDark ? 'bg-[#0f172a] border-slate-800' : 'bg-white border-slate-200'}`}>
+      <aside className={`fixed top-0 bottom-0 ${t.dir === 'rtl' ? 'right-0 border-l' : 'left-0 border-r'} w-64 z-50 transition-transform duration-300 transform ${isSidebarVisible ? 'translate-x-0' : (t.dir === 'rtl' ? 'translate-x-full' : '-translate-x-full')} ${isDark ? 'bg-transparent border-white/10 backdrop-blur-sm' : 'bg-white border-slate-200'}`}>
         
         <div className="p-6 border-b border-inherit flex justify-center items-center relative">
           <button onClick={() => setIsSidebarVisible(false)} className={`absolute top-4 ${t.dir === 'rtl' ? 'left-4' : 'right-4'} md:hidden p-1.5 rounded-lg transition-colors ${isDark ? 'text-slate-400 hover:bg-slate-800' : 'text-slate-500 hover:bg-slate-100'}`}>
@@ -2883,9 +2883,9 @@ CRITICAL RULES:
           </button>
           
           <div className="flex justify-center items-center w-full mt-2 mb-2">
-            <div className="relative rounded-2xl p-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 animate-pulse shadow-[0_0_20px_rgba(168,85,247,0.5)] w-full text-center">
+            <div className="relative rounded-2xl p-1 bg-gradient-to-r from-[#2563EB] via-[#9333EA] to-[#DB2777] animate-pulse shadow-[0_0_20px_rgba(147,51,234,0.5)] w-full text-center">
                <div className={`px-4 py-3 rounded-xl ${isDark ? 'bg-[#0f172a]' : 'bg-white'}`}>
-                 <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500 tracking-tight">
+                 <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#2563EB] via-[#9333EA] to-[#DB2777] tracking-tight">
                     {t.appTitle}
                  </h2>
                </div>
@@ -2904,30 +2904,30 @@ CRITICAL RULES:
 
           {/* ظهور القوائم بناءً على صلاحيات الباقة */}
           {(hasCalendar || userRole === 'admin') && (
-            <button onClick={() => { setActiveView('calendar'); if(window.innerWidth < 768) setIsSidebarVisible(false); }} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${activeView === 'calendar' ? (isDark ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' : 'bg-purple-50 text-purple-600 border border-purple-200') : (isDark ? 'text-slate-400 hover:bg-slate-800 border border-transparent' : 'text-slate-600 hover:bg-slate-100 border border-transparent')}`}>
-              <CalendarRange size={20} className={activeView === 'calendar' ? 'text-purple-500' : ''} /> 
+            <button onClick={() => { setActiveView('calendar'); if(window.innerWidth < 768) setIsSidebarVisible(false); }} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${activeView === 'calendar' ? (isDark ? 'bg-[#9333EA]/10 text-[#c084fc] border border-[#9333EA]/20' : 'bg-purple-50 text-purple-600 border border-purple-200') : (isDark ? 'text-slate-400 hover:bg-slate-800 border border-transparent' : 'text-slate-600 hover:bg-slate-100 border border-transparent')}`}>
+              <CalendarRange size={20} className={activeView === 'calendar' ? 'text-[#9333EA]' : ''} /> 
               {t.calendarTab}
             </button>
           )}
 
-          <button onClick={() => { setActiveView('studio'); if(window.innerWidth < 768) setIsSidebarVisible(false); }} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${activeView === 'studio' ? (isDark ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : 'bg-blue-50 text-blue-600 border border-blue-200') : (isDark ? 'text-slate-400 hover:bg-slate-800 border border-transparent' : 'text-slate-600 hover:bg-slate-100 border border-transparent')}`}>
-            <Star size={20} className={activeView === 'studio' ? 'text-blue-500' : ''} /> 
+          <button onClick={() => { setActiveView('studio'); if(window.innerWidth < 768) setIsSidebarVisible(false); }} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${activeView === 'studio' ? (isDark ? 'bg-[#2563EB]/10 text-[#60a5fa] border border-[#2563EB]/20' : 'bg-blue-50 text-blue-600 border border-blue-200') : (isDark ? 'text-slate-400 hover:bg-slate-800 border border-transparent' : 'text-slate-600 hover:bg-slate-100 border border-transparent')}`}>
+            <Star size={20} className={activeView === 'studio' ? 'text-[#2563EB]' : ''} /> 
             {t.studioTab}
           </button>
 
           {/* ===================== القسم الجديد ===================== */}
-          <button onClick={() => { setActiveView('socialHub'); if(window.innerWidth < 768) setIsSidebarVisible(false); }} className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl font-bold transition-all relative group overflow-hidden border ${activeView === 'socialHub' ? (isDark ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20' : 'bg-indigo-50 text-indigo-600 border-indigo-200') : (isDark ? 'text-slate-400 hover:bg-slate-800 hover:border-slate-700 border-transparent' : 'text-slate-600 hover:bg-slate-100 hover:border-slate-200 border-transparent')}`}>
+          <button onClick={() => { setActiveView('socialHub'); if(window.innerWidth < 768) setIsSidebarVisible(false); }} className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl font-bold transition-all relative group overflow-hidden border ${activeView === 'socialHub' ? (isDark ? 'bg-[#2563EB]/10 text-[#60a5fa] border-[#2563EB]/20' : 'bg-indigo-50 text-indigo-600 border-indigo-200') : (isDark ? 'text-slate-400 hover:bg-slate-800 hover:border-slate-700 border-transparent' : 'text-slate-600 hover:bg-slate-100 hover:border-slate-200 border-transparent')}`}>
               <div className="flex items-center gap-3 w-full">
-                <Smartphone size={20} className={activeView === 'socialHub' ? 'text-indigo-500 shrink-0' : 'group-hover:text-indigo-500 transition-colors shrink-0'} /> 
+                <Smartphone size={20} className={activeView === 'socialHub' ? 'text-[#2563EB] shrink-0' : 'group-hover:text-[#2563EB] transition-colors shrink-0'} /> 
                 <span className="truncate flex-1 text-right">{t.socialHubTab}</span>
               </div>
           </button>
           {/* ======================================================== */}
 
           {(hasReviews || userRole === 'admin') && (
-            <button onClick={() => { setActiveView('reviews'); if(window.innerWidth < 768) setIsSidebarVisible(false); }} className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl font-bold transition-all relative group overflow-hidden border ${activeView === 'reviews' ? (isDark ? 'bg-pink-500/10 text-pink-400 border-pink-500/20' : 'bg-pink-50 text-pink-600 border-pink-200') : (isDark ? 'text-slate-400 hover:bg-slate-800 hover:border-slate-700 border-transparent' : 'text-slate-600 hover:bg-slate-100 hover:border-slate-200 border-transparent')}`}>
+            <button onClick={() => { setActiveView('reviews'); if(window.innerWidth < 768) setIsSidebarVisible(false); }} className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl font-bold transition-all relative group overflow-hidden border ${activeView === 'reviews' ? (isDark ? 'bg-[#DB2777]/10 text-[#f472b6] border-[#DB2777]/20' : 'bg-pink-50 text-pink-600 border-pink-200') : (isDark ? 'text-slate-400 hover:bg-slate-800 hover:border-slate-700 border-transparent' : 'text-slate-600 hover:bg-slate-100 hover:border-slate-200 border-transparent')}`}>
               <div className="flex items-center gap-3 w-full">
-                <MessageCircle size={20} className={activeView === 'reviews' ? 'text-pink-500 shrink-0' : 'group-hover:text-pink-500 transition-colors shrink-0'} /> 
+                <MessageCircle size={20} className={activeView === 'reviews' ? 'text-[#DB2777] shrink-0' : 'group-hover:text-[#DB2777] transition-colors shrink-0'} /> 
                 <span className="truncate flex-1 text-right">{t.reviewsTab}</span>
               </div>
             </button>
@@ -3171,7 +3171,7 @@ CRITICAL RULES:
             <div className={`relative z-10 backdrop-blur-2xl p-6 sm:p-10 rounded-[2.5rem] border w-full max-w-xl mx-auto mt-4 transition-colors duration-500 ${panelBg}`}>
               <div className="text-center mb-10">
                 <span className="inline-block py-1 px-3 rounded-full bg-blue-500/10 text-blue-500 text-xs font-bold mb-4 border border-blue-500/20">{t.badge}</span>
-                <h1 className="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 mb-3 drop-shadow-xl">{t.appTitle}</h1>
+                <h1 className="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#2563EB] via-[#9333EA] to-[#DB2777] mb-3 drop-shadow-xl">{t.appTitle}</h1>
                 <p className={`font-medium text-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t.appDesc}</p>
               </div>
 
