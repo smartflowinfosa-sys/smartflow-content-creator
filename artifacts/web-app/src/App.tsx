@@ -194,7 +194,7 @@ const translations: any = {
     pendingTitle: "حسابك قيد المراجعة ⏳",
     pendingDesc: "شكراً لاهتمامك بـ SmartFlow! لقد تم إدراج حسابك بنجاح وسنقوم بإشعارك فور تفعيله لتنطلق معنا.",
     pendingRefresh: "تحديث الحالة",
-    calTitle: "التقويم التسويقي الذكي 🗓️",
+    calTitle: "التقويم التسويقي",
     calDesc: "خطط لحملاتك مسبقاً. اضغط على علامة الصح (✅) لتحديد المناسبات المنجزة.",
     calDaysLeft: "باقي {days} يوم",
     calEnded: "انتهت",
@@ -437,7 +437,7 @@ const translations: any = {
     pendingTitle: "Account Under Review ⏳",
     pendingDesc: "Thank you for joining SmartFlow! Your account has been successfully registered and we will notify you as soon as it is activated.",
     pendingRefresh: "Refresh Status",
-    calTitle: "Smart Marketing Calendar 🗓️",
+    calTitle: "Marketing Calendar",
     calDesc: "Plan your campaigns ahead. Click the checkmark (✅) to mark events as completed.",
     calDaysLeft: "{days} Days Left",
     calEnded: "Ended",
@@ -888,7 +888,7 @@ const AdminDashboard = ({ isDark, t }: any) => {
 // 🚀 مركز إدارة السوشال ميديا الجديد (Social Media Hub) 🚀
 // ==========================================
 const SOCIAL_PROVIDER_META: any = {
-  tiktok: { label: 'TikTok', icon: PlayCircle, iconClass: 'bg-black text-white' },
+  tiktok: { label: 'TikTok', icon: PlayCircle, iconImage: '/tiktok-logo.png', iconClass: 'bg-black text-white' },
   instagram: { label: 'Instagram', icon: Instagram, iconClass: 'bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 text-white' },
   whatsapp: { label: 'WhatsApp', icon: Phone, iconClass: 'bg-green-500 text-white' },
   google: { label: 'Google Business', icon: Store, iconClass: 'bg-blue-600 text-white' },
@@ -1018,6 +1018,23 @@ const SocialMediaHub = ({
     { id: 1, name: 'إعلان الصيف', platform: 'TikTok', time: 'اليوم — 8:00 PM', status: 'مجدول', statusColor: 'blue' },
     { id: 2, name: 'بوست الخصومات', platform: 'Instagram', time: 'غداً — 7:00 PM', status: 'بانتظار الموافقة', statusColor: 'yellow' },
   ]);
+  const [editingPostId, setEditingPostId] = useState<number | null>(null);
+  const [editPostName, setEditPostName] = useState("");
+  const [editPostTime, setEditPostTime] = useState("");
+
+  const startEditPost = (post: any) => {
+    setEditingPostId(post.id);
+    setEditPostName(post.name);
+    setEditPostTime(post.time);
+  };
+  const saveEditPost = () => {
+    setScheduledPosts((prev) => prev.map((p) => p.id === editingPostId ? { ...p, name: editPostName, time: editPostTime } : p));
+    setEditingPostId(null);
+  };
+  const deleteScheduledPost = (id: number) => {
+    if (!window.confirm(t.dir === 'rtl' ? 'هل تريد حذف هذا المحتوى المجدول؟' : 'Delete this scheduled content?')) return;
+    setScheduledPosts((prev) => prev.filter((p) => p.id !== id));
+  };
 
   const formatScheduleDate = (dateStr: string) => {
     if (!dateStr) return t.publishDate;
@@ -1057,6 +1074,13 @@ const SocialMediaHub = ({
   const ProviderIcon = ({ provider, size = 40 }: any) => {
     const meta = SOCIAL_PROVIDER_META[provider];
     const Icon = meta.icon;
+    if (meta.iconImage) {
+      return (
+        <div className={`rounded-xl flex items-center justify-center shrink-0 overflow-hidden ${meta.iconClass}`} style={{ width: size, height: size }}>
+          <img src={meta.iconImage} alt={meta.label} style={{ width: size * 0.68, height: size * 0.68 }} className="object-contain" />
+        </div>
+      );
+    }
     return (
       <div className={`rounded-xl flex items-center justify-center shrink-0 ${meta.iconClass}`} style={{ width: size, height: size }}>
         <Icon size={size * 0.55} />
@@ -1194,7 +1218,11 @@ const SocialMediaHub = ({
       );
     }
     return (
-      <button onClick={() => setActiveTab(tab.id)} className={`px-4 py-2.5 rounded-xl text-sm font-bold whitespace-nowrap border transition-colors shrink-0 ${isDark ? 'border-slate-800 text-slate-400 hover:text-slate-200 hover:border-slate-700' : 'border-slate-200 text-slate-500 hover:text-slate-800 hover:border-slate-300'}`}>
+      <button
+        onClick={() => setActiveTab(tab.id)}
+        style={{ WebkitTapHighlightColor: 'transparent' }}
+        className={`px-4 py-2.5 rounded-xl text-sm font-bold whitespace-nowrap border transition-colors shrink-0 bg-transparent outline-none focus:outline-none focus:ring-0 focus-visible:outline-none active:bg-transparent ${isDark ? 'border-slate-800 text-slate-400 hover:text-slate-200 hover:border-slate-700 hover:bg-transparent' : 'border-slate-200 text-slate-500 hover:text-slate-800 hover:border-slate-300 hover:bg-transparent'}`}
+      >
         {tab.name}
       </button>
     );
@@ -1403,17 +1431,51 @@ const SocialMediaHub = ({
                       <th className="px-6 py-4 font-bold text-right">المنصة</th>
                       <th className="px-6 py-4 font-bold text-right">الموعد</th>
                       <th className="px-6 py-4 font-bold text-right">الحالة</th>
+                      <th className="px-6 py-4 font-bold text-right">إجراءات</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-700/50">
                     {scheduledPosts.map((post) => (
                       <tr key={post.id} className={isDark ? 'hover:bg-slate-800/30' : 'hover:bg-slate-50'}>
-                        <td className="px-6 py-4 font-bold">{post.name}</td>
-                        <td className="px-6 py-4">{post.platform}</td>
-                        <td className="px-6 py-4 text-slate-400">{post.time}</td>
-                        <td className="px-6 py-4">
-                          <span className={`px-2.5 py-1 rounded-lg text-xs font-bold border ${post.statusColor === 'blue' ? 'text-[#67e2f5] bg-[#67e2f5]/10 border-[#06C6EA]/20' : 'text-yellow-500 bg-yellow-500/10 border-yellow-500/20'}`}>{post.status}</span>
-                        </td>
+                        {editingPostId === post.id ? (
+                          <>
+                            <td className="px-6 py-3">
+                              <input value={editPostName} onChange={(e: any) => setEditPostName(e.target.value)} className={`w-full p-2 rounded-lg text-sm outline-none border ${isDark ? 'bg-slate-800/60 border-slate-700 text-white' : 'bg-white border-slate-200'}`} />
+                            </td>
+                            <td className="px-6 py-3">{post.platform}</td>
+                            <td className="px-6 py-3">
+                              <input value={editPostTime} onChange={(e: any) => setEditPostTime(e.target.value)} className={`w-full p-2 rounded-lg text-sm outline-none border ${isDark ? 'bg-slate-800/60 border-slate-700 text-white' : 'bg-white border-slate-200'}`} />
+                            </td>
+                            <td className="px-6 py-3">
+                              <span className={`px-2.5 py-1 rounded-lg text-xs font-bold border ${post.statusColor === 'blue' ? 'text-[#67e2f5] bg-[#67e2f5]/10 border-[#06C6EA]/20' : 'text-yellow-500 bg-yellow-500/10 border-yellow-500/20'}`}>{post.status}</span>
+                            </td>
+                            <td className="px-6 py-3">
+                              <div className="flex items-center gap-2">
+                                <button onClick={saveEditPost} className="text-xs font-bold text-white bg-[#426CEA] hover:opacity-90 px-3 py-1.5 rounded-lg transition-opacity">حفظ</button>
+                                <button onClick={() => setEditingPostId(null)} className={`text-xs font-bold px-3 py-1.5 rounded-lg border transition-colors ${isDark ? 'border-slate-700 text-slate-300 hover:bg-slate-800' : 'border-slate-200 text-slate-600 hover:bg-slate-50'}`}>إلغاء</button>
+                              </div>
+                            </td>
+                          </>
+                        ) : (
+                          <>
+                            <td className="px-6 py-4 font-bold">{post.name}</td>
+                            <td className="px-6 py-4">{post.platform}</td>
+                            <td className="px-6 py-4 text-slate-400">{post.time}</td>
+                            <td className="px-6 py-4">
+                              <span className={`px-2.5 py-1 rounded-lg text-xs font-bold border ${post.statusColor === 'blue' ? 'text-[#67e2f5] bg-[#67e2f5]/10 border-[#06C6EA]/20' : 'text-yellow-500 bg-yellow-500/10 border-yellow-500/20'}`}>{post.status}</span>
+                            </td>
+                            <td className="px-6 py-4">
+                              <div className="flex items-center gap-1.5">
+                                <button onClick={() => startEditPost(post)} title="تعديل" className={`p-2 rounded-lg transition-colors ${isDark ? 'text-slate-400 hover:text-[#67e2f5] hover:bg-[#06C6EA]/10' : 'text-slate-500 hover:text-[#426CEA] hover:bg-[#426CEA]/10'}`}>
+                                  <Edit size={16} />
+                                </button>
+                                <button onClick={() => deleteScheduledPost(post.id)} title="حذف" className={`p-2 rounded-lg transition-colors ${isDark ? 'text-slate-400 hover:text-red-400 hover:bg-red-500/10' : 'text-slate-500 hover:text-red-600 hover:bg-red-50'}`}>
+                                  <Trash2 size={16} />
+                                </button>
+                              </div>
+                            </td>
+                          </>
+                        )}
                       </tr>
                     ))}
                   </tbody>
@@ -1998,7 +2060,10 @@ const MarketingCalendar = ({ isDark, setActiveView, setRawIdea, setIsAiAssistOpe
   return (
     <div className="w-full max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 animate-in fade-in zoom-in duration-500">
       <div className={`mb-8 ${t.dir === 'ltr' ? 'text-left' : 'text-right'}`}>
-        <h2 className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-[#67e2f5] to-[#426CEA] mb-2">{t.calTitle}</h2>
+        <h2 className="text-3xl font-black bg-clip-text text-transparent bg-gradient-to-r from-[#67e2f5] to-[#426CEA] mb-2 flex items-center gap-3">
+          <CalendarRange size={30} className="text-[#426CEA] shrink-0" strokeWidth={2.5} />
+          {t.calTitle}
+        </h2>
         <p className={`font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t.calDesc}</p>
       </div>
 
@@ -2527,6 +2592,11 @@ export default function App() {
       setActiveTab('connections');
       // تنظيف الرابط بعد السحب حتى لا يبقى الكود ظاهراً
       window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (urlParams.get('tk_connected') === 'false') {
+      setIsTkConnected(false);
+      setIsSettingsOpen(true);
+      setActiveTab('connections');
+      window.history.replaceState({}, document.title, window.location.pathname);
     }
 
     // التقاط بيانات انستقرام الحقيقية من الرابط بعد عودة العميل من المصادقة
@@ -3040,8 +3110,8 @@ CRITICAL RULES:
                             {isTkConnected && tkAvatar ? (
                               <img src={tkAvatar} alt="TikTok Avatar" className="w-12 h-12 rounded-xl object-cover shadow-md border border-slate-200 dark:border-slate-700" />
                             ) : (
-                              <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-black text-white shadow-md">
-                                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z"/></svg>
+                              <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-black text-white shadow-md overflow-hidden">
+                                <img src="/tiktok-logo.png" alt="TikTok" className="w-8 h-8 object-contain" />
                               </div>
                             )}
                             <div>
