@@ -84,26 +84,38 @@ export default function Auth() {
   return (
     // الخلفية الحيوية والتفاعلية
     <div 
-      className="relative flex items-center justify-center min-h-screen bg-slate-950 font-sans overflow-hidden transition-all duration-500"
+      className="relative flex items-center justify-center min-h-screen bg-[#0b1121] font-sans overflow-hidden transition-all duration-500"
       dir={isArabic ? 'rtl' : 'ltr'}
     >
+      {/* خلفية الهوية البصرية (SmartFlow Brand) بشفافية خافتة 🚀 */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          backgroundImage: "url('/smartflow-bg.jpg')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          opacity: 0.35,
+        }}
+      />
       {/* كرات مضيئة في الخلفية لتعطي طابع 3D وحيوي */}
-      <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-purple-600 rounded-full mix-blend-multiply filter blur-[128px] opacity-40 animate-pulse"></div>
-      <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-blue-600 rounded-full mix-blend-multiply filter blur-[128px] opacity-40 animate-pulse" style={{ animationDelay: '2s' }}></div>
+      <div className="absolute top-[-10%] left-[-10%] w-96 h-96 rounded-full mix-blend-multiply filter blur-[128px] opacity-40 animate-pulse" style={{ backgroundColor: '#426CEA' }}></div>
+      <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 rounded-full mix-blend-multiply filter blur-[128px] opacity-40 animate-pulse" style={{ backgroundColor: '#06C6EA', animationDelay: '2s' }}></div>
 
       {/* زر تبديل اللغة (ثابت أعلى يسار الشاشة دائماً) */}
       <button
         onClick={() => setIsArabic(!isArabic)}
-        className="absolute top-6 left-6 z-50 px-4 py-2 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/10 text-white rounded-full text-sm font-medium transition-all shadow-lg hover:shadow-purple-500/20 active:scale-95"
+        className="absolute top-6 left-6 z-50 px-4 py-2 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/10 text-white rounded-full text-sm font-medium transition-all shadow-lg hover:shadow-[#426CEA]/20 active:scale-95"
       >
         {t.langToggle}
       </button>
 
       {/* كارت تسجيل الدخول الزجاجي 3D */}
-      <div className="relative z-10 w-full max-w-md p-10 space-y-8 bg-slate-900/60 backdrop-blur-xl border border-slate-700/50 rounded-3xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.7)] hover:shadow-[0_0_60px_-15px_rgba(168,85,247,0.4)] hover:-translate-y-2 transition-all duration-500">
+      <div className="relative z-10 w-full max-w-md p-10 space-y-8 bg-slate-900/60 backdrop-blur-xl border border-slate-700/50 rounded-3xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.7)] hover:shadow-[0_0_60px_-15px_rgba(66,108,234,0.4)] hover:-translate-y-2 transition-all duration-500">
 
         <div className="text-center">
-          <h2 className="text-4xl font-black bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent drop-shadow-sm">
+          <h2 className="text-4xl font-black bg-gradient-to-r from-[#06C6EA] to-[#426CEA] bg-clip-text text-transparent drop-shadow-sm">
             {t.title}
           </h2>
           <p className="mt-3 text-sm text-slate-400 font-medium">
@@ -119,7 +131,7 @@ export default function Auth() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-5 py-3 bg-slate-950/50 border border-slate-700 rounded-xl focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 focus:outline-none text-white transition-all shadow-inner"
+              className="w-full px-5 py-3 bg-slate-950/50 border border-slate-700 rounded-xl focus:ring-2 focus:ring-[#426CEA]/50 focus:border-[#426CEA] focus:outline-none text-white transition-all shadow-inner"
               placeholder={t.emailPlaceholder}
               dir="ltr"
               style={{ textAlign: isArabic ? 'right' : 'left' }}
@@ -133,7 +145,7 @@ export default function Auth() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-5 py-3 bg-slate-950/50 border border-slate-700 rounded-xl focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 focus:outline-none text-white transition-all shadow-inner"
+              className="w-full px-5 py-3 bg-slate-950/50 border border-slate-700 rounded-xl focus:ring-2 focus:ring-[#426CEA]/50 focus:border-[#426CEA] focus:outline-none text-white transition-all shadow-inner"
               placeholder={t.passwordPlaceholder}
               dir="ltr"
               style={{ textAlign: isArabic ? 'right' : 'left' }}
@@ -150,7 +162,7 @@ export default function Auth() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full relative group overflow-hidden py-4 text-white font-bold rounded-xl bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 shadow-[0_10px_20px_-10px_rgba(168,85,247,0.6)] hover:shadow-[0_10px_30px_-10px_rgba(168,85,247,0.8)] transform active:scale-95 transition-all duration-300 disabled:opacity-50 disabled:active:scale-100"
+              className="w-full relative group overflow-hidden py-4 text-white font-bold rounded-xl bg-gradient-to-r from-[#06C6EA] to-[#426CEA] shadow-[0_10px_20px_-10px_rgba(66,108,234,0.6)] hover:shadow-[0_10px_30px_-10px_rgba(66,108,234,0.8)] transform active:scale-95 transition-all duration-300 disabled:opacity-50 disabled:active:scale-100"
             >
               <div className="absolute inset-0 w-full h-full bg-white/20 group-hover:translate-x-full transition-transform duration-500 ease-out -skew-x-12 -translate-x-full"></div>
               <span className="relative z-10">{loading ? t.loading : (isLogin ? t.loginBtn : t.signupBtn)}</span>
@@ -165,7 +177,7 @@ export default function Auth() {
               setIsLogin(!isLogin);
               setMessage('');
             }}
-            className="text-purple-400 hover:text-purple-300 hover:underline focus:outline-none transition-colors"
+            className="text-[#67e2f5] hover:text-[#8fa6f3] hover:underline focus:outline-none transition-colors"
           >
             {isLogin ? t.switchSignup : t.switchLogin}
           </button>
@@ -174,11 +186,11 @@ export default function Auth() {
         {/* الروابط القانونية - تظهر في أسفل الكارت وترتبط بملفاتك الداخلية */}
         <div className="pt-2 text-center text-xs text-slate-500 font-medium">
           {t.agreementText}
-          <a href="/terms.html" target="_blank" rel="noreferrer" className="underline hover:text-purple-400 transition-colors">
+          <a href="/terms.html" target="_blank" rel="noreferrer" className="underline hover:text-[#67e2f5] transition-colors">
             {t.termsText}
           </a>
           {t.andText}
-          <a href="/privacy.html" target="_blank" rel="noreferrer" className="underline hover:text-purple-400 transition-colors">
+          <a href="/privacy.html" target="_blank" rel="noreferrer" className="underline hover:text-[#67e2f5] transition-colors">
             {t.privacyText}
           </a>
         </div>
