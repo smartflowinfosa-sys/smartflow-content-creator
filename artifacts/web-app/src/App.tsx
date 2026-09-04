@@ -888,7 +888,7 @@ const AdminDashboard = ({ isDark, t }: any) => {
 // 🚀 مركز إدارة السوشال ميديا الجديد (Social Media Hub) 🚀
 // ==========================================
 const SOCIAL_PROVIDER_META: any = {
-  tiktok: { label: 'TikTok', icon: PlayCircle, iconImage: '/tiktok-logo.png', iconClass: 'bg-black text-white' },
+  tiktok: { label: 'TikTok', icon: PlayCircle, iconImage: 'data:image/png;base64,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', iconClass: 'bg-black text-white' },
   instagram: { label: 'Instagram', icon: Instagram, iconClass: 'bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 text-white' },
   whatsapp: { label: 'WhatsApp', icon: Phone, iconClass: 'bg-green-500 text-white' },
   google: { label: 'Google Business', icon: Store, iconClass: 'bg-blue-600 text-white' },
@@ -1074,10 +1074,11 @@ const SocialMediaHub = ({
   const ProviderIcon = ({ provider, size = 40 }: any) => {
     const meta = SOCIAL_PROVIDER_META[provider];
     const Icon = meta.icon;
-    if (meta.iconImage) {
+    const [imgFailed, setImgFailed] = useState(false);
+    if (meta.iconImage && !imgFailed) {
       return (
         <div className={`rounded-xl flex items-center justify-center shrink-0 overflow-hidden ${meta.iconClass}`} style={{ width: size, height: size }}>
-          <img src={meta.iconImage} alt={meta.label} style={{ width: size * 0.68, height: size * 0.68 }} className="object-contain" />
+          <img src={meta.iconImage} alt={meta.label} onError={() => setImgFailed(true)} style={{ width: size * 0.68, height: size * 0.68 }} className="object-contain" />
         </div>
       );
     }
@@ -1608,7 +1609,7 @@ const SocialMediaHub = ({
               <h3 className="text-lg font-bold mb-4">قنوات صندوق الوارد</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {connections.map((conn) => (
-                  <div key={conn.provider} onClick={() => setActiveChannelDetail(conn.provider)} className={`p-4 rounded-2xl border flex items-center justify-between gap-3 cursor-pointer transition-colors ${isDark ? 'bg-slate-900/50 border-slate-800 hover:border-[#426CEA]/50' : 'bg-white border-slate-200 shadow-sm hover:border-[#a6b9f7]'}`}>
+                  <div key={conn.provider} onClick={() => setActiveChannelDetail(conn.provider)} style={{ WebkitTapHighlightColor: 'transparent' }} className={`p-4 rounded-2xl border flex items-center justify-between gap-3 cursor-pointer transition-colors outline-none select-none ${isDark ? 'bg-slate-900/50 border-slate-800 hover:border-[#426CEA]/50' : 'bg-white border-slate-200 shadow-sm hover:border-[#a6b9f7]'}`}>
                     <div className="flex items-center gap-3">
                       <ProviderIcon provider={conn.provider} size={32} />
                       <div>
@@ -2071,9 +2072,11 @@ const MarketingCalendar = ({ isDark, setActiveView, setRawIdea, setIsAiAssistOpe
         {events.map((ev) => {
           const isDone = completedEvents.includes(ev.id);
           const daysLeft = getDaysLeft(ev.date);
+          const isExpired = daysLeft === t.calEnded;
+          const isClosed = isDone || isExpired;
           
           return (
-            <div key={ev.id} className={`p-6 rounded-3xl border transition-all duration-300 relative overflow-hidden ${isDone ? (isDark ? 'bg-slate-900/40 border-slate-800 opacity-60' : 'bg-slate-100 border-slate-200 opacity-60 grayscale-[50%]') : (isDark ? 'bg-slate-900/80 border-slate-700/80 shadow-lg hover:border-[#426CEA]/50' : 'bg-white border-slate-200 shadow-xl hover:border-[#8fa6f3]')}`}>
+            <div key={ev.id} className={`p-6 rounded-3xl border transition-all duration-300 relative overflow-hidden ${isClosed ? (isDark ? 'bg-slate-900/40 border-slate-800 opacity-60 grayscale-[60%]' : 'bg-slate-100 border-slate-200 opacity-60 grayscale-[50%]') : (isDark ? 'bg-slate-900/80 border-slate-700/80 shadow-lg hover:border-[#426CEA]/50' : 'bg-white border-slate-200 shadow-xl hover:border-[#8fa6f3]')}`}>
               
               <div className="flex justify-between items-start mb-4">
                 <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-2xl border ${ev.bg} ${ev.color} ${ev.border}`}>
@@ -2085,11 +2088,11 @@ const MarketingCalendar = ({ isDark, setActiveView, setRawIdea, setIsAiAssistOpe
                 </button>
               </div>
 
-              <h3 className={`text-lg font-black mb-1 ${isDone ? 'line-through decoration-2' : ''} ${isDark ? 'text-white' : 'text-slate-900'}`}>{ev.title}</h3>
+              <h3 className={`text-lg font-black mb-1 ${isClosed ? 'line-through decoration-2' : ''} ${isDark ? 'text-white' : 'text-slate-900'}`}>{ev.title}</h3>
               
               <div className="flex gap-2 mb-6 mt-3 flex-wrap">
                 <span className={`text-xs font-bold px-2.5 py-1 rounded-lg border ${ev.bg} ${ev.color} ${ev.border}`}>{ev.type}</span>
-                <span className={`text-xs font-bold px-2.5 py-1 rounded-lg border flex items-center gap-1 ${daysLeft === t.calEnded ? 'bg-red-500/10 text-red-500 border-red-500/20' : (isDark ? 'bg-slate-800 text-slate-300 border-slate-700' : 'bg-slate-100 text-slate-600 border-slate-200')}`}>
+                <span className={`text-xs font-bold px-2.5 py-1 rounded-lg border flex items-center gap-1 ${isExpired ? 'bg-red-500/10 text-red-500 border-red-500/20' : (isDark ? 'bg-slate-800 text-slate-300 border-slate-700' : 'bg-slate-100 text-slate-600 border-slate-200')}`}>
                    <Clock size={12} /> {daysLeft}
                 </span>
                 <span className={`text-xs font-bold px-2.5 py-1 rounded-lg border ${isDark ? 'bg-slate-800 text-slate-400 border-slate-700' : 'bg-slate-100 text-slate-500 border-slate-200'}`} dir="ltr">{ev.date}</span>
@@ -2097,8 +2100,8 @@ const MarketingCalendar = ({ isDark, setActiveView, setRawIdea, setIsAiAssistOpe
 
               <button 
                 onClick={() => handleLaunch(ev.title)} 
-                disabled={isDone || daysLeft === t.calEnded}
-                className={`w-full py-3 rounded-xl text-sm font-bold flex justify-center items-center gap-2 transition-all ${isDone || daysLeft === t.calEnded ? (isDark ? 'bg-slate-800 text-slate-600 cursor-not-allowed' : 'bg-slate-200 text-slate-400 cursor-not-allowed') : 'bg-gradient-to-r from-[#06AFCE] to-[#3557d1] text-white hover:shadow-lg hover:scale-[1.02]'}`}
+                disabled={isClosed}
+                className={`w-full py-3 rounded-xl text-sm font-bold flex justify-center items-center gap-2 transition-all ${isClosed ? (isDark ? 'bg-slate-800 text-slate-600 cursor-not-allowed' : 'bg-slate-200 text-slate-400 cursor-not-allowed') : 'bg-gradient-to-r from-[#06AFCE] to-[#3557d1] text-white hover:shadow-lg hover:scale-[1.02]'}`}
               >
                 <Wand2 size={16} /> {isDone ? t.calPrepared : t.calLaunch}
               </button>
@@ -3111,7 +3114,7 @@ CRITICAL RULES:
                               <img src={tkAvatar} alt="TikTok Avatar" className="w-12 h-12 rounded-xl object-cover shadow-md border border-slate-200 dark:border-slate-700" />
                             ) : (
                               <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-black text-white shadow-md overflow-hidden">
-                                <img src="/tiktok-logo.png" alt="TikTok" className="w-8 h-8 object-contain" />
+                                <img src={SOCIAL_PROVIDER_META.tiktok.iconImage} alt="TikTok" className="w-8 h-8 object-contain" />
                               </div>
                             )}
                             <div>
