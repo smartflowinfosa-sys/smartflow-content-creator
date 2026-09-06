@@ -958,6 +958,24 @@ const SF_PROVIDER_STATS: any = {
   google: { totalReviews: 47, avgRating: 4.6, positive: 41, negative: 6 },
 };
 
+// تقييمات قوقل بزنس التجريبية لعرضها داخل صفحة تفاصيل القناة (نفس أسلوب لوحة تقييمات قوقل ماب) 🚀
+const SF_DEMO_GOOGLE_REVIEWS = [
+  {
+    id: 1, name: 'أحمد عبدالله', avatarLetter: 'أ', stars: 5, time: 'قبل ساعتين',
+    text: 'تجربة ممتازة جداً! المكان نظيف والخدمة سريعة.',
+    sentimentPositive: true, tag: 'التصنيف: الخدمة والجودة',
+    aiReplyText: 'نسعد بتجربتك أستاذ أحمد! شهادتك بجودة خدمتنا وسام نعتز به.',
+    status: 'published',
+  },
+  {
+    id: 2, name: 'سارة خالد', avatarLetter: 'س', stars: 4, time: 'أمس',
+    text: 'للأسف الطلب تأخر أكثر من 45 دقيقة، ولما وصل كان الأكل بارد.',
+    sentimentPositive: false, tag: 'التصنيف: خدمة العملاء',
+    aiReplyText: 'نعتذر جداً عن هذا التأخير غير المقبول، وهذا ليس مستوى الخدمة الذي نعد به.',
+    status: 'draft',
+  },
+];
+
 const SocialMediaHub = ({
   isDark, t, setActiveView,
   isTkConnected, tkUsername, tkAvatar, setIsTkConnected, setTkUsername, setTkAvatar, handleConnectTikTok,
@@ -1063,6 +1081,10 @@ const SocialMediaHub = ({
   // إعدادات كل منصة (وضع الرد + خيارات خاصة) - محفوظة في التخزين المحلي 🚀
   const [appSettings, setAppSettings] = useState<any>(() => sfReadLS('sf_autoreply_settings_v2', SF_DEFAULT_SETTINGS));
   const [activeChannelDetail, setActiveChannelDetail] = useState<string | null>(null);
+  const [googleReviews, setGoogleReviews] = useState<any[]>(SF_DEMO_GOOGLE_REVIEWS);
+  const [googleReviewFilter, setGoogleReviewFilter] = useState('latest');
+  const [editingGoogleReviewId, setEditingGoogleReviewId] = useState<number | null>(null);
+  const [editGoogleReviewText, setEditGoogleReviewText] = useState("");
 
   useEffect(() => { sfWriteLS('sf_autoreply_settings_v2', appSettings); }, [appSettings]);
 
@@ -1075,9 +1097,9 @@ const SocialMediaHub = ({
   ];
 
   const StatusBadge = ({ status }: { status: string }) => {
-    if (status === 'connected') return <span className="flex items-center text-xs text-green-400 bg-green-400/10 px-2.5 py-1 rounded-full border border-green-500/20"><span className="w-1.5 h-1.5 rounded-full bg-green-400 ml-1.5"></span>متصل</span>;
-    if (status === 'pending') return <span className="flex items-center text-xs text-yellow-500 bg-yellow-500/10 px-2.5 py-1 rounded-full border border-yellow-500/20"><span className="w-1.5 h-1.5 rounded-full bg-yellow-500 ml-1.5"></span>بانتظار الموافقة</span>;
-    return <span className="flex items-center text-xs text-slate-400 bg-slate-800/50 px-2.5 py-1 rounded-full border border-slate-700"><span className="w-1.5 h-1.5 rounded-full bg-slate-500 ml-1.5"></span>غير متصل</span>;
+    if (status === 'connected') return <span className="flex items-center text-xs text-green-500 bg-green-500/10 px-2.5 py-1 rounded-full border border-green-500/20"><span className="w-1.5 h-1.5 rounded-full bg-green-500 ml-1.5"></span>متصل</span>;
+    if (status === 'pending') return <span className="flex items-center text-xs text-yellow-600 bg-yellow-500/10 px-2.5 py-1 rounded-full border border-yellow-500/20"><span className="w-1.5 h-1.5 rounded-full bg-yellow-500 ml-1.5"></span>بانتظار الموافقة</span>;
+    return <span className={`flex items-center text-xs font-bold px-2.5 py-1 rounded-full border ${isDark ? 'text-slate-300 bg-slate-800/60 border-slate-600' : 'text-slate-600 bg-red-50 border-red-200'}`}><span className="w-1.5 h-1.5 rounded-full bg-red-500 ml-1.5 shrink-0"></span>غير متصل</span>;
   };
 
   const ProviderIcon = ({ provider, size = 40 }: any) => {
@@ -1207,6 +1229,27 @@ const SocialMediaHub = ({
     setAppSettings((prev: any) => ({ ...prev, [provider]: { ...prev[provider], [key]: value } }));
   };
 
+  // اعتماد/تعديل رد الذكاء الاصطناعي المقترح على تقييمات قوقل بزنس 🚀
+  const approveGoogleReview = (id: number, textOverride?: string) => {
+    setGoogleReviews((prev) => prev.map((r) => r.id === id ? { ...r, aiReplyText: textOverride ?? r.aiReplyText, status: 'published' } : r));
+    setEditingGoogleReviewId(null);
+  };
+  const startEditGoogleReview = (id: number, currentText: string) => {
+    setEditingGoogleReviewId(id);
+    setEditGoogleReviewText(currentText);
+  };
+  const submitEditGoogleReview = () => {
+    if (editingGoogleReviewId === null || !editGoogleReviewText.trim()) return;
+    approveGoogleReview(editingGoogleReviewId, editGoogleReviewText.trim());
+  };
+  const sortedGoogleReviews = googleReviewFilter === 'rating'
+    ? googleReviews.filter((r) => !r.text)
+    : googleReviewFilter === 'comment'
+    ? googleReviews.filter((r) => !!r.text)
+    : googleReviewFilter === 'oldest'
+    ? [...googleReviews].reverse()
+    : googleReviews;
+
   const inboxProviders = inboxFilter === 'all' ? connections : connections.filter((c) => c.provider === inboxFilter);
   const flattenedConversations = inboxProviders.flatMap((c) =>
     (conversations[c.provider] || []).map((conv: any) => ({ ...conv, provider: c.provider }))
@@ -1220,10 +1263,12 @@ const SocialMediaHub = ({
     const isActive = activeTab === tab.id;
     if (isActive) {
       return (
-        <button onClick={() => setActiveTab(tab.id)} className="relative rounded-xl p-[2px] bg-gradient-to-r from-[#06C6EA] to-[#426CEA] animate-pulse shadow-[0_0_14px_rgba(66,108,234,0.5)] shrink-0">
-          <span className={`block px-4 py-2 rounded-[10px] text-sm font-black whitespace-nowrap ${isDark ? 'bg-[#0f172a] text-transparent bg-clip-text bg-gradient-to-r from-[#06C6EA] to-[#426CEA]' : 'bg-white text-transparent bg-clip-text bg-gradient-to-r from-[#06C6EA] to-[#426CEA]'}`}>
-            {tab.name}
-          </span>
+        <button onClick={() => setActiveTab(tab.id)} style={{ WebkitTapHighlightColor: 'transparent' }} className="relative rounded-xl p-[2px] bg-gradient-to-r from-[#06C6EA] to-[#426CEA] animate-pulse shadow-[0_0_14px_rgba(66,108,234,0.5)] shrink-0 outline-none">
+          <div className={`px-4 py-2 rounded-[10px] ${isDark ? 'bg-[#0f172a]' : 'bg-white'}`}>
+            <span className="block text-sm font-black whitespace-nowrap text-transparent bg-clip-text bg-gradient-to-r from-[#06C6EA] to-[#426CEA]">
+              {tab.name}
+            </span>
+          </div>
         </button>
       );
     }
@@ -1609,6 +1654,92 @@ const SocialMediaHub = ({
                       </div>
                     )}
                   </div>
+
+                  {/* التعليقات والردود (قوقل بزنس فقط) - فلاتر + رد آلي + رد AI مقترح + توقيع الموظف 🚀 */}
+                  {provider === 'google' && (
+                    <div>
+                      <h3 className="text-sm font-black mb-3">التعليقات والردود</h3>
+                      <div className={`rounded-2xl border overflow-hidden ${isDark ? 'bg-slate-900/50 border-slate-800' : 'bg-white border-slate-200'}`}>
+                        <div className={`flex flex-wrap items-center justify-between gap-3 p-3 border-b ${isDark ? 'border-slate-800' : 'border-slate-200'}`}>
+                          <div className={`flex items-center gap-1 p-1 rounded-xl ${isDark ? 'bg-slate-800/60' : 'bg-slate-100'}`}>
+                            <button onClick={() => setGoogleReviewFilter('rating')} className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${googleReviewFilter === 'rating' ? (isDark ? 'bg-slate-700 shadow-md text-white' : 'bg-white shadow-md text-slate-900') : (isDark ? 'text-slate-400 hover:bg-slate-800' : 'text-slate-500 hover:bg-slate-200')}`}>{t.filterRating}</button>
+                            <button onClick={() => setGoogleReviewFilter('comment')} className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${googleReviewFilter === 'comment' ? (isDark ? 'bg-slate-700 shadow-md text-white' : 'bg-white shadow-md text-slate-900') : (isDark ? 'text-slate-400 hover:bg-slate-800' : 'text-slate-500 hover:bg-slate-200')}`}>{t.filterComment}</button>
+                            <span className={`w-px h-4 mx-1 ${isDark ? 'bg-slate-700' : 'bg-slate-300'}`}></span>
+                            <button onClick={() => setGoogleReviewFilter('oldest')} className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${googleReviewFilter === 'oldest' ? (isDark ? 'bg-slate-700 shadow-md text-white' : 'bg-white shadow-md text-slate-900') : (isDark ? 'text-slate-400 hover:bg-slate-800' : 'text-slate-500 hover:bg-slate-200')}`}>{t.filterOldest}</button>
+                            <button onClick={() => setGoogleReviewFilter('latest')} className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${googleReviewFilter === 'latest' ? (isDark ? 'bg-slate-700 shadow-md text-white' : 'bg-white shadow-md text-slate-900') : (isDark ? 'text-slate-400 hover:bg-slate-800' : 'text-slate-500 hover:bg-slate-200')}`}>{t.filterLatest}</button>
+                            <span className={`text-xs font-bold px-2 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>{t.filterTimeAll}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className={`text-xs font-bold ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>{t.autoReplyMode}</span>
+                            <ToggleSwitch isOn={settings.replyMode === 'auto'} onToggle={() => updateProviderSetting('google', 'replyMode', settings.replyMode === 'auto' ? 'suggest' : 'auto')} />
+                          </div>
+                        </div>
+
+                        <div className={`divide-y ${isDark ? 'divide-slate-800' : 'divide-slate-100'}`}>
+                          {sortedGoogleReviews.map((rev) => {
+                            const displayStatus = settings.replyMode === 'auto' ? 'published' : rev.status;
+                            return (
+                              <div key={rev.id} className="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className={`rounded-2xl border p-4 ${displayStatus === 'published' ? (isDark ? 'bg-[#06C6EA]/5 border-[#06C6EA]/20' : 'bg-cyan-50/50 border-cyan-100') : (isDark ? 'bg-orange-500/5 border-orange-500/20' : 'bg-orange-50/50 border-orange-100')}`}>
+                                  <div className="flex justify-between items-start mb-3 gap-2 border-b border-black/5 pb-2">
+                                    <h4 className={`text-xs font-black flex items-center gap-2 ${isDark ? 'text-[#67e2f5]' : 'text-[#3557d1]'}`}><Bot size={16} /> {t.aiReplyTitle}</h4>
+                                    {displayStatus === 'published' ? (
+                                      <span className="text-xs font-bold text-[#3557d1] bg-[#426CEA]/10 px-2.5 py-1 rounded-lg border border-[#426CEA]/20 flex items-center gap-1.5 whitespace-nowrap"><CheckCircle2 size={14} /> {t.autoPublished}</span>
+                                    ) : (
+                                      <span className="text-xs font-bold text-orange-500 bg-orange-500/10 px-2.5 py-1 rounded-lg border border-orange-500/20 flex items-center gap-1.5 whitespace-nowrap"><Info size={14} /> {t.draftReview}</span>
+                                    )}
+                                  </div>
+
+                                  {editingGoogleReviewId === rev.id ? (
+                                    <div className="space-y-2">
+                                      <textarea value={editGoogleReviewText} onChange={(e: any) => setEditGoogleReviewText(e.target.value)} rows={3} className={`w-full p-2.5 rounded-lg text-sm outline-none border resize-none ${isDark ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-slate-200'}`} />
+                                      <div className="flex gap-2">
+                                        <button onClick={submitEditGoogleReview} className="flex-1 bg-[#426CEA] hover:opacity-90 text-white py-2 rounded-xl text-sm font-bold transition-all">إرسال الرد المعدّل</button>
+                                        <button onClick={() => setEditingGoogleReviewId(null)} className={`flex-1 py-2 rounded-xl text-sm font-bold border transition-all ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}>إلغاء</button>
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    <>
+                                      <p className="text-sm font-medium leading-relaxed mb-3">{rev.aiReplyText}</p>
+                                      <AiSignature />
+                                      {displayStatus !== 'published' && (
+                                        <div className="flex gap-2 mt-4">
+                                          <button onClick={() => approveGoogleReview(rev.id)} className="flex-1 bg-[#426CEA] hover:opacity-90 text-white py-2 rounded-xl text-sm font-bold transition-all">{t.approvePublish}</button>
+                                          <button onClick={() => startEditGoogleReview(rev.id, rev.aiReplyText)} className={`flex-1 py-2 rounded-xl text-sm font-bold border transition-all ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'}`}>{t.editReply}</button>
+                                        </div>
+                                      )}
+                                    </>
+                                  )}
+                                </div>
+
+                                <div>
+                                  <div className="flex justify-between items-start gap-3">
+                                    <div className="flex gap-0.5">
+                                      {Array.from({ length: 5 }).map((_, i) => (
+                                        <Star key={i} size={16} className={i < rev.stars ? 'fill-yellow-400 text-yellow-400' : (isDark ? 'text-slate-700' : 'text-slate-300')} />
+                                      ))}
+                                    </div>
+                                    <div className="flex items-center gap-2 text-right">
+                                      <div>
+                                        <p className="text-sm font-bold">{rev.name}</p>
+                                        <p className={`text-[11px] ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>{rev.time}</p>
+                                      </div>
+                                      <div className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm shrink-0 ${isDark ? 'bg-slate-700 text-white' : 'bg-slate-200 text-slate-700'}`}>{rev.avatarLetter}</div>
+                                    </div>
+                                  </div>
+                                  <p className="text-sm font-medium leading-relaxed my-3">{rev.text}</p>
+                                  <div className="flex gap-2 flex-wrap">
+                                    <span className={`text-xs font-bold px-2.5 py-1 rounded-lg border ${isDark ? 'bg-slate-800 text-slate-300 border-slate-700' : 'bg-slate-100 text-slate-600 border-slate-200'}`}>{rev.tag}</span>
+                                    <span className={`text-xs font-bold px-2.5 py-1 rounded-lg border ${rev.sentimentPositive ? 'bg-green-500/10 text-green-500 border-green-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'}`}>{rev.sentimentPositive ? t.positive : t.negative}</span>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               );
             })()
@@ -2988,8 +3119,8 @@ CRITICAL RULES:
 
           {/* ظهور القوائم بناءً على صلاحيات الباقة */}
           {(hasCalendar || userRole === 'admin') && (
-            <button onClick={() => { setActiveView('calendar'); if(window.innerWidth < 768) setIsSidebarVisible(false); }} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${activeView === 'calendar' ? (isDark ? 'bg-[#426CEA]/10 text-[#8fa6f3] border border-[#426CEA]/20' : 'bg-[#eef1fd] text-[#3557d1] border border-[#c3d0fa]') : (isDark ? 'text-slate-400 hover:bg-slate-800 border border-transparent' : 'text-slate-600 hover:bg-slate-100 border border-transparent')}`}>
-              <CalendarRange size={20} className={activeView === 'calendar' ? 'text-[#426CEA]' : ''} /> 
+            <button onClick={() => { setActiveView('calendar'); if(window.innerWidth < 768) setIsSidebarVisible(false); }} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold transition-all ${activeView === 'calendar' ? (isDark ? 'bg-[#06C6EA]/10 text-[#67e2f5] border border-[#06C6EA]/20' : 'bg-cyan-50 text-cyan-700 border border-cyan-200') : (isDark ? 'text-slate-400 hover:bg-slate-800 border border-transparent' : 'text-slate-600 hover:bg-slate-100 border border-transparent')}`}>
+              <CalendarRange size={20} className={activeView === 'calendar' ? 'text-[#06C6EA]' : ''} /> 
               {t.calendarTab}
             </button>
           )}
@@ -3002,9 +3133,9 @@ CRITICAL RULES:
           )}
 
           {/* ===================== القسم الجديد ===================== */}
-          <button onClick={() => { setActiveView('socialHub'); if(window.innerWidth < 768) setIsSidebarVisible(false); }} className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl font-bold transition-all relative group overflow-hidden border ${activeView === 'socialHub' ? (isDark ? 'bg-[#426CEA]/10 text-[#8fa6f3] border-[#426CEA]/20' : 'bg-[#eef1fd] text-[#3557d1] border-[#c3d0fa]') : (isDark ? 'text-slate-400 hover:bg-slate-800 hover:border-slate-700 border-transparent' : 'text-slate-600 hover:bg-slate-100 hover:border-slate-200 border-transparent')}`}>
+          <button onClick={() => { setActiveView('socialHub'); if(window.innerWidth < 768) setIsSidebarVisible(false); }} className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl font-bold transition-all relative group overflow-hidden border ${activeView === 'socialHub' ? (isDark ? 'bg-[#06C6EA]/10 text-[#67e2f5] border-[#06C6EA]/20' : 'bg-cyan-50 text-cyan-700 border-cyan-200') : (isDark ? 'text-slate-400 hover:bg-slate-800 hover:border-slate-700 border-transparent' : 'text-slate-600 hover:bg-slate-100 hover:border-slate-200 border-transparent')}`}>
               <div className="flex items-center gap-3 w-full">
-                <Smartphone size={20} className={activeView === 'socialHub' ? 'text-[#426CEA] shrink-0' : 'group-hover:text-[#426CEA] transition-colors shrink-0'} /> 
+                <Smartphone size={20} className={activeView === 'socialHub' ? 'text-[#06C6EA] shrink-0' : 'group-hover:text-[#06C6EA] transition-colors shrink-0'} /> 
                 <span className="truncate flex-1 text-right">{t.socialHubTab}</span>
               </div>
           </button>
