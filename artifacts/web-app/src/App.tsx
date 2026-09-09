@@ -980,6 +980,7 @@ const SocialMediaHub = ({
   isDark, t, setActiveView,
   isTkConnected, tkUsername, tkAvatar, setIsTkConnected, setTkUsername, setTkAvatar, handleConnectTikTok,
   isIgConnected, igUsername, igAvatar, setIsIgConnected, setIgUsername, setIgAvatar, handleConnectInstagram,
+  handleDisconnectSocial,
 }: any) => {
   const [activeTab, setActiveTab] = useState('overview');
 
@@ -1146,9 +1147,8 @@ const SocialMediaHub = ({
   };
 
   const handleDisconnectProvider = (provider: string) => {
+    if (provider === 'tiktok' || provider === 'instagram') return handleDisconnectSocial(provider);
     if (!window.confirm(t.disconnectConfirm)) return;
-    if (provider === 'tiktok') { setIsTkConnected(false); setTkUsername(""); setTkAvatar(""); }
-    if (provider === 'instagram') { setIsIgConnected(false); setIgUsername(""); setIgAvatar(""); }
     if (provider === 'whatsapp') { setIsWaConnected(false); setWaPhone(""); }
     if (provider === 'google') { setIsGoogleConnected(false); }
   };
@@ -2689,26 +2689,14 @@ export default function App() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('general');
   
-  const [isIgConnected, setIsIgConnected] = useState(() => sfReadLS('sf_ig_connected', false));
-  const [igUsername, setIgUsername] = useState(() => sfReadLS('sf_ig_username', ""));
-  const [igAvatar, setIgAvatar] = useState(() => sfReadLS('sf_ig_avatar', ""));
+  const [isIgConnected, setIsIgConnected] = useState(false);
+  const [igUsername, setIgUsername] = useState("");
+  const [igAvatar, setIgAvatar] = useState("");
   
   // حالات تيك توك المحدثة 🚀
-  const [isTkConnected, setIsTkConnected] = useState(() => sfReadLS('sf_tk_connected', false)); 
-  const [tkUsername, setTkUsername] = useState(() => sfReadLS('sf_tk_username', ""));
-  const [tkAvatar, setTkAvatar] = useState(() => sfReadLS('sf_tk_avatar', ""));
-
-  // حفظ حالة ربط تيك توك وانستقرام في التخزين المحلي حتى لا تُفصل عند تحديث الصفحة أو ربط منصة أخرى 🚀
-  useEffect(() => {
-    sfWriteLS('sf_ig_connected', isIgConnected);
-    sfWriteLS('sf_ig_username', igUsername);
-    sfWriteLS('sf_ig_avatar', igAvatar);
-  }, [isIgConnected, igUsername, igAvatar]);
-  useEffect(() => {
-    sfWriteLS('sf_tk_connected', isTkConnected);
-    sfWriteLS('sf_tk_username', tkUsername);
-    sfWriteLS('sf_tk_avatar', tkAvatar);
-  }, [isTkConnected, tkUsername, tkAvatar]);
+  const [isTkConnected, setIsTkConnected] = useState(false);
+  const [tkUsername, setTkUsername] = useState("");
+  const [tkAvatar, setTkAvatar] = useState("");
   
   const [isConnecting, setIsConnecting] = useState(false);
 
@@ -2738,38 +2726,33 @@ export default function App() {
       setIsSidebarVisible(false);
     }
     
-    // التقاط بيانات تيك توك من الرابط بعد عودة العميل من المصادقة
+    // فتح تبويب الربط بعد العودة من OAuth. حالة الاتصال نفسها تُقرأ من السيرفر.
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('tk_connected') === 'true') {
-      setIsTkConnected(true);
-      setTkUsername(urlParams.get('tk_username') || "@user");
-      setTkAvatar(urlParams.get('tk_avatar') || "");
-      setIsSettingsOpen(true);
-      setActiveTab('connections');
-      // تنظيف الرابط بعد السحب حتى لا يبقى الكود ظاهراً
-      window.history.replaceState({}, document.title, window.location.pathname);
-    } else if (urlParams.get('tk_connected') === 'false') {
-      setIsTkConnected(false);
-      setIsSettingsOpen(true);
-      setActiveTab('connections');
-      window.history.replaceState({}, document.title, window.location.pathname);
-    }
-
-    // التقاط بيانات انستقرام الحقيقية من الرابط بعد عودة العميل من المصادقة
-    if (urlParams.get('ig_connected') === 'true') {
-      setIsIgConnected(true);
-      setIgUsername(urlParams.get('ig_username') || "@user");
-      setIgAvatar(urlParams.get('ig_avatar') || "");
-      setIsSettingsOpen(true);
-      setActiveTab('connections');
-      window.history.replaceState({}, document.title, window.location.pathname);
-    } else if (urlParams.get('ig_connected') === 'false') {
-      setIsIgConnected(false);
+    if (urlParams.has('oauth_connected')) {
       setIsSettingsOpen(true);
       setActiveTab('connections');
       window.history.replaceState({}, document.title, window.location.pathname);
     }
   }, []);
+
+  const loadSocialConnections = async (activeSession: any) => {
+    if (!activeSession?.access_token) return;
+    try {
+      const response = await fetch('/api/auth/connections', { headers: { Authorization: `Bearer ${activeSession.access_token}` } });
+      if (!response.ok) throw new Error('Could not load social connections');
+      const { connections = [] } = await response.json();
+      const instagram = connections.find((item: any) => item.platform === 'instagram');
+      const tiktok = connections.find((item: any) => item.platform === 'tiktok');
+      setIsIgConnected(Boolean(instagram));
+      setIgUsername(instagram?.username || '');
+      setIgAvatar(instagram?.avatar_url || '');
+      setIsTkConnected(Boolean(tiktok));
+      setTkUsername(tiktok?.username || '');
+      setTkAvatar(tiktok?.avatar_url || '');
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const checkUserStatus = async (user: any) => {
     if (!user) return;
@@ -2807,12 +2790,18 @@ export default function App() {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
-      if(session) checkUserStatus(session.user);
+      if(session) {
+        checkUserStatus(session.user);
+        loadSocialConnections(session);
+      }
       else setUserStatus('loading');
     });
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
-      if(session) checkUserStatus(session.user);
+      if(session) {
+        checkUserStatus(session.user);
+        loadSocialConnections(session);
+      }
       else setUserStatus('loading');
     });
     return () => subscription.unsubscribe();
@@ -2856,31 +2845,41 @@ export default function App() {
     }
   };
 
-  // دالة توجيه انستقرام الديناميكية 🚀
-  const handleConnectInstagram = () => {
+  const startOAuth = async (provider: 'instagram' | 'tiktok') => {
+    if (!session?.access_token) return alert('يرجى تسجيل الدخول أولاً');
     setIsConnecting(true);
-    const clientKey = "1038788628657969";
-    const redirectUri = "https://smartflow-content-creator-web-app.vercel.app/api/auth/instagram/callback";
-    const scope = "instagram_business_basic,instagram_business_content_publish";
-    const state = "ig_" + Math.random().toString(36).substring(7);
-
-    const authUrl = `https://www.instagram.com/oauth/authorize?client_id=${clientKey}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}&state=${state}`;
-
-    window.location.href = authUrl;
+    try {
+      const response = await fetch(`/api/auth/start?provider=${provider}`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+      const result = await response.json();
+      if (!response.ok || !result.authorizationUrl) throw new Error(result.error || 'oauth_start_failed');
+      window.location.assign(result.authorizationUrl);
+    } catch (error) {
+      console.error(error);
+      alert('تعذر بدء ربط الحساب. تحقق من إعدادات التطبيق وحاول مرة أخرى.');
+      setIsConnecting(false);
+    }
   };
 
-  // دالة توجيه تيك توك الديناميكية 🚀
-  const handleConnectTikTok = () => {
-    const clientKey = "awo6ohs5hl7tubqp"; 
-    const redirectUri = "https://smartflow-content-creator-web-app.vercel.app/api/auth/callback";
-    const scope = "user.info.basic,video.publish";
-    // توليد رمز حالة عشوائي لحماية الطلب (CSRF Protection)
-    const state = "tk_" + Math.random().toString(36).substring(7); 
-    
-    const authUrl = `https://www.tiktok.com/v2/auth/authorize/?client_key=${clientKey}&response_type=code&scope=${scope}&redirect_uri=${redirectUri}&state=${state}`;
-    
-    // نقل العميل فوراً لشاشة الموافقة
-    window.location.href = authUrl;
+  const handleConnectInstagram = () => startOAuth('instagram');
+  const handleConnectTikTok = () => startOAuth('tiktok');
+
+  const handleDisconnectSocial = async (provider: 'instagram' | 'tiktok') => {
+    if (!window.confirm(t.disconnectConfirm) || !session?.access_token) return;
+    try {
+      const response = await fetch('/api/auth/disconnect', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
+        body: JSON.stringify({ provider }),
+      });
+      if (!response.ok) throw new Error('disconnect_failed');
+      await loadSocialConnections(session);
+    } catch (error) {
+      console.error(error);
+      alert('تعذر فصل الحساب. حاول مرة أخرى.');
+    }
   };
 
   const handleImageChange = (e: any) => {
@@ -3255,7 +3254,7 @@ CRITICAL RULES:
                             </div>
                           </div>
                           {isIgConnected ? (
-                            <button onClick={() => { setIsIgConnected(false); setIgUsername(""); setIgAvatar(""); }} className={`px-4 py-2 rounded-lg text-xs font-bold border transition ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300 hover:text-red-400' : 'bg-slate-100 border-slate-200 text-slate-600 hover:text-red-500'}`}>{t.disconnectIg}</button>
+                            <button onClick={() => handleDisconnectSocial('instagram')} className={`px-4 py-2 rounded-lg text-xs font-bold border transition ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300 hover:text-red-400' : 'bg-slate-100 border-slate-200 text-slate-600 hover:text-red-500'}`}>{t.disconnectIg}</button>
                           ) : (
                             <button onClick={handleConnectInstagram} disabled={isConnecting} className="px-4 py-2 rounded-lg text-xs font-bold border bg-slate-900 text-white border-slate-800 hover:bg-slate-800 transition flex items-center gap-2">
                               {isConnecting ? <Loader2 size={14} className="animate-spin" /> : t.connectIg}
@@ -3283,10 +3282,10 @@ CRITICAL RULES:
                             </div>
                           </div>
                           {isTkConnected ? (
-                            <button onClick={() => { setIsTkConnected(false); setTkUsername(""); setTkAvatar(""); }} className={`px-4 py-2 rounded-lg text-xs font-bold border transition ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300 hover:text-red-400' : 'bg-slate-100 border-slate-200 text-slate-600 hover:text-red-500'}`}>{t.disconnectIg}</button>
+                            <button onClick={() => handleDisconnectSocial('tiktok')} className={`px-4 py-2 rounded-lg text-xs font-bold border transition ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300 hover:text-red-400' : 'bg-slate-100 border-slate-200 text-slate-600 hover:text-red-500'}`}>{t.disconnectIg}</button>
                           ) : (
-                            <button onClick={handleConnectTikTok} className="px-4 py-2 rounded-lg text-xs font-bold border bg-black text-white border-slate-800 hover:bg-slate-900 transition flex items-center gap-2">
-                              {t.connectTk}
+                            <button onClick={handleConnectTikTok} disabled={isConnecting} className="px-4 py-2 rounded-lg text-xs font-bold border bg-black text-white border-slate-800 hover:bg-slate-900 transition flex items-center gap-2">
+                              {isConnecting ? <Loader2 size={14} className="animate-spin" /> : t.connectTk}
                             </button>
                           )}
                         </div>
@@ -3391,6 +3390,7 @@ CRITICAL RULES:
             setIgUsername={setIgUsername}
             setIgAvatar={setIgAvatar}
             handleConnectInstagram={handleConnectInstagram}
+            handleDisconnectSocial={handleDisconnectSocial}
           />
         )}
         {/* ======================================================== */}

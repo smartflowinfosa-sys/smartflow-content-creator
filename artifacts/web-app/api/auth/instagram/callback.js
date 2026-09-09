@@ -1,59 +1,48 @@
+import { APP_URL, redirectToApp, saveConnection, verifyOAuthState } from '../_lib.js';
+
 export default async function handler(req, res) {
-  const { code, error } = req.query;
-
-  // إذا رفض العميل إعطاء الصلاحية
-  if (error) {
-    return res.redirect(302, '/?ig_connected=false');
-  }
-
+  const { code, state, error } = req.query;
+  if (error) return redirectToApp(res, 'instagram', false, String(error));
+  if (!code) return redirectToApp(res, 'instagram', false, 'missing_code');
   try {
-    // 1. تبديل الـ code بـ short-lived access_token
+    const { userId } = verifyOAuthState(state, 'instagram');
+    const redirectUri = `${APP_URL}/api/auth/instagram/callback`;
     const tokenResponse = await fetch('https://api.instagram.com/oauth/access_token', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: new URLSearchParams({
-        client_id: process.env.INSTAGRAM_CLIENT_KEY,
-        client_secret: process.env.INSTAGRAM_CLIENT_SECRET,
-        grant_type: 'authorization_code',
-        redirect_uri: 'https://smartflow-content-creator-web-app.vercel.app/api/auth/instagram/callback',
-        code: code,
-      }),
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ client_id: process.env.INSTAGRAM_CLIENT_KEY || '', client_secret: process.env.INSTAGRAM_CLIENT_SECRET || '', grant_type: 'authorization_code', redirect_uri: redirectUri, code: String(code) }),
     });
+    const shortLived = await tokenResponse.json();
+    if (!tokenResponse.ok || !shortLived.access_token) throw new Error(`Instagram token exchange failed: ${JSON.stringify(shortLived)}`);
 
-    const tokenData = await tokenResponse.json();
+    const longLivedUrl = new URL('https://graph.instagram.com/access_token');
+    longLivedUrl.search = new URLSearchParams({ grant_type: 'ig_exchange_token', client_secret: process.env.INSTAGRAM_CLIENT_SECRET || '', access_token: shortLived.access_token }).toString();
+    const longLivedResponse = await fetch(longLivedUrl);
+    const longLived = await longLivedResponse.json();
+    const accessToken = longLived.access_token || shortLived.access_token;
+    const expiresIn = longLived.expires_in || 3600;
 
-    if (!tokenData.access_token) {
-      return res.redirect(302, '/?ig_connected=false');
-    }
+    const profileUrl = new URL('https://graph.instagram.com/me');
+    profileUrl.search = new URLSearchParams({ fields: 'user_id,username,name,profile_picture_url', access_token: accessToken }).toString();
+    const profileResponse = await fetch(profileUrl);
+    const profile = await profileResponse.json();
+    if (!profileResponse.ok || profile.error) throw new Error(`Instagram profile request failed: ${JSON.stringify(profile)}`);
 
-    // 2. تحويل الـ short-lived token إلى long-lived token (يدوم 60 يوم بدل ساعة)
-    const longLivedResponse = await fetch(
-      `https://graph.instagram.com/access_token?grant_type=ig_exchange_token&client_secret=${process.env.INSTAGRAM_CLIENT_SECRET}&access_token=${tokenData.access_token}`
-    );
-    const longLivedData = await longLivedResponse.json();
-    const finalAccessToken = longLivedData.access_token || tokenData.access_token;
-
-    // 3. جلب بيانات المستخدم الحقيقية (اسم المستخدم + صورة البروفايل)
-    const userResponse = await fetch(
-      `https://graph.instagram.com/v21.0/me?fields=user_id,username,name,profile_picture_url&access_token=${finalAccessToken}`
-    );
-    const userData = await userResponse.json();
-
-    const igUsername = userData.username || 'instagram_user';
-    const igAvatar = userData.profile_picture_url || '';
-
-    // 4. حفظ الـ access_token و user_id في قاعدة البيانات هنا
-    // TODO: خزّن finalAccessToken و userData.user_id مرتبطين بحساب المستخدم بـ Supabase
-    // ملاحظة: الـ long-lived token يحتاج تجديد كل أقل من 60 يوم عبر نفس endpoint فوق
-
-    // 5. إعادة توجيه العميل لواجهة التطبيق ببيانات النجاح
-    const redirectUrl = `/?ig_connected=true&ig_username=${encodeURIComponent(igUsername)}&ig_avatar=${encodeURIComponent(igAvatar)}`;
-    res.redirect(302, redirectUrl);
-
-  } catch (err) {
-    console.error('Instagram OAuth error:', err);
-    return res.redirect(302, '/?ig_connected=false');
+    await saveConnection({
+      user_id: userId,
+      platform: 'instagram',
+      provider_account_id: String(profile.user_id || profile.id || shortLived.user_id || ''),
+      username: profile.username || profile.name || 'instagram_user',
+      avatar_url: profile.profile_picture_url || '',
+      access_token: accessToken,
+      refresh_token: null,
+      scope: 'instagram_business_basic,instagram_business_content_publish',
+      expires_at: new Date(Date.now() + expiresIn * 1000).toISOString(),
+      refresh_expires_at: null,
+    });
+    return redirectToApp(res, 'instagram', true);
+  } catch (oauthError) {
+    console.error('Instagram OAuth error:', oauthError);
+    return redirectToApp(res, 'instagram', false, 'oauth_failed');
   }
 }
